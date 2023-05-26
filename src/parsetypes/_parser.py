@@ -51,10 +51,11 @@ class _SpecialValue(Enum):
 	NAN = "nan value"
 
 
-# TODO: implement use_decimal and add tests, but tsch should set use_decimal=True
 class TypeParser:
-	def __init__(self, *,
+	def __init__(self,
+	    *,
 		trim: bool=True,
+		use_decimal: bool=False,
 		list_delimiter: str | None=None,
 		none_values: Iterable[str]=[""],
 		none_case_sensitive: bool=False,
@@ -79,6 +80,7 @@ class TypeParser:
 			inf_values = (value.strip() for value in inf_values)
 			nan_values = (value.strip() for value in nan_values)
 
+		self.use_decimal = use_decimal
 		self.list_delimiter = list_delimiter
 
 		self.none_case_sensitive = none_case_sensitive
@@ -137,12 +139,20 @@ class TypeParser:
 				if self.is_int(special_value):
 					raise ValueError(f"cannot use int value as {name.value}: {special_value}")
 
-				if (
-					(name == _SpecialValue.INF and self.parse_float(special_value) != math.inf) or
-					(name == _SpecialValue.NAN and self.parse_float(special_value) is not math.nan) or
-					(name != _SpecialValue.INF and name != _SpecialValue.NAN and self.is_float(special_value))
-				):
-					raise ValueError(f"cannot use float or Decimal value as {name}: {special_value}")
+				if self.use_decimal:
+					if (
+						(name == _SpecialValue.INF and self.parse_decimal(special_value) != Decimal(math.inf)) or
+						(name == _SpecialValue.NAN and not self.parse_decimal(special_value).is_nan()) or
+						(name != _SpecialValue.INF and name != _SpecialValue.NAN and self.is_float(special_value))
+					):
+						raise ValueError(f"cannot use Decimal value as {name}: {special_value}")
+				else:
+					if (
+						(name == _SpecialValue.INF and self.parse_float(special_value) != math.inf) or
+						(name == _SpecialValue.NAN and self.parse_float(special_value) is not math.nan) or
+						(name != _SpecialValue.INF and name != _SpecialValue.NAN and self.is_float(special_value))
+					):
+						raise ValueError(f"cannot use float value as {name}: {special_value}")
 
 
 	def is_none(self, value: str) -> bool:
@@ -397,7 +407,10 @@ class TypeParser:
 		if self.is_int(value):
 			return int
 		if self.is_float(value):
-			return Decimal
+			if self.use_decimal:
+				return Decimal
+			else:
+				return float
 
 		if self.trim:
 			value = value.strip()

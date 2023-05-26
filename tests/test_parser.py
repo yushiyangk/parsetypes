@@ -996,28 +996,28 @@ class TestInfer:
 			("-1", int),
 			("20", int),
 			("1e6", int),
-			("0.0", Decimal),
-			("+0.0", Decimal),
-			("-0.0", Decimal),
-			("0.", Decimal),
-			("+0.", Decimal),
-			("-0.", Decimal),
-			(".0", Decimal),
-			("+.0", Decimal),
-			("-.0", Decimal),
-			("1.0", Decimal),
-			("+1.0", Decimal),
-			("-1.0", Decimal),
-			("1.", Decimal),
-			(".1", Decimal),
-			("1.1", Decimal),
-			("1.23e0", Decimal),
-			("1.23e-0", Decimal),
-			("1.23e+0", Decimal),
-			("1.23e1", Decimal),
-			("1.23e-1", Decimal),
-			("1.23e+1", Decimal),
-			("1.23e6", Decimal),
+			("0.0", float),
+			("+0.0", float),
+			("-0.0", float),
+			("0.", float),
+			("+0.", float),
+			("-0.", float),
+			(".0", float),
+			("+.0", float),
+			("-.0", float),
+			("1.0", float),
+			("+1.0", float),
+			("-1.0", float),
+			("1.", float),
+			(".1", float),
+			("1.1", float),
+			("1.23e0", float),
+			("1.23e-0", float),
+			("1.23e+0", float),
+			("1.23e1", float),
+			("1.23e-1", float),
+			("1.23e+1", float),
+			("1.23e6", float),
 			("a", str),
 			("a1", str),
 			("1a", str),
@@ -1068,14 +1068,14 @@ class TestInfer:
 
 			("0,1,2", ',', list[int], str),
 			("0,01,-2,+3,4e5,-60,7_0", ',', list[int], str),
-			("0.1,0.2,0.3", ',', list[Decimal], str),
-			(",,0.4", ',', list[Nullable[Decimal]], str),
-			("0.,.0,0.0,01.00,-0.2,+3.0,4.e+5,6e-7,-80.08,9_0e1_0", ',', list[Decimal], str),
+			("0.1,0.2,0.3", ',', list[float], str),
+			(",,0.4", ',', list[Nullable[float]], str),
+			("0.,.0,0.0,01.00,-0.2,+3.0,4.e+5,6e-7,-80.08,9_0e1_0", ',', list[float], str),
 
 			("false,1", ',', list[int], str),
-			("false,1.", ',', list[Decimal], str),
-			("false,,1.", ',', list[Nullable[Decimal]], str),
-			("1,2.", ',', list[Decimal], str),
+			("false,1.", ',', list[float], str),
+			("false,,1.", ',', list[Nullable[float]], str),
+			("1,2.", ',', list[float], str),
 			("1,2.,a", ',', list[str], str),
 			("1,2.,,a", ',', list[Nullable[str]], str),
 
@@ -1097,6 +1097,36 @@ class TestInfer:
 		assert result == no_delimiter_expected
 
 
+	@staticmethod
+	@pytest.fixture
+	def use_decimal_inferrer(request: pytest.FixtureRequest) -> TypeParser:
+		return TypeParser(use_decimal=request.param)
+
+	@staticmethod
+	@pytest.mark.parametrize('value', [
+		"0.0", "+0.0", "-0.0",
+		"0.", "+0.", "-0.",
+		".0", "+.0", "-.0",
+		"1.0", "+1.0", "-1.0",
+		"1.", ".1", "1.1",
+		"1.23e0", "1.23e-0", "1.23e+0",
+		"1.23e1", "1.23e-1", "1.23e+1",
+		"1.23e6",
+	])
+	@pytest.mark.parametrize(
+		('use_decimal_inferrer', 'expected'),
+		[(False, float), (True, Decimal)],
+		indirect=['use_decimal_inferrer'],
+	)
+	def test_use_decimal(
+		value: str,
+		use_decimal_inferrer: TypeParser,
+		expected: DatumType,
+	):
+		result = use_decimal_inferrer.infer(value)
+		assert result == expected
+
+
 class TestInferSeries:
 	@staticmethod
 	@pytest.mark.parametrize(
@@ -1114,8 +1144,8 @@ class TestInferSeries:
 			),
 			(
 				["1.0", "-2.", "+0.3", "4"],
-				[Decimal, Decimal, Decimal, int],
-				[Decimal],
+				[float, float, float, int],
+				[float],
 			),
 			(
 				["false", "true", "", "false"],
@@ -1164,10 +1194,10 @@ class TestInferTable:
 				[
 					[int, int, int, bool],
 					[str, str, str, NoneType],
-					[Decimal, Decimal, Decimal, int],
+					[float, float, float, int],
 					[bool, bool, NoneType, bool],
 				],
-				[int, Nullable[str], Decimal, Nullable[bool]],
+				[int, Nullable[str], float, Nullable[bool]],
 			),
 			([], [], []),
 			(
