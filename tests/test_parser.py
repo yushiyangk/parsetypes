@@ -1131,7 +1131,7 @@ class TestInferTableTypes:
 		]
 	)
 	def test_default(default_inferrer: TypeParser, rows: list[list[str]], expected_reduce_types: list[list[DatumType]], expected: list[DatumType]):
-		with patch('parsetypes._inference.reduce_types', side_effect=expected) as mocked_reduce_types:
+		with patch('parsetypes._parser.reduce_types', side_effect=expected) as mocked_reduce_types:
 			result = default_inferrer.infer_table_types(rows)
 			mocked_reduce_types.assert_has_calls([call(expected_call) for expected_call in expected_reduce_types])
 			assert result == expected
