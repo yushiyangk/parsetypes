@@ -979,7 +979,7 @@ class TestFloatDecimal:
 			assert TestFloatDecimal.check_decimal(decimal_result, expected_decimal)
 
 
-class TestInferType:
+class TestInfer:
 	@staticmethod
 	@pytest.mark.parametrize(
 		('value', 'expected'),
@@ -1097,7 +1097,59 @@ class TestInferType:
 		assert result == no_delimiter_expected
 
 
-class TestInferTableTypes:
+class TestInferSeries:
+	@staticmethod
+	@pytest.mark.parametrize(
+		('values', 'expected_reduce_types', 'expected'),
+		[
+			(
+				["1", "-2", "+3", "false"],
+				[int, int, int, bool],
+				[int],
+			),
+			(
+				["a", "b", "cc", ""],
+				[str, str, str, NoneType],
+				[Nullable[str]],
+			),
+			(
+				["1.0", "-2.", "+0.3", "4"],
+				[Decimal, Decimal, Decimal, int],
+				[Decimal],
+			),
+			(
+				["false", "true", "", "false"],
+				[bool, bool, NoneType, bool],
+				[Nullable[bool]],
+			),
+			([], [], []),
+			(["1"], [int], [int]),
+		]
+	)
+	def test_default(default_inferrer: TypeParser, values: list[str], expected_reduce_types: list[DatumType], expected: DatumType):
+		with patch('parsetypes._parser.reduce_types', return_value=expected) as mocked_reduce_types:
+			result = default_inferrer.infer_series(values)
+			assert len(mocked_reduce_types.call_args_list) == 1
+			args, kwargs = mocked_reduce_types.call_args_list[0]
+			for call_arg, expected_arg in zip(args[0], expected_reduce_types):
+				assert call_arg == expected_arg
+			assert result == expected
+
+
+	@staticmethod
+	@pytest.mark.parametrize('values', [
+		["1", "-2", "+3", "false"],
+		["a", "b", "cc", ""],
+		["1.0", "-2.", "+0.3", "4"],
+		["false", "true", "", "false"],
+	])
+	def test_infer_args(default_inferrer: TypeParser, values: list[str]):
+		with patch.object(default_inferrer, 'infer') as mocked_infer:
+			default_inferrer.infer_series(values)
+			mocked_infer.assert_has_calls([call(value) for value in values], any_order=True)
+
+
+class TestInferTable:
 	@staticmethod
 	@pytest.mark.parametrize(
 		('rows', 'expected_reduce_types', 'expected'),
@@ -1115,7 +1167,7 @@ class TestInferTableTypes:
 					[Decimal, Decimal, Decimal, int],
 					[bool, bool, NoneType, bool],
 				],
-				[int, str, Decimal, bool],
+				[int, Nullable[str], Decimal, Nullable[bool]],
 			),
 			([], [], []),
 			(
@@ -1132,7 +1184,7 @@ class TestInferTableTypes:
 	)
 	def test_default(default_inferrer: TypeParser, rows: list[list[str]], expected_reduce_types: list[list[DatumType]], expected: list[DatumType]):
 		with patch('parsetypes._parser.reduce_types', side_effect=expected) as mocked_reduce_types:
-			result = default_inferrer.infer_table_types(rows)
+			result = default_inferrer.infer_table(rows)
 			mocked_reduce_types.assert_has_calls([call(expected_call) for expected_call in expected_reduce_types])
 			assert result == expected
 
@@ -1148,7 +1200,7 @@ class TestInferTableTypes:
 	])
 	def test_infer_args(default_inferrer: TypeParser, rows: list[list[str]]):
 		with patch.object(default_inferrer, 'infer') as mocked_infer:
-			default_inferrer.infer_table_types(rows)
+			default_inferrer.infer_table(rows)
 
 			expected_calls = []
 			for row in rows:

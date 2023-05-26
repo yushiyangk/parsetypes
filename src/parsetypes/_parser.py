@@ -412,9 +412,22 @@ class TypeParser:
 		return str
 
 
-	def infer_table_types(self, rows: Iterable[Sequence[str]]) -> list[DatumType]:
+	def infer_series(self, values: Iterable[str]) -> DatumType:
 		"""
-			Infer the type of each column for a table of strings.
+			Infer the common type of a series of strings.
+
+			If the values in the series are of different types, they will be broadened to the narrowest type that covers all values in the series. See `parsetypes.reduce_types` for more information.
+		"""
+		return reduce_types(self.infer(value) for value in values)
+
+
+	def infer_table(self, rows: Iterable[Sequence[str]]) -> list[DatumType]:
+		"""
+			Infer the common type for each column of a table of strings.
+
+			The table should be given as an iterable of rows, where each row is a sequence of strings.
+
+			For each column, if the values in the column are of different types, they will be broadened to the narrowest type that covers all values in the column. See `parsetypes.reduce_types` for more information.
 		"""
 		rows_iter = iter(rows)
 		first_row = next(rows_iter, None)
