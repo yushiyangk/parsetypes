@@ -128,8 +128,8 @@ class TypeParser:
 					raise ValueError(f"cannot use None value as {name.value}: {special_value}")
 
 				if (
-					(name == _SpecialValue.TRUE and self.to_bool(special_value) != True) or
-					(name == _SpecialValue.FALSE and self.to_bool(special_value) != False) or
+					(name == _SpecialValue.TRUE and self.parse_bool(special_value) != True) or
+					(name == _SpecialValue.FALSE and self.parse_bool(special_value) != False) or
 					(name != _SpecialValue.TRUE and name != _SpecialValue.FALSE and self.is_bool(special_value))
 				):
 					raise ValueError(f"cannot use bool value as {name.value}: {special_value}")
@@ -138,8 +138,8 @@ class TypeParser:
 					raise ValueError(f"cannot use int value as {name.value}: {special_value}")
 
 				if (
-					(name == _SpecialValue.INF and self.to_float(special_value) != math.inf) or
-					(name == _SpecialValue.NAN and self.to_float(special_value) is not math.nan) or
+					(name == _SpecialValue.INF and self.parse_float(special_value) != math.inf) or
+					(name == _SpecialValue.NAN and self.parse_float(special_value) is not math.nan) or
 					(name != _SpecialValue.INF and name != _SpecialValue.NAN and self.is_float(special_value))
 				):
 					raise ValueError(f"cannot use float or Decimal value as {name}: {special_value}")
@@ -160,9 +160,9 @@ class TypeParser:
 			return False
 
 
-	def to_none(self, value: str) -> None:
+	def parse_none(self, value: str) -> None:
 		"""
-			Convert a string to None if possible, or raise ValueError otherwise.
+			Parse a string as None if possible, or raise ValueError otherwise.
 		"""
 		if self.is_none(value):
 			return None
@@ -187,7 +187,7 @@ class TypeParser:
 		return False
 
 
-	def to_bool(self, value: str) -> bool:
+	def parse_bool(self, value: str) -> bool:
 		"""
 			Convert a string to a bool if possible, or raise ValueError otherwise.
 		"""
@@ -249,7 +249,7 @@ class TypeParser:
 		return True
 
 
-	def to_int(self, value: str, *, allow_scientific: bool=True) -> int:
+	def parse_int(self, value: str, *, allow_scientific: bool=True) -> int:
 		"""
 			Convert a string to an int if possible, or raise ValueError otherwise.
 		"""
@@ -312,7 +312,7 @@ class TypeParser:
 		return self.is_int(value, allow_sign=True, allow_negative=True, allow_scientific=False)
 
 
-	def _to_floatlike(self,
+	def _parse_floatlike(self,
 		value: str,
 		converter: Callable[[str], _FloatLike],
 		inf_value: _FloatLike,
@@ -355,11 +355,11 @@ class TypeParser:
 			raise ValueError(f"not a {_FloatLike.__name__}: {value}")
 
 
-	def to_float(self, value: str, *, allow_scientific: bool=True, allow_inf: bool=True, allow_nan: bool=True) -> float:
+	def parse_float(self, value: str, *, allow_scientific: bool=True, allow_inf: bool=True, allow_nan: bool=True) -> float:
 		"""
 			Convert a string to a (non-exact) float if possible, or raise ValueError otherwise.
 		"""
-		return self._to_floatlike(value, float, math.inf, math.nan,
+		return self._parse_floatlike(value, float, math.inf, math.nan,
 			allow_scientific=allow_scientific,
 			allow_inf=allow_inf,
 			allow_nan=allow_nan,
@@ -373,20 +373,20 @@ class TypeParser:
 		return self.is_float(value, allow_scientific=allow_scientific, allow_inf=allow_inf, allow_nan=allow_nan)
 
 
-	def to_decimal(self, value: str, *, allow_scientific: bool=True, allow_inf: bool=True, allow_nan: bool=True) -> Decimal:
+	def parse_decimal(self, value: str, *, allow_scientific: bool=True, allow_inf: bool=True, allow_nan: bool=True) -> Decimal:
 		"""
 			Convert a string to an exact Decimal if possible, or raise ValueError otherwise.
 		"""
-		return self._to_floatlike(value, Decimal, Decimal(math.inf), Decimal(math.nan),
+		return self._parse_floatlike(value, Decimal, Decimal(math.inf), Decimal(math.nan),
 			allow_scientific=allow_scientific,
 			allow_inf=allow_inf,
 			allow_nan=allow_nan,
 		)
 
 
-	def infer_type(self, value: str) -> DatumType:
+	def infer(self, value: str) -> DatumType:
 		"""
-			Infer the type of value given as a string.
+			Infer the type of a value given as a string.
 
 			Also check for inline lists if `self.list_delimiter` is not None.
 		"""
@@ -407,7 +407,7 @@ class TypeParser:
 			print(subvalues)
 			if self.trim:
 				subvalues = [subvalue.strip() for subvalue in subvalues]
-			return list[reduce_types(self.infer_type(subvalue) for subvalue in subvalues)]
+			return list[reduce_types(self.infer(subvalue) for subvalue in subvalues)]
 
 		return str
 
@@ -425,8 +425,8 @@ class TypeParser:
 		if num_cols == 0:
 			return []
 
-		table = _TypeTable([[self.infer_type(value)] for value in first_row])
+		table = _TypeTable([[self.infer(value)] for value in first_row])
 		for row in rows_iter:
-			table.add_row([self.infer_type(value) for value in row])
+			table.add_row([self.infer(value) for value in row])
 
 		return [reduce_types(col) for col in table.cols]

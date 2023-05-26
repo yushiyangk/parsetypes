@@ -30,11 +30,11 @@ class TestNull:
 		assert is_none_result == is_none_expected
 
 		if is_none_expected:
-			result = default_inferrer.to_none(value)
+			result = default_inferrer.parse_none(value)
 			assert result is None
 		else:
 			with pytest.raises(ValueError):
-				default_inferrer.to_bool(value)
+				default_inferrer.parse_bool(value)
 
 
 	@staticmethod
@@ -75,11 +75,11 @@ class TestNull:
 		assert is_none_result == is_none_expected
 
 		if is_none_expected:
-			result = none_values_inferrer.to_none(value)
+			result = none_values_inferrer.parse_none(value)
 			assert result is None
 		else:
 			with pytest.raises(ValueError):
-				none_values_inferrer.to_none(value)
+				none_values_inferrer.parse_none(value)
 
 
 	@staticmethod
@@ -125,11 +125,11 @@ class TestNull:
 		assert is_none_result == is_none_expected
 
 		if is_none_expected:
-			result = none_trim_inferrer.to_none(value)
+			result = none_trim_inferrer.parse_none(value)
 			assert result is None
 		else:
 			with pytest.raises(ValueError):
-				none_trim_inferrer.to_none(value)
+				none_trim_inferrer.parse_none(value)
 
 
 class TestBool:
@@ -158,9 +158,9 @@ class TestBool:
 
 		if expected_bool is None:
 			with pytest.raises(ValueError):
-				default_inferrer.to_bool(value)
+				default_inferrer.parse_bool(value)
 		else:
-			result = default_inferrer.to_bool(value)
+			result = default_inferrer.parse_bool(value)
 			assert result == expected_bool
 
 
@@ -212,9 +212,9 @@ class TestBool:
 
 		if expected_bool is None:
 			with pytest.raises(ValueError):
-				bool_values_inferrer.to_bool(value)
+				bool_values_inferrer.parse_bool(value)
 		else:
-			result = bool_values_inferrer.to_bool(value)
+			result = bool_values_inferrer.parse_bool(value)
 			assert result == expected_bool
 
 
@@ -258,9 +258,9 @@ class TestBool:
 
 		if expected_bool is None:
 			with pytest.raises(ValueError):
-				bool_case_sensitive_inferrer.to_bool(value)
+				bool_case_sensitive_inferrer.parse_bool(value)
 		else:
-			result = bool_case_sensitive_inferrer.to_bool(value)
+			result = bool_case_sensitive_inferrer.parse_bool(value)
 			assert result == expected_bool
 
 
@@ -307,9 +307,9 @@ class TestBool:
 
 		if expected_bool is None:
 			with pytest.raises(ValueError):
-				bool_trim_inferrer.to_bool(value)
+				bool_trim_inferrer.parse_bool(value)
 		else:
-			result = bool_trim_inferrer.to_bool(value)
+			result = bool_trim_inferrer.parse_bool(value)
 			assert result == expected_bool
 
 
@@ -357,9 +357,9 @@ class TestInt:
 
 		if expected_int is None:
 			with pytest.raises(ValueError):
-				default_inferrer.to_int(value)
+				default_inferrer.parse_int(value)
 		else:
-			result = default_inferrer.to_int(value)
+			result = default_inferrer.parse_int(value)
 			assert result == expected_int
 
 
@@ -410,9 +410,9 @@ class TestInt:
 
 		if expected_int is None:
 			with pytest.raises(ValueError):
-				default_inferrer.to_int(value)
+				default_inferrer.parse_int(value)
 		else:
-			result = default_inferrer.to_int(value)
+			result = default_inferrer.parse_int(value)
 			assert result == expected_int
 
 
@@ -461,13 +461,13 @@ class TestInt:
 
 		if allow_scientific_expected is None:
 			with pytest.raises(ValueError):
-				default_inferrer.to_int(value, allow_scientific=True)
+				default_inferrer.parse_int(value, allow_scientific=True)
 		else:
-			allow_scientific_result = default_inferrer.to_int(value, allow_scientific=True)
+			allow_scientific_result = default_inferrer.parse_int(value, allow_scientific=True)
 			assert allow_scientific_result == allow_scientific_expected
 
 		with pytest.raises(ValueError):
-			default_inferrer.to_int(value, allow_scientific=False)
+			default_inferrer.parse_int(value, allow_scientific=False)
 
 
 	@staticmethod
@@ -504,9 +504,9 @@ class TestInt:
 
 		if expected_int is None:
 			with pytest.raises(ValueError):
-				int_trim_inferrer.to_int(value)
+				int_trim_inferrer.parse_int(value)
 		else:
-			int_result = int_trim_inferrer.to_int(value)
+			int_result = int_trim_inferrer.parse_int(value)
 			assert int_result == expected_int
 
 
@@ -536,13 +536,13 @@ class TestFloatDecimal:
 
 		if expected_int is None:
 			with pytest.raises(ValueError):
-				default_inferrer.to_float(value)
+				default_inferrer.parse_float(value)
 			with pytest.raises(ValueError):
-				default_inferrer.to_decimal(value)
+				default_inferrer.parse_decimal(value)
 		else:
-			float_result = default_inferrer.to_float(value)
+			float_result = default_inferrer.parse_float(value)
 			assert float_result == float(expected_int)
-			decimal_result = default_inferrer.to_decimal(value)
+			decimal_result = default_inferrer.parse_decimal(value)
 			assert decimal_result == Decimal(expected_int)
 
 
@@ -609,16 +609,16 @@ class TestFloatDecimal:
 
 		if expected_float is None:
 			with pytest.raises(ValueError):
-				default_inferrer.to_float(value)
+				default_inferrer.parse_float(value)
 		else:
-			float_result = default_inferrer.to_float(value)
+			float_result = default_inferrer.parse_float(value)
 			assert TestFloatDecimal.check_float(float_result, expected_float)
 
 		if expected_decimal is None:
 			with pytest.raises(ValueError):
-				default_inferrer.to_decimal(value)
+				default_inferrer.parse_decimal(value)
 		else:
-			decimal_result = default_inferrer.to_decimal(value)
+			decimal_result = default_inferrer.parse_decimal(value)
 			assert TestFloatDecimal.check_decimal(decimal_result, expected_decimal)
 
 
@@ -670,21 +670,21 @@ class TestFloatDecimal:
 
 		if expected_float is None:
 			with pytest.raises(ValueError):
-				default_inferrer.to_float(value, allow_scientific=True)
+				default_inferrer.parse_float(value, allow_scientific=True)
 		else:
-			float_result = default_inferrer.to_float(value, allow_scientific=True)
+			float_result = default_inferrer.parse_float(value, allow_scientific=True)
 			assert TestFloatDecimal.check_float(float_result, expected_float)
 		with pytest.raises(ValueError):
-			default_inferrer.to_float(value, allow_scientific=False)
+			default_inferrer.parse_float(value, allow_scientific=False)
 
 		if expected_decimal is None:
 			with pytest.raises(ValueError):
-				default_inferrer.to_decimal(value, allow_scientific=True)
+				default_inferrer.parse_decimal(value, allow_scientific=True)
 		else:
-			decimal_result = default_inferrer.to_decimal(value, allow_scientific=True)
+			decimal_result = default_inferrer.parse_decimal(value, allow_scientific=True)
 			assert TestFloatDecimal.check_decimal(decimal_result, expected_decimal)
 		with pytest.raises(ValueError):
-			default_inferrer.to_decimal(value, allow_scientific=False)
+			default_inferrer.parse_decimal(value, allow_scientific=False)
 
 
 	@staticmethod
@@ -739,16 +739,16 @@ class TestFloatDecimal:
 
 		if expected_float is None:
 			with pytest.raises(ValueError):
-				float_values_inferrer.to_float(value)
+				float_values_inferrer.parse_float(value)
 		else:
-			float_result = float_values_inferrer.to_float(value)
+			float_result = float_values_inferrer.parse_float(value)
 			assert TestFloatDecimal.check_float(float_result, expected_float)
 
 		if expected_decimal is None:
 			with pytest.raises(ValueError):
-				float_values_inferrer.to_decimal(value)
+				float_values_inferrer.parse_decimal(value)
 		else:
-			decimal_result = float_values_inferrer.to_decimal(value)
+			decimal_result = float_values_inferrer.parse_decimal(value)
 			assert TestFloatDecimal.check_decimal(decimal_result, expected_decimal)
 
 
@@ -773,21 +773,21 @@ class TestFloatDecimal:
 
 		if expected_float is None:
 			with pytest.raises(ValueError):
-				float_values_inferrer.to_float(value, allow_inf=True)
+				float_values_inferrer.parse_float(value, allow_inf=True)
 		else:
-			float_result = float_values_inferrer.to_float(value, allow_inf=True)
+			float_result = float_values_inferrer.parse_float(value, allow_inf=True)
 			assert TestFloatDecimal.check_float(float_result, expected_float)
 		with pytest.raises(ValueError):
-			float_values_inferrer.to_float(value, allow_inf=False)
+			float_values_inferrer.parse_float(value, allow_inf=False)
 
 		if expected_decimal is None:
 			with pytest.raises(ValueError):
-				float_values_inferrer.to_decimal(value, allow_inf=True)
+				float_values_inferrer.parse_decimal(value, allow_inf=True)
 		else:
-			decimal_result = float_values_inferrer.to_decimal(value, allow_inf=True)
+			decimal_result = float_values_inferrer.parse_decimal(value, allow_inf=True)
 			assert TestFloatDecimal.check_decimal(decimal_result, expected_decimal)
 		with pytest.raises(ValueError):
-			float_values_inferrer.to_decimal(value, allow_inf=False)
+			float_values_inferrer.parse_decimal(value, allow_inf=False)
 
 
 	@staticmethod
@@ -811,21 +811,21 @@ class TestFloatDecimal:
 
 		if expected_float is None:
 			with pytest.raises(ValueError):
-				float_values_inferrer.to_float(value, allow_nan=True)
+				float_values_inferrer.parse_float(value, allow_nan=True)
 		else:
-			float_result = float_values_inferrer.to_float(value, allow_nan=True)
+			float_result = float_values_inferrer.parse_float(value, allow_nan=True)
 			assert TestFloatDecimal.check_float(float_result, expected_float)
 		with pytest.raises(ValueError):
-			float_values_inferrer.to_float(value, allow_nan=False)
+			float_values_inferrer.parse_float(value, allow_nan=False)
 
 		if expected_decimal is None:
 			with pytest.raises(ValueError):
-				float_values_inferrer.to_decimal(value, allow_nan=True)
+				float_values_inferrer.parse_decimal(value, allow_nan=True)
 		else:
-			decimal_result = float_values_inferrer.to_decimal(value, allow_nan=True)
+			decimal_result = float_values_inferrer.parse_decimal(value, allow_nan=True)
 			assert TestFloatDecimal.check_decimal(decimal_result, expected_decimal)
 		with pytest.raises(ValueError):
-			float_values_inferrer.to_decimal(value, allow_nan=False)
+			float_values_inferrer.parse_decimal(value, allow_nan=False)
 
 
 	@staticmethod
@@ -883,16 +883,16 @@ class TestFloatDecimal:
 
 		if expected_float is None:
 			with pytest.raises(ValueError):
-				float_case_sensitive_inferrer.to_float(value)
+				float_case_sensitive_inferrer.parse_float(value)
 		else:
-			float_result = float_case_sensitive_inferrer.to_float(value)
+			float_result = float_case_sensitive_inferrer.parse_float(value)
 			assert TestFloatDecimal.check_float(float_result, expected_float)
 
 		if expected_decimal is None:
 			with pytest.raises(ValueError):
-				float_case_sensitive_inferrer.to_decimal(value)
+				float_case_sensitive_inferrer.parse_decimal(value)
 		else:
-			decimal_result = float_case_sensitive_inferrer.to_decimal(value)
+			decimal_result = float_case_sensitive_inferrer.parse_decimal(value)
 			assert TestFloatDecimal.check_decimal(decimal_result, expected_decimal)
 
 
@@ -966,16 +966,16 @@ class TestFloatDecimal:
 
 		if expected_float is None:
 			with pytest.raises(ValueError):
-				float_trim_inferrer.to_float(value)
+				float_trim_inferrer.parse_float(value)
 		else:
-			float_result = float_trim_inferrer.to_float(value)
+			float_result = float_trim_inferrer.parse_float(value)
 			assert TestFloatDecimal.check_float(float_result, expected_float)
 
 		if expected_decimal is None:
 			with pytest.raises(ValueError):
-				float_trim_inferrer.to_decimal(value)
+				float_trim_inferrer.parse_decimal(value)
 		else:
-			decimal_result = float_trim_inferrer.to_decimal(value)
+			decimal_result = float_trim_inferrer.parse_decimal(value)
 			assert TestFloatDecimal.check_decimal(decimal_result, expected_decimal)
 
 
@@ -1042,7 +1042,7 @@ class TestInferType:
 		]
 	)
 	def test_scalars_default(default_inferrer: TypeParser, value: str, expected: DatumType):
-		result = default_inferrer.infer_type(value)
+		result = default_inferrer.infer(value)
 		assert result == expected
 
 
@@ -1090,10 +1090,10 @@ class TestInferType:
 		delimiter_expected: DatumType,
 		no_delimiter_expected: DatumType
 	):
-		result = list_inferrer.infer_type(value)
+		result = list_inferrer.infer(value)
 		assert result == delimiter_expected
 
-		result = default_inferrer.infer_type(value)
+		result = default_inferrer.infer(value)
 		assert result == no_delimiter_expected
 
 
@@ -1147,7 +1147,7 @@ class TestInferTableTypes:
 		],
 	])
 	def test_infer_args(default_inferrer: TypeParser, rows: list[list[str]]):
-		with patch.object(default_inferrer, 'infer_type') as mocked_infer_type:
+		with patch.object(default_inferrer, 'infer') as mocked_infer:
 			default_inferrer.infer_table_types(rows)
 
 			expected_calls = []
@@ -1157,7 +1157,7 @@ class TestInferTableTypes:
 						call(value)
 					)
 
-			mocked_infer_type.assert_has_calls(expected_calls, any_order=True)
+			mocked_infer.assert_has_calls(expected_calls, any_order=True)
 
 
 class TestConstructor:
