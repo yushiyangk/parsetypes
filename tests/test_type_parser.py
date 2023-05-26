@@ -7,12 +7,12 @@ from unittest.mock import call, patch
 
 import pytest
 
-from parsetypes import DatumType, Inferrer, Nullable
+from parsetypes import DatumType, TypeParser, Nullable
 
 
 @pytest.fixture
 def default_inferrer():
-	return Inferrer()
+	return TypeParser()
 
 
 class TestNull:
@@ -25,7 +25,7 @@ class TestNull:
 			("none", False),
 		]
 	)
-	def test_default(default_inferrer: Inferrer, value: str, is_none_expected: bool):
+	def test_default(default_inferrer: TypeParser, value: str, is_none_expected: bool):
 		is_none_result = default_inferrer.is_none(value)
 		assert is_none_result == is_none_expected
 
@@ -39,8 +39,8 @@ class TestNull:
 
 	@staticmethod
 	@pytest.fixture
-	def none_values_inferrer(request: pytest.FixtureRequest) -> Inferrer:
-		return Inferrer(none_values=request.param)
+	def none_values_inferrer(request: pytest.FixtureRequest) -> TypeParser:
+		return TypeParser(none_values=request.param)
 
 	no_values = []
 	empty_str_none = [""]
@@ -68,7 +68,7 @@ class TestNull:
 	)
 	def test_none_values(
 		value: str,
-		none_values_inferrer: Inferrer,
+		none_values_inferrer: TypeParser,
 		is_none_expected: bool,
 	):
 		is_none_result = none_values_inferrer.is_none(value)
@@ -84,8 +84,8 @@ class TestNull:
 
 	@staticmethod
 	@pytest.fixture
-	def none_trim_inferrer(request: pytest.FixtureRequest) -> Inferrer:
-		return Inferrer(trim=request.param[0], none_values=request.param[1])
+	def none_trim_inferrer(request: pytest.FixtureRequest) -> TypeParser:
+		return TypeParser(trim=request.param[0], none_values=request.param[1])
 
 	@staticmethod
 	@pytest.mark.parametrize(
@@ -118,7 +118,7 @@ class TestNull:
 	)
 	def test_trim(
 		value: str,
-		none_trim_inferrer: Inferrer,
+		none_trim_inferrer: TypeParser,
 		is_none_expected: bool,
 	):
 		is_none_result = none_trim_inferrer.is_none(value)
@@ -152,7 +152,7 @@ class TestBool:
 			("", False, None),
 		]
 	)
-	def test_default(default_inferrer: Inferrer, value: str, is_bool_expected: bool, expected_bool: bool | None):
+	def test_default(default_inferrer: TypeParser, value: str, is_bool_expected: bool, expected_bool: bool | None):
 		is_bool_result = default_inferrer.is_bool(value)
 		assert is_bool_result == is_bool_expected
 
@@ -166,8 +166,8 @@ class TestBool:
 
 	@staticmethod
 	@pytest.fixture
-	def bool_values_inferrer(request: pytest.FixtureRequest) -> Inferrer:
-		return Inferrer(true_values=request.param[0], false_values=request.param[1], none_values=[])
+	def bool_values_inferrer(request: pytest.FixtureRequest) -> TypeParser:
+		return TypeParser(true_values=request.param[0], false_values=request.param[1], none_values=[])
 
 	no_values = ([], [])
 	empty_str_true = ([""], [])
@@ -203,7 +203,7 @@ class TestBool:
 	)
 	def test_bool_values(
 		value: str,
-		bool_values_inferrer: Inferrer,
+		bool_values_inferrer: TypeParser,
 		is_bool_expected: bool,
 		expected_bool: bool | None
 	):
@@ -220,8 +220,8 @@ class TestBool:
 
 	@staticmethod
 	@pytest.fixture
-	def bool_case_sensitive_inferrer(request: pytest.FixtureRequest) -> Inferrer:
-		return Inferrer(bool_case_sensitive=request.param[0], true_values=request.param[1], false_values=request.param[2])
+	def bool_case_sensitive_inferrer(request: pytest.FixtureRequest) -> TypeParser:
+		return TypeParser(bool_case_sensitive=request.param[0], true_values=request.param[1], false_values=request.param[2])
 
 	@staticmethod
 	@pytest.mark.parametrize(
@@ -249,7 +249,7 @@ class TestBool:
 	)
 	def test_case_sensitive(
 		value: str,
-		bool_case_sensitive_inferrer: Inferrer,
+		bool_case_sensitive_inferrer: TypeParser,
 		is_bool_expected: bool,
 		expected_bool: bool | None
 	):
@@ -266,8 +266,8 @@ class TestBool:
 
 	@staticmethod
 	@pytest.fixture
-	def bool_trim_inferrer(request: pytest.FixtureRequest) -> Inferrer:
-		return Inferrer(trim=request.param[0], true_values=request.param[1], false_values=request.param[2], none_values=[])
+	def bool_trim_inferrer(request: pytest.FixtureRequest) -> TypeParser:
+		return TypeParser(trim=request.param[0], true_values=request.param[1], false_values=request.param[2], none_values=[])
 
 	@staticmethod
 	@pytest.mark.parametrize(
@@ -298,7 +298,7 @@ class TestBool:
 	)
 	def test_trim(
 		value: str,
-		bool_trim_inferrer: Inferrer,
+		bool_trim_inferrer: TypeParser,
 		is_bool_expected: bool,
 		expected_bool: bool | None,
 	):
@@ -351,7 +351,7 @@ class TestInt:
 
 	@staticmethod
 	@pytest.mark.parametrize(('value', 'is_int_expected', 'expected_int'), int_test_cases + not_int_test_cases)
-	def test_default(default_inferrer: Inferrer, value: str, is_int_expected: bool, expected_int: int | None):
+	def test_default(default_inferrer: TypeParser, value: str, is_int_expected: bool, expected_int: int | None):
 		is_int_result = default_inferrer.is_int(value)
 		assert is_int_result == is_int_expected
 
@@ -391,7 +391,7 @@ class TestInt:
 		]
 	)
 	def test_allow_sign_negative(
-		default_inferrer: Inferrer,
+		default_inferrer: TypeParser,
 		value: str,
 		is_int_allow_sign_expected: bool,
 		is_int_allow_negative_expected: bool,
@@ -453,7 +453,7 @@ class TestInt:
 			("e", False, None),
 		]
 	)
-	def test_allow_scientific(default_inferrer: Inferrer, value: str, is_int_allow_scientific_expected: bool, allow_scientific_expected: int | None):
+	def test_allow_scientific(default_inferrer: TypeParser, value: str, is_int_allow_scientific_expected: bool, allow_scientific_expected: int | None):
 		is_int_allow_scientific_result = default_inferrer.is_int(value, allow_scientific=True)
 		assert is_int_allow_scientific_result == is_int_allow_scientific_expected
 		is_int_disallow_scientific_result = default_inferrer.is_int(value, allow_scientific=False)
@@ -472,8 +472,8 @@ class TestInt:
 
 	@staticmethod
 	@pytest.fixture
-	def int_trim_inferrer(request: pytest.FixtureRequest) -> Inferrer:
-		return Inferrer(trim=request.param)
+	def int_trim_inferrer(request: pytest.FixtureRequest) -> TypeParser:
+		return TypeParser(trim=request.param)
 
 	@staticmethod
 	@pytest.mark.parametrize(
@@ -495,7 +495,7 @@ class TestInt:
 	)
 	def test_trim(
 		value: str,
-		int_trim_inferrer: Inferrer,
+		int_trim_inferrer: TypeParser,
 		is_int_expected: bool,
 		expected_int: int | None,
 	):
@@ -528,7 +528,7 @@ class TestFloatDecimal:
 
 	@staticmethod
 	@pytest.mark.parametrize(('value', 'is_float_expected', 'expected_int'), TestInt.int_test_cases)
-	def test_default_int_as_float(default_inferrer: Inferrer, value: str, is_float_expected: bool, expected_int: int):
+	def test_default_int_as_float(default_inferrer: TypeParser, value: str, is_float_expected: bool, expected_int: int):
 		is_float_result = default_inferrer.is_float(value)
 		assert is_float_result == is_float_expected
 		is_decimal_result = default_inferrer.is_decimal(value)
@@ -601,7 +601,7 @@ class TestFloatDecimal:
 			("", False, None, None),
 		]
 	)
-	def test_default(default_inferrer: Inferrer, value: str, is_float_expected: bool, expected_float: float | None, expected_decimal: Decimal | None):
+	def test_default(default_inferrer: TypeParser, value: str, is_float_expected: bool, expected_float: float | None, expected_decimal: Decimal | None):
 		is_float_result = default_inferrer.is_float(value)
 		assert is_float_result == is_float_expected
 		is_decimal_result = default_inferrer.is_decimal(value)
@@ -662,7 +662,7 @@ class TestFloatDecimal:
 			("e0.1", False, None, None),
 		]
 	)
-	def test_allow_scientific(default_inferrer: Inferrer, value: str, is_float_expected: bool, expected_float: float | None, expected_decimal: Decimal | None):
+	def test_allow_scientific(default_inferrer: TypeParser, value: str, is_float_expected: bool, expected_float: float | None, expected_decimal: Decimal | None):
 		is_float_result = default_inferrer.is_float(value, allow_scientific=True)
 		assert is_float_result == is_float_expected
 		is_decimal_result = default_inferrer.is_decimal(value, allow_scientific=True)
@@ -689,8 +689,8 @@ class TestFloatDecimal:
 
 	@staticmethod
 	@pytest.fixture
-	def float_values_inferrer(request: pytest.FixtureRequest) -> Inferrer:
-		return Inferrer(inf_values=request.param[0], nan_values=request.param[1], none_values=[])
+	def float_values_inferrer(request: pytest.FixtureRequest) -> TypeParser:
+		return TypeParser(inf_values=request.param[0], nan_values=request.param[1], none_values=[])
 
 	no_values = ([], [])
 	empty_str_inf = ([""], [])
@@ -727,7 +727,7 @@ class TestFloatDecimal:
 	)
 	def test_float_values(
 		value: str,
-		float_values_inferrer: Inferrer,
+		float_values_inferrer: TypeParser,
 		is_float_expected: bool,
 		expected_float: bool | None,
 		expected_decimal: Decimal | None,
@@ -765,7 +765,7 @@ class TestFloatDecimal:
 		],
 		indirect=['float_values_inferrer']
 	)
-	def test_allow_inf(float_values_inferrer: Inferrer, value: str, is_float_expected: bool, expected_float: float | None, expected_decimal: Decimal | None):
+	def test_allow_inf(float_values_inferrer: TypeParser, value: str, is_float_expected: bool, expected_float: float | None, expected_decimal: Decimal | None):
 		is_float_result = float_values_inferrer.is_float(value, allow_inf=True)
 		assert is_float_result == is_float_expected
 		is_decimal_result = float_values_inferrer.is_decimal(value, allow_inf=True)
@@ -803,7 +803,7 @@ class TestFloatDecimal:
 		],
 		indirect=['float_values_inferrer']
 	)
-	def test_allow_nan(float_values_inferrer: Inferrer, value: str, is_float_expected: bool, expected_float: float | None, expected_decimal: Decimal | None):
+	def test_allow_nan(float_values_inferrer: TypeParser, value: str, is_float_expected: bool, expected_float: float | None, expected_decimal: Decimal | None):
 		is_float_result = float_values_inferrer.is_float(value, allow_nan=True)
 		assert is_float_result == is_float_expected
 		is_decimal_result = float_values_inferrer.is_decimal(value, allow_nan=True)
@@ -830,8 +830,8 @@ class TestFloatDecimal:
 
 	@staticmethod
 	@pytest.fixture
-	def float_case_sensitive_inferrer(request: pytest.FixtureRequest) -> Inferrer:
-		return Inferrer(float_case_sensitive=request.param[0], inf_values=request.param[1], nan_values=request.param[2])
+	def float_case_sensitive_inferrer(request: pytest.FixtureRequest) -> TypeParser:
+		return TypeParser(float_case_sensitive=request.param[0], inf_values=request.param[1], nan_values=request.param[2])
 
 	@staticmethod
 	@pytest.mark.parametrize(
@@ -871,7 +871,7 @@ class TestFloatDecimal:
 	)
 	def test_case_sensitive(
 		value: str,
-		float_case_sensitive_inferrer: Inferrer,
+		float_case_sensitive_inferrer: TypeParser,
 		is_float_expected: bool,
 		expected_float: float | None,
 		expected_decimal: Decimal | None
@@ -898,8 +898,8 @@ class TestFloatDecimal:
 
 	@staticmethod
 	@pytest.fixture
-	def float_trim_inferrer(request: pytest.FixtureRequest) -> Inferrer:
-		return Inferrer(trim=request.param[0], inf_values=request.param[1], nan_values=request.param[2], none_values=[])
+	def float_trim_inferrer(request: pytest.FixtureRequest) -> TypeParser:
+		return TypeParser(trim=request.param[0], inf_values=request.param[1], nan_values=request.param[2], none_values=[])
 
 	@staticmethod
 	@pytest.mark.parametrize(
@@ -954,7 +954,7 @@ class TestFloatDecimal:
 	)
 	def test_trim(
 		value: str,
-		float_trim_inferrer: Inferrer,
+		float_trim_inferrer: TypeParser,
 		is_float_expected: bool,
 		expected_float: float | None,
 		expected_decimal: Decimal | None,
@@ -1041,15 +1041,15 @@ class TestInferType:
 			("nan", str),
 		]
 	)
-	def test_scalars_default(default_inferrer: Inferrer, value: str, expected: DatumType):
+	def test_scalars_default(default_inferrer: TypeParser, value: str, expected: DatumType):
 		result = default_inferrer.infer_type(value)
 		assert result == expected
 
 
 	@staticmethod
 	@pytest.fixture
-	def list_inferrer(request: pytest.FixtureRequest) -> Inferrer:
-		return Inferrer(list_delimiter=request.param)
+	def list_inferrer(request: pytest.FixtureRequest) -> TypeParser:
+		return TypeParser(list_delimiter=request.param)
 
 	@staticmethod
 	@pytest.mark.parametrize(
@@ -1084,9 +1084,9 @@ class TestInferType:
 		indirect=['list_inferrer']
 	)
 	def test_lists_default(
-		default_inferrer: Inferrer,
+		default_inferrer: TypeParser,
 		value: str,
-		list_inferrer: Inferrer,
+		list_inferrer: TypeParser,
 		delimiter_expected: DatumType,
 		no_delimiter_expected: DatumType
 	):
@@ -1130,7 +1130,7 @@ class TestInferTableTypes:
 			)
 		]
 	)
-	def test_default(default_inferrer: Inferrer, rows: list[list[str]], expected_reduce_types: list[list[DatumType]], expected: list[DatumType]):
+	def test_default(default_inferrer: TypeParser, rows: list[list[str]], expected_reduce_types: list[list[DatumType]], expected: list[DatumType]):
 		with patch('parsetypes._inference.reduce_types', side_effect=expected) as mocked_reduce_types:
 			result = default_inferrer.infer_table_types(rows)
 			mocked_reduce_types.assert_has_calls([call(expected_call) for expected_call in expected_reduce_types])
@@ -1146,7 +1146,7 @@ class TestInferTableTypes:
 			["false", "", "4", "false"],
 		],
 	])
-	def test_infer_args(default_inferrer: Inferrer, rows: list[list[str]]):
+	def test_infer_args(default_inferrer: TypeParser, rows: list[list[str]]):
 		with patch.object(default_inferrer, 'infer_type') as mocked_infer_type:
 			default_inferrer.infer_table_types(rows)
 
@@ -1176,7 +1176,7 @@ class TestConstructor:
 		inf_values: list[str],
 		nan_values: list[str],
 	):
-		inferrer = Inferrer(
+		inferrer = TypeParser(
 			trim=False,
 			list_delimiter=list_delimiter,
 			none_values=none_values,
@@ -1210,7 +1210,7 @@ class TestConstructor:
 		none_values: list[str],
 		none_case_sensitive: bool,
 	):
-		inferrer = Inferrer(
+		inferrer = TypeParser(
 			trim=trim,
 			none_values=none_values,
 			none_case_sensitive=none_case_sensitive,
@@ -1242,7 +1242,7 @@ class TestConstructor:
 		false_values: list[str],
 		bool_case_sensitive: bool,
 	):
-		inferrer = Inferrer(
+		inferrer = TypeParser(
 			trim=trim,
 			true_values=true_values,
 			false_values=false_values,
@@ -1286,7 +1286,7 @@ class TestConstructor:
 		nan_values: list[str],
 		float_case_sensitive: bool,
 	):
-		inferrer = Inferrer(
+		inferrer = TypeParser(
 			trim=trim,
 			inf_values=inf_values,
 			nan_values=nan_values,
@@ -1325,7 +1325,7 @@ class TestConstructor:
 	@pytest.mark.parametrize('float_case_sensitive', [True, False])
 	@pytest.mark.parametrize('case_sensitive', [True, False, None])
 	def test_case_sensitive(none_case_sensitive: bool, bool_case_sensitive: bool, float_case_sensitive: bool, case_sensitive: bool | None):
-		inferrer = Inferrer(
+		inferrer = TypeParser(
 			none_case_sensitive=none_case_sensitive,
 			bool_case_sensitive=bool_case_sensitive,
 			float_case_sensitive=float_case_sensitive,
@@ -1346,29 +1346,29 @@ class TestConstructor:
 	@pytest.mark.parametrize('list_delimiter', ["", "1", "."])
 	def test_invalid_list_delimiter(list_delimiter: str):
 		with pytest.raises(ValueError):
-			Inferrer(list_delimiter=list_delimiter)
+			TypeParser(list_delimiter=list_delimiter)
 
 
 	@staticmethod
 	@pytest.mark.parametrize('none_values', [["true"], ["true", "false"], ["1"], ["2e6"], ["."]])
 	def test_invalid_none_values(none_values: list[str]):
 		with pytest.raises(ValueError):
-			Inferrer(none_values=none_values)
+			TypeParser(none_values=none_values)
 
 
 	@staticmethod
 	@pytest.mark.parametrize('bool_values', [[""], ["e"], ["1"], ["2e6"], ["."]])
 	def test_invalid_bool_values(bool_values: list[str]):
 		with pytest.raises(ValueError):
-			Inferrer(true_values=bool_values)
+			TypeParser(true_values=bool_values)
 		with pytest.raises(ValueError):
-			Inferrer(false_values=bool_values)
+			TypeParser(false_values=bool_values)
 
 
 	@staticmethod
 	@pytest.mark.parametrize('float_values', [[""], ["true"], ["e"], ["1"], ["2e6"], ["."]])
 	def test_invalid_float_values(float_values: list[str]):
 		with pytest.raises(ValueError):
-			Inferrer(inf_values=float_values)
+			TypeParser(inf_values=float_values)
 		with pytest.raises(ValueError):
-			Inferrer(nan_values=float_values)
+			TypeParser(nan_values=float_values)

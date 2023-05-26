@@ -180,7 +180,7 @@ class _SpecialValue(Enum):
 
 
 # TODO: implement use_decimal and add tests, but tsch should set use_decimal=True
-class Inferrer:
+class TypeParser:
 	def __init__(self, *,
 		trim: bool=True,
 		list_delimiter: str | None=None,
