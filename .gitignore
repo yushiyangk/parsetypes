@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+
+# venv
+/Include/
+/Lib/
+/Scripts/
+/pyvenv.cfg
+
+# pytest and coveragepy
+/.coverage
+/htmlcov/
+
+# setuptools and build
+/dist/
+*.egg-info/
+
+# tox
+/.tox/
+
+# PyPI
+/PyPI

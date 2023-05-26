@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools >= 61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "parsetypes"
+dynamic = ["version", "readme"]
+authors = [
+	{name = "Yu Shiyang", email = "yu.shiyang@gnayihs.uy"}
+]
+#description = "Generalised abstract file path that provides path manipulations independent from the local environment"
+license = {text = "MPL-2.0"}
+classifiers = [
+	"Development Status :: 3 - Alpha",
+	"Intended Audience :: Developers",
+	"Intended Audience :: Information Technology",
+	"Intended Audience :: Science/Research",
+	"Intended Audience :: System Administrators",
+	"License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
+	"Operating System :: OS Independent",
+	"Programming Language :: Python :: 3 :: Only",
+	"Programming Language :: Python :: 3.10",
+	"Programming Language :: Python :: 3.11",
+	"Programming Language :: Python :: 3.12",
+	"Topic :: File Formats",
+	"Topic :: Office/Business",
+	"Topic :: Scientific/Engineering :: Information Analysis",
+	"Topic :: Scientific/Engineering :: Interface Engine/Protocol Translator",
+	"Topic :: Software Development :: Libraries :: Python Modules",
+	"Topic :: Utilities",
+	"Typing :: Typed",
+]
+keywords = ["python", "str", "string", "types", "conversion"]
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+addopts = "tests"
+
+[tool.coverage.run]
+source_pkgs = ["parsetypes"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["*"]
+namespaces = false
+
+[tool.setuptools.dynamic]
+version = {attr = "parsetypes.__version__"}
+readme = {file = ["README.md", "CHANGELOG.md"], content-type = "text/markdown"}
