@@ -75,7 +75,7 @@ class TypeParser:
 		case_sensitive: bool | None=None,
 	):
 		"""
-			Initialise a new parser.
+			Initialise a new parser
 
 			Parameters
 			----------
@@ -83,7 +83,7 @@ class TypeParser:
 			: whether leading and trailing whitespace should be stripped from strings
 
 			`use_decimal`
-			: whether non-integer numeric values should be inferred to be Decimal (exact values) instead of float (non-exact values). Note that this only applies to methods that attempt to infer the type (`infer()` and `infer_*()`), and does not affect methods that are explicitly given a type (`is_float()`, `is_decimal()`, `parse_float()`, `parse_decimal()`).
+			: whether non-integer numeric values should be inferred as Decimal (exact values) instead of float (non-exact values). Note that this only applies to methods that attempt to infer type (`infer()` and `infer_*()`), and does not affect methods where the type is explicitly specified (`is_float()`, `is_decimal()`, `parse_float()`, `parse_decimal()`).
 
 			`list_delimiter`
 			: the delimiter used for identifying lists and for separating list items. If set to None, the parser will not attempt to identify lists when inferring types, which usually causes the value to be treated as a str instead.
@@ -210,7 +210,7 @@ class TypeParser:
 
 	def is_none(self, value: str) -> bool:
 		"""
-			Check if the string represents the value None.
+			Check if a string represents the value None
 
 			Only strings that match the values in `self.none_values` will be interpreted as None. The default accepted values are `[""]`, i.e. an empty string. The case sensitivity of this matching depends on `self.none_case_sensitive`, which is False by default.
 
@@ -226,6 +226,7 @@ class TypeParser:
 			Examples
 			--------
 			```python
+			parser = TypeParser()
 			parser.parse_bool("")     # True
 			parser.parse_bool("abc")  # False
 			```
@@ -241,41 +242,9 @@ class TypeParser:
 			return False
 
 
-	def parse_none(self, value: str) -> None:
-		"""
-			Parse a string and return it as the value None if possible.
-
-			Only strings that match the values in `self.none_values` will be interpreted as None. The default accepted values are `[""]`, i.e. an empty string. The case sensitivity of this matching depends on `self.none_case_sensitive`, which is False by default.
-
-			Parameters
-			----------
-			`value`
-			: string to be parsed
-
-			Returns
-			-------
-			parsed None value
-
-			Raises
-			------
-			`ValueError` if `value` cannot be parsed
-
-			Examples
-			--------
-			```python
-			parser.parse_bool("")     # None
-			parser.parse_bool("abc")  # raises ValueError
-			```
-		"""
-		if self.is_none(value):
-			return None
-		else:
-			raise ValueError(f"not a none value: {value}")
-
-
 	def is_bool(self, value: str) -> bool:
 		"""
-			Check if the string represents a bool.
+			Check if a string represents a bool
 
 			Only strings that match the values in `self.true_values` and `self.false_values` will be interpreted as booleans. The default accepted values are `["true"]` and `["false"]` respectively. The case sensitivity of this matching depends on `self.bool_case_sensitive`, which is False by default.
 
@@ -291,6 +260,7 @@ class TypeParser:
 			Examples
 			--------
 			```python
+			parser = TypeParser()
 			parser.is_bool("true")  # True
 			parser.is_bool("")      # True
 			parser.is_bool("abc")   # False
@@ -309,50 +279,9 @@ class TypeParser:
 		return False
 
 
-	def parse_bool(self, value: str) -> bool:
-		"""
-			Parse the string and return it as a bool if possible.
-
-			Only strings that match the values in `self.true_values` and `self.false_values` will be interpreted as booleans. The default accepted values are `["true"]` and `["false"]` respectively. The case sensitivity of this matching depends on `self.bool_case_sensitive`, which is False by default.
-
-			Parameters
-			----------
-			`value`
-			: string to be parsed
-
-			Returns
-			-------
-			parsed bool value
-
-			Raises
-			------
-			`ValueError` if `value` cannot be parsed
-
-			Examples
-			--------
-			```python
-			parser.parse_bool("true")   # True
-			parser.parse_bool("FALSE")  # False
-			```
-		"""
-		if self.trim:
-			value = value.strip()
-
-		if self.bool_case_sensitive:
-			special_value = value
-		else:
-			special_value = value.lower()
-		if special_value in self.true_values:
-			return True
-		if special_value in self.false_values:
-			return False
-
-		raise ValueError(f"not a boolean: {value}")
-
-
 	def is_int(self, value: str, *, allow_sign: bool=True, allow_negative: bool=True, allow_scientific: bool=True) -> bool:
 		"""
-			Check if the string represents an int.
+			Check if a string represents an int
 
 			Parameters
 			----------
@@ -375,6 +304,7 @@ class TypeParser:
 			Examples
 			--------
 			```python
+			parser = TypeParser()
 			parser.is_int("0")    # True
 			parser.is_int("-1")   # True
 			parser.is_int("abc")  # False
@@ -420,56 +350,9 @@ class TypeParser:
 		return True
 
 
-	def parse_int(self, value: str, *, allow_scientific: bool=True) -> int:
-		"""
-			Parse the string and return it as an int if possible.
-
-			Parameters
-			----------
-			`value`
-			: string to be parsed
-
-			`allow_scientific`
-			: whether to accept scientific notation. If True, strings of the form `"<var>M</var>e<var>X</var>"` will be interpreted as the expression `<var>M</var> * (10 ** <var>X</var>)`, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note <var>M</var> *must* be an integer and <var>X</var> *must* be a non-negative integer, even in cases where the above expression evaluates mathematically to an integer.
-
-			Returns
-			-------
-			parsed int value
-
-			Raises
-			------
-			`ValueError` if `value` cannot be parsed
-
-			Examples
-			--------
-			```python
-			parser.parse_int("0")    # 0
-			parser.parse_int("-1")   # -1
-			parser.parse_int("2e3")  # 2000
-			```
-		"""
-		if self.trim:
-			value = value.strip()
-
-		if self.is_int(value, allow_sign=True, allow_negative=True, allow_scientific=allow_scientific):
-			if allow_scientific:
-				value, exp = _decompose_string_pair(value, self._scientific_char)
-				if exp is not None:
-					if value[0] in (self._negative_chars - {self._negative_char}):
-						value = self._negative_char + value[1:]
-					return int(value) * (10 ** int(exp))
-
-			if value[0] in (self._negative_chars - {self._negative_char}):
-				value = self._negative_char + value[1:]
-			return int(value)
-
-		else:
-			raise ValueError(f"not an integer: {value}")
-
-
 	def is_float(self, value: str, *, allow_scientific: bool=True, allow_inf: bool=True, allow_nan: bool=True) -> bool:
 		"""
-			Check if the string represents a float (or equivalently, a Decimal)
+			Check if a string represents a float (or equivalently, a Decimal)
 
 			Alias: `is_decimal()`
 
@@ -494,6 +377,7 @@ class TypeParser:
 			Examples
 			--------
 			```python
+			parser = TypeParser()
 			parser.is_float("1.")       # True
 			parser.is_float("12.3e-2")  # True
 			parser.is_float("abc")      # False
@@ -534,6 +418,136 @@ class TypeParser:
 			)
 
 		return self.is_int(value, allow_sign=True, allow_negative=True, allow_scientific=False)
+
+
+	def is_decimal(self, value: str, *, allow_scientific: bool=True, allow_inf: bool=True, allow_nan: bool=True) -> bool:
+		"""
+			Alias of `is_float()`
+		"""
+		return self.is_float(value, allow_scientific=allow_scientific, allow_inf=allow_inf, allow_nan=allow_nan)
+
+
+	def parse_none(self, value: str) -> None:
+		"""
+			Parse a string and return it as the value None if possible
+
+			Only strings that match the values in `self.none_values` will be interpreted as None. The default accepted values are `[""]`, i.e. an empty string. The case sensitivity of this matching depends on `self.none_case_sensitive`, which is False by default.
+
+			Parameters
+			----------
+			`value`
+			: string to be parsed
+
+			Returns
+			-------
+			parsed None value
+
+			Raises
+			------
+			`ValueError` if `value` cannot be parsed
+
+			Examples
+			--------
+			```python
+			parser = TypeParser()
+			parser.parse_bool("")     # None
+			parser.parse_bool("abc")  # raises ValueError
+			```
+		"""
+		if self.is_none(value):
+			return None
+		else:
+			raise ValueError(f"not a none value: {value}")
+
+
+	def parse_bool(self, value: str) -> bool:
+		"""
+			Parse a string and return it as a bool if possible
+
+			Only strings that match the values in `self.true_values` and `self.false_values` will be interpreted as booleans. The default accepted values are `["true"]` and `["false"]` respectively. The case sensitivity of this matching depends on `self.bool_case_sensitive`, which is False by default.
+
+			Parameters
+			----------
+			`value`
+			: string to be parsed
+
+			Returns
+			-------
+			parsed bool value
+
+			Raises
+			------
+			`ValueError` if `value` cannot be parsed
+
+			Examples
+			--------
+			```python
+			parser = TypeParser()
+			parser.parse_bool("true")   # True
+			parser.parse_bool("FALSE")  # False
+			```
+		"""
+		if self.trim:
+			value = value.strip()
+
+		if self.bool_case_sensitive:
+			special_value = value
+		else:
+			special_value = value.lower()
+		if special_value in self.true_values:
+			return True
+		if special_value in self.false_values:
+			return False
+
+		raise ValueError(f"not a boolean: {value}")
+
+
+	def parse_int(self, value: str, *, allow_scientific: bool=True) -> int:
+		"""
+			Parse a string and return it as an int if possible
+
+			Parameters
+			----------
+			`value`
+			: string to be parsed
+
+			`allow_scientific`
+			: whether to accept scientific notation. If True, strings of the form `"<var>M</var>e<var>X</var>"` will be interpreted as the expression `<var>M</var> * (10 ** <var>X</var>)`, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note <var>M</var> *must* be an integer and <var>X</var> *must* be a non-negative integer, even in cases where the above expression evaluates mathematically to an integer.
+
+			Returns
+			-------
+			parsed int value
+
+			Raises
+			------
+			`ValueError` if `value` cannot be parsed
+
+			Examples
+			--------
+			```python
+			parser = TypeParser()
+			parser.parse_int("0")    # 0
+			parser.parse_int("-1")   # -1
+			parser.parse_int("2e3")  # 2000
+			```
+		"""
+		if self.trim:
+			value = value.strip()
+
+		if self.is_int(value, allow_sign=True, allow_negative=True, allow_scientific=allow_scientific):
+			if allow_scientific:
+				value, exp = _decompose_string_pair(value, self._scientific_char)
+				if exp is not None:
+					if value[0] in (self._negative_chars - {self._negative_char}):
+						value = self._negative_char + value[1:]
+					return int(value) * (10 ** int(exp))
+
+			if value[0] in (self._negative_chars - {self._negative_char}):
+				value = self._negative_char + value[1:]
+			return int(value)
+
+		else:
+			raise ValueError(f"not an integer: {value}")
 
 
 	def _parse_floatlike(self,
@@ -581,7 +595,7 @@ class TypeParser:
 
 	def parse_float(self, value: str, *, allow_scientific: bool=True, allow_inf: bool=True, allow_nan: bool=True) -> float:
 		"""
-			Parse the string and return it as a (non-exact) float if possible.
+			Parse a string and return it as a (non-exact) float if possible
 
 			Behaves analogously to `parse_decimal()`, except that that returns an exact Decimal instead.
 
@@ -610,6 +624,7 @@ class TypeParser:
 			Examples
 			--------
 			```python
+			parser = TypeParser(inf_values=["inf"], nan_values=["nan"])
 			parser.parse_float("1.")       # 1.
 			parser.parse_float("1.23e2")   # 123.
 			parser.parse_float("1.23e-2")  # 0.0123
@@ -623,16 +638,9 @@ class TypeParser:
 		)
 
 
-	def is_decimal(self, value: str, *, allow_scientific: bool=True, allow_inf: bool=True, allow_nan: bool=True) -> bool:
-		"""
-			Alias of `is_float()`.
-		"""
-		return self.is_float(value, allow_scientific=allow_scientific, allow_inf=allow_inf, allow_nan=allow_nan)
-
-
 	def parse_decimal(self, value: str, *, allow_scientific: bool=True, allow_inf: bool=True, allow_nan: bool=True) -> Decimal:
 		"""
-			Parse the string and return it as an exact Decimal if possible.
+			Parse a string and return it as an exact Decimal if possible
 
 			Behaves analogously to `parse_float()`, except that that returns a non-exact float instead.
 
@@ -661,6 +669,7 @@ class TypeParser:
 			Examples
 			--------
 			```python
+			parser = TypeParser(inf_values=["inf"], nan_values=["nan"])
 			parser.parse_decimal("1.")       # Decimal(1)
 			parser.parse_decimal("1.23e2")   # Decimal(123)
 			parser.parse_decimal("1.23e-2")  # Decimal(123) / Decimal(10000)
@@ -676,7 +685,7 @@ class TypeParser:
 
 	def infer(self, value: str) -> ValueType:
 		"""
-			Infer the type of the value given as a string
+			Infer the underlying type of a string
 
 			Also check for inline lists if `self.list_delimiter` is not None.
 
@@ -692,6 +701,7 @@ class TypeParser:
 			Examples
 			--------
 			```python
+			parser = TypeParser()
 			parser.infer("true")  # bool
 			parser.infer("2.0")   # float
 			parser.infer("abc")   # str
@@ -724,7 +734,7 @@ class TypeParser:
 
 	def infer_series(self, values: Iterable[str]) -> ValueType:
 		"""
-			Infer the common type of a series of strings
+			Infer the underlying common type of a series of strings
 
 			If the values in the series do not have the same apparent type, the resulting type will be narrowest possible type that will encompass all values in the series. See `parsetypes.reduce_types()` for more information.
 
@@ -740,9 +750,10 @@ class TypeParser:
 			Examples
 			--------
 			```python
+			parser = TypeParser()
 			parser.infer_series(["1", "2", "3.4"])     # float
-			parser.infer_series("true", "false", "2")  # int
-			parser.infer_series("1", "2.3", "abc")     # str
+			parser.infer_series(["true", "false", "2"])  # int
+			parser.infer_series(["1", "2.3", "abc"])     # str
 			```
 		"""
 		return reduce_types(self.infer(value) for value in values)
@@ -750,7 +761,7 @@ class TypeParser:
 
 	def infer_table(self, rows: Iterable[Sequence[str]]) -> list[ValueType]:
 		"""
-			Infer the common type for each column of a table of strings.
+			Infer the underlying common type for each column of a table of strings
 
 			The table should be given as an iterable of rows, where each row is a sequence of strings.
 
@@ -768,6 +779,7 @@ class TypeParser:
 			Examples
 			--------
 			```python
+			parser = TypeParser()
 			parser.infer_table([
 				["1",   "true",  "1"],
 				["2",   "false", "2.3"],
