@@ -133,25 +133,26 @@ class TestNull:
 
 
 class TestBool:
+	bool_test_cases = [
+		("true", True, True),
+		("TRUE", True, True),
+		("tRuE", True, True),
+		("false", True, False),
+		("FALSE", True, False),
+		("fAlSe", True, False),
+		("t", False, None),
+		("T", False, None),
+		("f", False, None),
+		("F", False, None),
+		("a", False, None),
+	]
+	not_bool_test_cases = [
+		("1", False, None),
+		("", False, None),
+	]
+
 	@staticmethod
-	@pytest.mark.parametrize(
-		('value', 'is_bool_expected', 'expected_bool'),
-		[
-			("true", True, True),
-			("TRUE", True, True),
-			("tRuE", True, True),
-			("false", True, False),
-			("FALSE", True, False),
-			("fAlSe", True, False),
-			("t", False, None),
-			("T", False, None),
-			("f", False, None),
-			("F", False, None),
-			("a", False, None),
-			("1", False, None),
-			("", False, None),
-		]
-	)
+	@pytest.mark.parametrize(('value', 'is_bool_expected', 'expected_bool'), bool_test_cases + not_bool_test_cases)
 	def test_default(default_parser: TypeParser, value: str, is_bool_expected: bool, expected_bool: bool | None):
 		is_bool_result = default_parser.is_bool(value)
 		assert is_bool_result == is_bool_expected
@@ -364,6 +365,17 @@ class TestInt:
 
 
 	@staticmethod
+	@pytest.mark.parametrize(('value', 'is_bool_expected', 'expected_bool'), TestBool.bool_test_cases)
+	def test_default_bool_to_float(default_parser: TypeParser, value: str, is_bool_expected: bool, expected_bool: bool | None):
+		if expected_bool is None:
+			with pytest.raises(ValueError):
+				default_parser.parse_int(value)
+		else:
+			int_result = default_parser.parse_int(value)
+			assert int_result == (1 if expected_bool == True else 0)
+
+
+	@staticmethod
 	@pytest.mark.parametrize(
 		('value', 'is_int_allow_sign_expected', 'is_int_allow_negative_expected', 'is_int_allow_both_expected', 'expected_int'),
 		# All test cases expect False when both disallowed
@@ -555,8 +567,23 @@ class TestFloatDecimal:
 
 
 	@staticmethod
+	@pytest.mark.parametrize(('value', 'is_bool_expected', 'expected_bool'), TestBool.bool_test_cases)
+	def test_default_bool_to_float(default_parser: TypeParser, value: str, is_bool_expected: bool, expected_bool: bool | None):
+		if expected_bool is None:
+			with pytest.raises(ValueError):
+				default_parser.parse_float(value)
+			with pytest.raises(ValueError):
+				default_parser.parse_decimal(value)
+		else:
+			float_result = default_parser.parse_float(value)
+			assert float_result == (1. if expected_bool == True else 0.)
+			decimal_result = default_parser.parse_decimal(value)
+			assert decimal_result == (Decimal(1) if expected_bool == True else Decimal(0))
+
+
+	@staticmethod
 	@pytest.mark.parametrize(('value', 'is_float_expected', 'expected_int'), TestInt.int_test_cases)
-	def test_default_int_as_float(default_parser: TypeParser, value: str, is_float_expected: bool, expected_int: int):
+	def test_default_int_as_float(default_parser: TypeParser, value: str, is_float_expected: bool, expected_int: int | None):
 		is_float_result = default_parser.is_float(value)
 		assert is_float_result == is_float_expected
 		is_decimal_result = default_parser.is_decimal(value)
@@ -737,7 +764,6 @@ class TestFloatDecimal:
 			("NAN", float_values, True, math.nan, Decimal(math.nan)),
 			("+NaN", float_values, True, math.nan, Decimal(math.nan)),
 			("-nan", float_values, True, math.nan, Decimal(math.nan)),
-			("true", float_values, False, None, None),
 			("1", float_values, True, 1, Decimal(1)),
 			("", float_values, False, None, None),
 

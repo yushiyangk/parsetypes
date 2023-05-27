@@ -4,7 +4,7 @@ import math
 from decimal import Decimal
 from enum import Enum
 from types import NoneType
-from typing import Callable, Iterable, Sequence, TypeVar
+from typing import Callable, Iterable, Sequence, TypeVar, Union
 
 from ._common import GenericValue, ValueType
 from ._reduce_types import reduce_types
@@ -366,6 +366,8 @@ class TypeParser:
 		"""
 			Check if a string represents a float (or equivalently, a Decimal)
 
+			This function will also return True if the string represents an int.
+
 			Alias: `is_decimal()`
 
 			Parameters
@@ -518,6 +520,8 @@ class TypeParser:
 		"""
 			Parse a string and return it as an int if possible
 
+			If the string represents a bool, it will be converted to `1` for True and `0` for False.
+
 			Parameters
 			----------
 			`value`
@@ -558,13 +562,15 @@ class TypeParser:
 				value = self._negative_char + value[1:]
 			return int(value)
 
+		elif self.is_bool(value):
+			return int(self.parse_bool(value))
 		else:
 			raise ValueError(f"not an integer: {value}")
 
 
 	def _parse_floatlike(self,
 		value: str,
-		converter: Callable[[str], _FloatLike],
+		converter: Callable[[Union[str, bool]], _FloatLike],
 		inf_value: _FloatLike,
 		nan_value: _FloatLike,
 		*,
@@ -601,6 +607,8 @@ class TypeParser:
 				if value[0] in self._negative_chars:
 					value = self._negative_char + positive_part
 			return converter(value)
+		elif self.is_bool(value):
+			return converter(self.parse_bool(value))
 		else:
 			raise ValueError(f"not a {_FloatLike.__name__}: {value}")
 
@@ -608,6 +616,8 @@ class TypeParser:
 	def parse_float(self, value: str, *, allow_scientific: bool=True, allow_inf: bool=True, allow_nan: bool=True) -> float:
 		"""
 			Parse a string and return it as a (non-exact) float if possible
+
+			If the string represents a bool, it will be converted to `1.` for True and `0.` for False. If the string represents an int, it will be converted to a float also.
 
 			Behaves analogously to `parse_decimal()`, except that that returns an exact Decimal instead.
 
@@ -653,6 +663,8 @@ class TypeParser:
 	def parse_decimal(self, value: str, *, allow_scientific: bool=True, allow_inf: bool=True, allow_nan: bool=True) -> Decimal:
 		"""
 			Parse a string and return it as an exact Decimal if possible
+
+			If the string represents a bool, it will be converted to `Decimal(1)` for True and `Decimal(0)` for False. If the string represents an int, it will be converted to a Decimal also.
 
 			Behaves analogously to `parse_float()`, except that that returns a non-exact float instead.
 
