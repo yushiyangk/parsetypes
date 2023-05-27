@@ -30,14 +30,19 @@ class _TypeTable:
 			self.cols[i].append(t)
 
 
-def _decompose_string_pair(string: str, delimiter: str) -> tuple[str, str | None]:
-	lower_string = string.lower()
-	if delimiter in lower_string:
-		parts = lower_string.split(delimiter)
-		if len(parts) != 2:
+def _decompose_string_pair(string: str, delimiter: str, case_sensitive: bool) -> tuple[str, str | None]:
+	if not case_sensitive:
+		delimiter = delimiter.lower()
+		operative_string = string.lower()
+	else:
+		operative_string = string
+	if delimiter in operative_string:
+		operative_parts = operative_string.split(delimiter)
+		if len(operative_parts) != 2:
 			return (string, None)
 		else:
-			return (parts[0], parts[1])
+			delimiter_pos = len(operative_parts[0])
+			return (string[:delimiter_pos], string[(delimiter_pos + len(delimiter)):])
 	else:
 		return (string, None)
 
@@ -69,6 +74,7 @@ class TypeParser:
 		true_values: Iterable[str]=["true"],
 		false_values: Iterable[str]=["false"],
 		bool_case_sensitive: bool=False,
+		int_case_sensitive: bool=False,
 		inf_values: Iterable[str]=[],
 		nan_values: Iterable[str]=[],
 		float_case_sensitive: bool=False,
@@ -103,6 +109,9 @@ class TypeParser:
 			`bool_case_sensitive`
 			: whether matches against `true_values` and `false_values` should be made in a case-sensitive manner
 
+			`int_case_sensitive`
+			: whether checks for int should be done in a case-sensitive manner. This usually only applies to values given in scientific notation, where the mantissa and exponent usually are separated by `e`.
+
 			`inf_values`
 			: list of strings that represent the float or Decimal value of infinity. Each of the strings can be prepended with a negative sign to represent negative infinity also.
 
@@ -110,10 +119,10 @@ class TypeParser:
 			: list of strings that represent a float or Decimal that is NaN (not a number)
 
 			`float_case_sensitive`
-			: whether matches against `inf_values` and `nan_values` should be made in a case-sensitive manner
+			: whether checks for float should be done in a case-sensitive manner. This applies to matches against `inf_values` and `nan_values`, as well as to values given in scientific notation, where the mantissa and exponent are usually separated by `e`.
 
 			`case_sensitive`
-			: whether all matches should be made in a case-sensitive manner. Sets all of `none_case_sensitive`, `bool_case_sensitive`, `float_case_sensitive` to the same value, ignoring any individual settings.
+			: whether all matches should be made in a case-sensitive manner. Sets all of `none_case_sensitive`, `bool_case_sensitive`, `int_case_sensitive`, `float_case_sensitive` to the same value, ignoring any individual settings.
 
 			Raises
 			------
@@ -122,6 +131,7 @@ class TypeParser:
 
 		if case_sensitive is not None:
 			none_case_sensitive = case_sensitive
+			int_case_sensitive = case_sensitive
 			bool_case_sensitive = case_sensitive
 			float_case_sensitive = case_sensitive
 
@@ -147,6 +157,8 @@ class TypeParser:
 			false_values = (value.lower() for value in false_values)
 		self.true_values = set(true_values)
 		self.false_values = set(false_values)
+
+		self.int_case_sensitive = int_case_sensitive
 
 		self.float_case_sensitive = float_case_sensitive
 		if not self.float_case_sensitive:
@@ -318,7 +330,7 @@ class TypeParser:
 			return False
 
 		if allow_scientific:
-			value, exp = _decompose_string_pair(value, self._scientific_char)
+			value, exp = _decompose_string_pair(value, self._scientific_char, self.int_case_sensitive)
 			if exp is not None:
 				return self.is_int(
 					value, allow_sign=True, allow_negative=allow_negative, allow_scientific=False
@@ -403,11 +415,11 @@ class TypeParser:
 			return False
 
 		if allow_scientific:
-			value, exp = _decompose_string_pair(value, self._scientific_char)
+			value, exp = _decompose_string_pair(value, self._scientific_char, self.float_case_sensitive)
 			if exp is not None:
 				return self.is_float(value, allow_scientific=False, allow_inf=False, allow_nan=False) and self.is_int(exp, allow_sign=True, allow_negative=True, allow_scientific=False)
 
-		value, frac = _decompose_string_pair(value, self._float_separator)
+		value, frac = _decompose_string_pair(value, self._float_separator, self.float_case_sensitive)
 		if frac is not None:
 			if value == "" and frac == "":
 				return False
@@ -536,7 +548,7 @@ class TypeParser:
 
 		if self.is_int(value, allow_sign=True, allow_negative=True, allow_scientific=allow_scientific):
 			if allow_scientific:
-				value, exp = _decompose_string_pair(value, self._scientific_char)
+				value, exp = _decompose_string_pair(value, self._scientific_char, self.int_case_sensitive)
 				if exp is not None:
 					if value[0] in (self._negative_chars - {self._negative_char}):
 						value = self._negative_char + value[1:]

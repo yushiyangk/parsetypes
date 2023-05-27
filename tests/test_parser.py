@@ -472,6 +472,34 @@ class TestInt:
 
 	@staticmethod
 	@pytest.fixture
+	def int_case_sensitive_parser(request: pytest.FixtureRequest) -> TypeParser:
+		return TypeParser(int_case_sensitive=request.param)
+
+	@staticmethod
+	@pytest.mark.parametrize(
+		('value', 'int_case_sensitive_parser', 'is_int_expected', 'expected_int'),
+		# All test cases expect False when e disallowed
+		[
+			("1e2", False, True, 100),
+			("1E2", False, True, 100),
+			("1e2", True, True, 100),
+			("1E2", True, False, None),
+		],
+		indirect=['int_case_sensitive_parser']
+	)
+	def test_case_sensitive(value: str, int_case_sensitive_parser: TypeParser, is_int_expected: bool, expected_int: int | None):
+		is_int_result = int_case_sensitive_parser.is_int(value)
+		assert is_int_result == is_int_expected
+		if expected_int is None:
+			with pytest.raises(ValueError):
+				int_case_sensitive_parser.parse_int(value)
+		else:
+			int_result = int_case_sensitive_parser.parse_int(value)
+			assert int_result == expected_int
+
+
+	@staticmethod
+	@pytest.fixture
 	def int_trim_parser(request: pytest.FixtureRequest) -> TypeParser:
 		return TypeParser(trim=request.param)
 
@@ -851,6 +879,8 @@ class TestFloatDecimal:
 			("+NAN", (False, *float_values), True, math.nan, -1 * Decimal(math.nan)),
 			("-nan", (False, *float_values), True, math.nan, -1 * Decimal(math.nan)),
 			("−NAN", (False, *float_values), True, math.nan, -1 * Decimal(math.nan)),
+			("1.23e-2", (False, *float_values), True, 0.0123, Decimal(123) / Decimal(10000)),
+			("1.23E-2", (False, *float_values), True, 0.0123, Decimal(123) / Decimal(10000)),
 
 			("inf", (True, *float_values), True, math.inf, Decimal(math.inf)),
 			("INF", (True, *float_values), False, None, None),
@@ -866,6 +896,8 @@ class TestFloatDecimal:
 			("+NAN", (True, *float_values), True, math.nan, Decimal(math.nan)),
 			("-nan", (True, *float_values), False, None, None),
 			("−NAN", (True, *float_values), True, math.nan, Decimal(math.nan)),
+			("1.23e-2", (True, *float_values), True, 0.0123, Decimal(123) / Decimal(10000)),
+			("1.23E-2", (True, *float_values), False, None, None),
 		],
 		indirect=['float_case_sensitive_parser']
 	)
