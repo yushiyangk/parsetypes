@@ -3,12 +3,12 @@ from decimal import Decimal
 from types import NoneType
 from typing import Iterable, cast
 
-from ._common import DatumType, GenericDatum, Nullable
+from ._common import GenericValue, Nullable, ValueType
 
 
-_TerminalDatum = list
+_TerminalValue = list
 
-_type_hierarchy: dict[DatumType, DatumType | None] = {
+_type_hierarchy: dict[ValueType, ValueType | None] = {
 	bool: int,
 	int: Decimal,
 	Decimal: float,
@@ -17,10 +17,10 @@ _type_hierarchy: dict[DatumType, DatumType | None] = {
 	Nullable: list,
 	list: None,
 }
-_containers: set[DatumType] = {Nullable, list}
+_containers: set[ValueType] = {Nullable, list}
 
 
-def _is_valid_type(t: DatumType) -> bool:
+def _is_valid_type(t: ValueType) -> bool:
 	if t == NoneType:
 		return True
 	base = typing.get_origin(t)
@@ -36,14 +36,16 @@ def _is_valid_type(t: DatumType) -> bool:
 				return False
 		return True
 
-def _decompose_type(t: DatumType) -> tuple[DatumType, tuple[DatumType, ...] | None]:
+
+def _decompose_type(t: ValueType) -> tuple[ValueType, tuple[ValueType, ...] | None]:
 	base = typing.get_origin(t)
 	if base is None:
 		return t, None
 	else:
-		return cast(DatumType, base), tuple(cast(DatumType, arg) for arg in typing.get_args(t))
+		return cast(ValueType, base), tuple(cast(ValueType, arg) for arg in typing.get_args(t))
 
-def _broaden_type(t: DatumType, cue: DatumType | None=None) -> DatumType | None:
+
+def _broaden_type(t: ValueType, cue: ValueType | None=None) -> ValueType | None:
 	base, type_args = _decompose_type(t)
 	broadened = _type_hierarchy[base]
 	if broadened is None:
@@ -72,14 +74,14 @@ def _broaden_type(t: DatumType, cue: DatumType | None=None) -> DatumType | None:
 			return broadened
 
 
-def _merge_types(t1: DatumType, t2: DatumType) -> DatumType:
+def _merge_types(t1: ValueType, t2: ValueType) -> ValueType:
 	if t1 == t2:
 		return t1
 	if (not _is_valid_type(t1)) or (not _is_valid_type(t2)):
-		return GenericDatum
+		return GenericValue
 
-	c: DatumType | None = t1
-	visited: dict[DatumType, tuple[DatumType, ...] | None] = {}
+	c: ValueType | None = t1
+	visited: dict[ValueType, tuple[ValueType, ...] | None] = {}
 	if t1 == NoneType:
 		visited[NoneType] = None
 		visited[Nullable] = None
@@ -88,7 +90,7 @@ def _merge_types(t1: DatumType, t2: DatumType) -> DatumType:
 			base, type_args = _decompose_type(c)
 			if base not in visited:
 				visited[base] = type_args
-			if base == _TerminalDatum:
+			if base == _TerminalValue:
 				break
 			c = _broaden_type(c, t1)
 
@@ -116,19 +118,44 @@ def _merge_types(t1: DatumType, t2: DatumType) -> DatumType:
 				else:
 					return base
 
-	return GenericDatum
+	return GenericValue
 
-def reduce_types(types: Iterable[DatumType]) -> DatumType:
-	reduced_type: DatumType | None = None
+
+def reduce_types(types: Iterable[ValueType]) -> ValueType:
+	"""
+		Reduce multiple types into a single common type.
+
+		If the input types are not all the same, the resulting type will be narrowest possible type that will encompass all of the input types.
+
+		This operation is useful in cases such as parsing a CSV file where each column should have a consistent type, but where the individual values in a column could be interpreted variously as ints or floats (or other types).
+
+		Parameters
+		----------
+		`types`
+		: types to be reduced
+
+		Returns
+		-------
+		common reduced type
+
+		Examples
+		--------
+		```python
+		reduce_types([int, float])        # float
+		reduce_types([bool, int])         # int
+		reduce_types([int, float, str])   # str
+		```
+	"""
+	reduced_type: ValueType | None = None
 	for t in types:
 		if reduced_type is None:
 			reduced_type = t
 		elif t != reduced_type:
 			reduced_type = _merge_types(reduced_type, t)
-		if reduced_type == _TerminalDatum:
-			return _TerminalDatum
+		if reduced_type == _TerminalValue:
+			return _TerminalValue
 
 	if reduced_type is None:
-		return GenericDatum
+		return GenericValue
 	else:
 		return reduced_type

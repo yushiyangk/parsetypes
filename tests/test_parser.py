@@ -7,7 +7,7 @@ from unittest.mock import call, patch
 
 import pytest
 
-from parsetypes import DatumType, TypeParser, Nullable
+from parsetypes import ValueType, TypeParser, Nullable
 
 
 @pytest.fixture
@@ -1041,7 +1041,7 @@ class TestInfer:
 			("nan", str),
 		]
 	)
-	def test_scalars_default(default_parser: TypeParser, value: str, expected: DatumType):
+	def test_scalars_default(default_parser: TypeParser, value: str, expected: ValueType):
 		result = default_parser.infer(value)
 		assert result == expected
 
@@ -1087,8 +1087,8 @@ class TestInfer:
 		default_parser: TypeParser,
 		value: str,
 		list_parser: TypeParser,
-		delimiter_expected: DatumType,
-		no_delimiter_expected: DatumType
+		delimiter_expected: ValueType,
+		no_delimiter_expected: ValueType
 	):
 		result = list_parser.infer(value)
 		assert result == delimiter_expected
@@ -1121,7 +1121,7 @@ class TestInfer:
 	def test_use_decimal(
 		value: str,
 		use_decimal_parser: TypeParser,
-		expected: DatumType,
+		expected: ValueType,
 	):
 		result = use_decimal_parser.infer(value)
 		assert result == expected
@@ -1156,7 +1156,7 @@ class TestInferSeries:
 			(["1"], [int], [int]),
 		]
 	)
-	def test_default(default_parser: TypeParser, values: list[str], expected_reduce_types: list[DatumType], expected: DatumType):
+	def test_default(default_parser: TypeParser, values: list[str], expected_reduce_types: list[ValueType], expected: ValueType):
 		with patch('parsetypes._parser.reduce_types', return_value=expected) as mocked_reduce_types:
 			result = default_parser.infer_series(values)
 			assert len(mocked_reduce_types.call_args_list) == 1
@@ -1212,7 +1212,7 @@ class TestInferTable:
 			)
 		]
 	)
-	def test_default(default_parser: TypeParser, rows: list[list[str]], expected_reduce_types: list[list[DatumType]], expected: list[DatumType]):
+	def test_default(default_parser: TypeParser, rows: list[list[str]], expected_reduce_types: list[list[ValueType]], expected: list[ValueType]):
 		with patch('parsetypes._parser.reduce_types', side_effect=expected) as mocked_reduce_types:
 			result = default_parser.infer_table(rows)
 			mocked_reduce_types.assert_has_calls([call(expected_call) for expected_call in expected_reduce_types])
