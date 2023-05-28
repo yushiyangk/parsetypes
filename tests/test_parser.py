@@ -7,6 +7,7 @@ import pytest
 
 import parsetypes
 from parsetypes import AnyScalar, AnyScalarType, AnyValue, AnyValueType, Nullable, TypeParser
+from parsetypes._reduce_types import _decompose_type
 
 from parsetypes._compat import NoneType, Union
 
@@ -1265,6 +1266,256 @@ class TestInferTable:
 			assert result == expected
 
 
+class TestConvert():
+	@staticmethod
+	@pytest.mark.parametrize(
+		('value', 'target_type', 'expected'),
+		[
+			("true", bool, True),
+			("false", bool, False),
+			("TRUE", bool, True),
+			("FALSE", bool, False),
+			("true", int, 1),
+			("false", int, 0),
+			("TRUE", int, 1),
+			("FALSE", int, 0),
+			("true", Decimal, Decimal(1)),
+			("false", Decimal, Decimal(0)),
+			("TRUE", Decimal, Decimal(1)),
+			("FALSE", Decimal, Decimal(0)),
+			("true", float, 1.),
+			("false", float, 0.),
+			("TRUE", float, 1.),
+			("FALSE", float, 0.),
+
+			("0", int, 0),
+			("+0", int, 0),
+			("-0", int, 0),
+			("1", int, 1),
+			("+1", int, 1),
+			("-1", int, -1),
+			("20", int, 20),
+			("1e6", int, 1000000),
+			("0", Decimal, Decimal(0)),
+			("+0", Decimal, Decimal(0)),
+			("-0", Decimal, Decimal(0)),
+			("1", Decimal, Decimal(1)),
+			("+1", Decimal, Decimal(1)),
+			("-1", Decimal, Decimal(-1)),
+			("20", Decimal, Decimal(20)),
+			("1e6", Decimal, Decimal(1000000)),
+			("0", float, 0.),
+			("+0", float, 0.),
+			("-0", float, 0.),
+			("1", float, 1.),
+			("+1", float, 1.),
+			("-1", float, -1.),
+			("20", float, 20.),
+
+			("1e6", float, 1000000.),
+			("0.0", float, 0.),
+			("+0.0", float, 0.),
+			("-0.0", float, 0.),
+			("0.", float, 0.),
+			("+0.", float, 0.),
+			("-0.", float, 0.),
+			(".0", float, 0.),
+			("+.0", float, 0.),
+			("-.0", float, 0.),
+			("1.0", float, 1.),
+			("+1.0", float, 1.),
+			("-1.0", float, -1.),
+			("1.", float, 1.),
+			(".1", float, .1),
+			("1.1", float, 1.1),
+			("1.23e0", float, 1.23),
+			("1.23e-0", float, 1.23),
+			("1.23e+0", float, 1.23),
+			("1.23e1", float, 12.3),
+			("1.23e-1", float, 0.123),
+			("1.23e+1", float, 12.3),
+			("1.23e6", float, 1230000.),
+			("1e6", Decimal, Decimal(1000000.)),
+			("0.0", Decimal, Decimal(0.)),
+			("+0.0", Decimal, Decimal(0.)),
+			("-0.0", Decimal, Decimal(0.)),
+			("0.", Decimal, Decimal(0.)),
+			("+0.", Decimal, Decimal(0.)),
+			("-0.", Decimal, Decimal(0.)),
+			(".0", Decimal, Decimal(0.)),
+			("+.0", Decimal, Decimal(0.)),
+			("-.0", Decimal, Decimal(0.)),
+			("1.0", Decimal, Decimal(1.)),
+			("+1.0", Decimal, Decimal(1.)),
+			("-1.0", Decimal, Decimal(-1.)),
+			("1.", Decimal, Decimal(1.)),
+			(".1", Decimal, Decimal(1) / Decimal(10)),
+			("1.1", Decimal, Decimal(11) / Decimal(10)),
+			("1.23e0", Decimal, Decimal(123) / Decimal(100)),
+			("1.23e+0", Decimal, Decimal(123) / Decimal(100)),
+			("1.23e-0", Decimal, Decimal(123) / Decimal(100)),
+			("1.23e1", Decimal, Decimal(123) / Decimal(10)),
+			("1.23e-1", Decimal, Decimal(123) / Decimal(1000)),
+			("1.23e+1", Decimal, Decimal(123) / Decimal(10)),
+			("1.23e6", Decimal, Decimal(1230000)),
+
+			("a", str, "a"),
+			("a1", str, "a1"),
+			("1a", str, "1a"),
+			("1a1", str, "1a1"),
+			("a1a", str, "a1a"),
+			("1.0.0", str, "1.0.0"),
+			("0+1", str, "0+1"),
+			("1-1", str, "1-1"),
+			("1e2.", str, "1e2."),
+			("1e2e3", str, "1e2e3"),
+			("a,", str, "a,"),
+			("a,b,c", str, "a,b,c"),
+			("1,", str, "1,"),
+			("1,2,3", str, "1,2,3"),
+			("a\n", str, "a\n"),
+			("a\nb\nc\n", str, "a\nb\nc\n"),
+			("", NoneType, None),
+
+			("inf", str, "inf"),
+			("nan", str, "nan"),
+		]
+	)
+	def test_scalars_and_nullables(default_parser: TypeParser, value: str, target_type: AnyScalarType, expected: AnyScalar):
+		result = default_parser.convert(value, target_type)
+		assert type(result) == type(expected)
+		assert result == expected
+
+		result = default_parser.convert(value, Nullable[target_type])
+		assert type(result) == type(expected)
+		assert result == expected
+
+
+	@staticmethod
+	@pytest.mark.parametrize('target_type', [int, float, Decimal, bool, str, None])
+	def test_none_nullables(default_parser: TypeParser, target_type: AnyScalarType):
+		result = default_parser.convert("", Nullable[target_type])
+		assert type(result) == NoneType
+		assert result == None
+
+
+	@staticmethod
+	@pytest.mark.parametrize(
+		('value', 'list_parser', 'target_inner_type', 'expected'),
+		[
+			("a,a", ",", str, ["a", "a"]),
+			("a,b,c", ",", str, ["a", "b", "c"]),
+			("a", ",", str, ["a"]),
+
+			("true,false,true", ",", bool, [True, False, True]),
+			("true:false:true", ":", bool, [True, False, True]),
+			("truepfalseptrue", "p", bool, [True, False, True]),
+			("true", ",", bool, [True]),
+
+			("0,1,2", ",", int, [0, 1, 2]),
+			("0,01,-2,+3,4e5,-60,7_0", ",", int, [0, 1, -2, 3, 400000, -60, 70]),
+
+			("0.1,0.2,0.3", ",", float, [0.1, 0.2, 0.3]),
+			(
+				"0.,.0,0.0,01.00,-0.2,+3.0,4.e+5,6e-7,-80.08,9_0e1_0",
+				",",
+				float,
+				[0., 0., 0., 1., -0.2, 3., 400000., 0.0000006, -80.08, 9.e11],
+			),
+			("0.1", ",", float, [0.1]),
+
+			("false,1", ",", int, [0, 1]),
+			("false,1.", ",", float, [0., 1.]),
+			("1,2.", ",", float, [1., 2.]),
+			("1,2.,a", ",", str, ["1", "2.", "a"]),
+
+			(",,,", ",", NoneType, [None, None, None, None]),
+			("", ",", NoneType, [None]),
+		],
+		indirect=['list_parser']
+	)
+	def test_lists(
+		value: str,
+		list_parser: TypeParser,
+		target_inner_type: AnyValueType,
+		expected: AnyValue,
+	):
+		result = list_parser.convert(value, list[target_inner_type])
+		assert type(result) == list
+		for result_value in result:
+			assert type(result_value) == target_inner_type
+		assert result == expected
+
+
+	@staticmethod
+	@pytest.mark.parametrize(
+		('value', 'list_parser', 'target_inner_type', 'expected'),
+		[
+			(",,a", ",", str, [None, None, "a"]),
+			(",,true", ",", bool, [None, None, True]),
+			("true,false,true", "t", str, [None, "rue,false,", "rue"]),
+			(",,0.4", ",", float, [None, None, 0.4]),
+			("false,,1.", ",", float, [0., None, 1.]),
+			("1,2.,,a", ",", str, ["1", "2.", None, "a"]),
+		],
+		indirect=['list_parser']
+	)
+	def test_list_nullables(
+		value: str,
+		list_parser: TypeParser,
+		target_inner_type: AnyScalarType,
+		expected: AnyValue,
+	):
+		result = list_parser.convert(value, list[Nullable[target_inner_type]])
+		assert type(result) == list
+		for result_value in result:
+			assert (type(result_value) == target_inner_type) or (result_value == None)
+		assert result == expected
+
+
+	@staticmethod
+	@pytest.mark.parametrize('value', ["1", "true", "a"])
+	@pytest.mark.parametrize('target_type', [dict, set, tuple])
+	def test_invalid_types(default_parser: TypeParser, value: str, target_type: type):
+		with pytest.raises(TypeError):
+			default_parser.convert(value, target_type)
+
+
+	@staticmethod
+	@pytest.mark.parametrize(
+		('value', 'target_type'),
+		[
+			("0", bool),
+			("1", bool),
+			("2", bool),
+			("0.", bool),
+			("1.2", bool),
+			("inf", bool),
+			("a", bool),
+			("", bool),
+
+			("0.", int),
+			("1.2", int),
+			("a", int),
+			("", int),
+
+			("a", float),
+			("", float),
+			("a", Decimal),
+			("", Decimal),
+
+			("true", NoneType),
+			("0", NoneType),
+			("0.", NoneType),
+			("a", NoneType),
+		]
+	)
+	def test_invalid_values(default_parser: TypeParser, value: str, target_type: type):
+		with pytest.raises(ValueError):
+			default_parser.convert(value, target_type)
+
+
+
 class TestParse():
 	@staticmethod
 	@pytest.mark.parametrize(
@@ -1327,14 +1578,17 @@ class TestParse():
 		]
 	)
 	def test_scalars_and_nullables(default_parser: TypeParser, value: str, expected_type: AnyScalarType, expected: AnyScalar):
-		with patch.object(default_parser, 'infer', return_value=expected_type) as mocked_infer:
+		with patch.object(default_parser, 'infer', return_value=expected_type) as mocked_infer, patch.object(default_parser, 'convert', return_value=expected) as mocked_convert:
 			result = default_parser.parse(value)
 			mocked_infer.assert_called_once_with(value)
+			mocked_convert.assert_called_once_with(value, expected_type)
 			assert result == expected
 
-		with patch.object(default_parser, 'infer', return_value=Nullable[expected_type]) as mocked_infer:
+		# infer should not actually return Nullable in these cases, but we mock it to test the behaviour of parse anyway
+		with patch.object(default_parser, 'infer', return_value=Nullable[expected_type]) as mocked_infer, patch.object(default_parser, 'convert', return_value=expected) as mocked_convert:
 			result = default_parser.parse(value)
 			mocked_infer.assert_called_once_with(value)
+			mocked_convert.assert_called_once_with(value, Nullable[expected_type])
 			assert result == expected
 
 
@@ -1381,9 +1635,10 @@ class TestParse():
 		expected_type: AnyValueType,
 		expected: AnyValue,
 	):
-		with patch.object(list_parser, 'infer', return_value=expected_type) as mocked_infer:
+		with patch.object(list_parser, 'infer', return_value=expected_type) as mocked_infer, patch.object(list_parser, 'convert', return_value=expected) as mocked_convert:
 			result = list_parser.parse(value)
 			mocked_infer.assert_called_once_with(value)
+			mocked_convert.assert_called_once_with(value, expected_type)
 			assert result == expected
 
 
