@@ -47,7 +47,7 @@ parser = TypeParser()
 table = parser.parse_table([
 	["1", "5",   "true",  "1"],
 	["2", "6.7", "false", "2.3"],
-	["3", "8.0", "",     "abc"],
+	["3", "8.0", "",      "abc"],
 ]):
 assert table == [
 	[1, 5.,  True,  "1"],
@@ -58,7 +58,7 @@ assert table == [
 
 ## Issues
 
-Found a bug? Please [file an issue](https://github.com/yushiyangk/GPath/issues), or, better yet, [submit a pull request](https://github.com/yushiyangk/GPath/pulls).
+Found a bug? Please [file an issue](https://github.com/yushiyangk/parsetypes/issues), or, better yet, [submit a pull request](https://github.com/yushiyangk/parsetypes/pulls).
 
 ## Development
 

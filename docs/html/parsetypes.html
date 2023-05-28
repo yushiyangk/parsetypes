@@ -205,7 +205,7 @@ parsetypes    </h1>
 </span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a>
 </span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a>
-</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;0.2&quot;</span>
+</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;0.2.1&quot;</span>
 </span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a>
 </span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="kn">from</span> <span class="nn">._common</span> <span class="kn">import</span> <span class="n">AnyScalar</span><span class="p">,</span> <span class="n">AnyScalarType</span><span class="p">,</span> <span class="n">AnyValue</span><span class="p">,</span> <span class="n">AnyValueType</span><span class="p">,</span> <span class="n">GenericValue</span><span class="p">,</span> <span class="n">Nullable</span>
 </span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="kn">from</span> <span class="nn">._parser</span> <span class="kn">import</span> <span class="n">TypeParser</span>
@@ -219,7 +219,7 @@ parsetypes    </h1>
                 <section id="TypeParser">
                             <input id="TypeParser-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr class">
-
+            
     <span class="def">class</span>
     <span class="name">TypeParser</span>:
 
@@ -1120,7 +1120,7 @@ parsetypes    </h1>
 </span><span id="TypeParser-949"><a href="#TypeParser-949"><span class="linenos">949</span></a><span class="sd">			table = parser.parse_table([</span>
 </span><span id="TypeParser-950"><a href="#TypeParser-950"><span class="linenos">950</span></a><span class="sd">				[&quot;1&quot;, &quot;5&quot;,   &quot;true&quot;,  &quot;1&quot;],</span>
 </span><span id="TypeParser-951"><a href="#TypeParser-951"><span class="linenos">951</span></a><span class="sd">				[&quot;2&quot;, &quot;6.7&quot;, &quot;false&quot;, &quot;2.3&quot;],</span>
-</span><span id="TypeParser-952"><a href="#TypeParser-952"><span class="linenos">952</span></a><span class="sd">				[&quot;3&quot;, &quot;8.0&quot;, &quot;&quot;,     &quot;abc&quot;],</span>
+</span><span id="TypeParser-952"><a href="#TypeParser-952"><span class="linenos">952</span></a><span class="sd">				[&quot;3&quot;, &quot;8.0&quot;, &quot;&quot;,      &quot;abc&quot;],</span>
 </span><span id="TypeParser-953"><a href="#TypeParser-953"><span class="linenos">953</span></a><span class="sd">			]):</span>
 </span><span id="TypeParser-954"><a href="#TypeParser-954"><span class="linenos">954</span></a><span class="sd">			assert table == [</span>
 </span><span id="TypeParser-955"><a href="#TypeParser-955"><span class="linenos">955</span></a><span class="sd">				[1, 5.,  True,  &quot;1&quot;],</span>
@@ -1180,7 +1180,7 @@ parsetypes    </h1>
                             <div id="TypeParser.__init__" class="classattr">
                                         <input id="TypeParser.__init__-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
-
+            
         <span class="name">TypeParser</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="o">*</span>,</span><span class="param">	<span class="n">trim</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>,</span><span class="param">	<span class="n">use_decimal</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>,</span><span class="param">	<span class="n">list_delimiter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>,</span><span class="param">	<span class="n">none_values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]</span>,</span><span class="param">	<span class="n">none_case_sensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>,</span><span class="param">	<span class="n">true_values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;true&#39;</span><span class="p">]</span>,</span><span class="param">	<span class="n">false_values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;false&#39;</span><span class="p">]</span>,</span><span class="param">	<span class="n">bool_case_sensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>,</span><span class="param">	<span class="n">int_case_sensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>,</span><span class="param">	<span class="n">inf_values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>,</span><span class="param">	<span class="n">nan_values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>,</span><span class="param">	<span class="n">float_case_sensitive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>,</span><span class="param">	<span class="n">case_sensitive</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></span>)</span>
 
 
@@ -1399,7 +1399,7 @@ parsetypes    </h1>
                             <div id="TypeParser.is_none" class="classattr">
                                         <input id="TypeParser.is_none-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
-
+            
         <span class="def">def</span>
         <span class="name">is_none</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">value</span><span class="p">:</span> <span class="nb">str</span></span><span class="return-annotation">) -> <span class="nb">bool</span>:</span></span>
 
@@ -1472,7 +1472,7 @@ parsetypes    </h1>
                             <div id="TypeParser.is_bool" class="classattr">
                                         <input id="TypeParser.is_bool-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
-
+            
         <span class="def">def</span>
         <span class="name">is_bool</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">value</span><span class="p">:</span> <span class="nb">str</span></span><span class="return-annotation">) -> <span class="nb">bool</span>:</span></span>
 
@@ -1549,7 +1549,7 @@ parsetypes    </h1>
                             <div id="TypeParser.is_int" class="classattr">
                                         <input id="TypeParser.is_int-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
-
+            
         <span class="def">def</span>
         <span class="name">is_int</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">value</span><span class="p">:</span> <span class="nb">str</span>,</span><span class="param">	<span class="o">*</span>,</span><span class="param">	<span class="n">allow_sign</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>,</span><span class="param">	<span class="n">allow_negative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>,</span><span class="param">	<span class="n">allow_scientific</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span></span><span class="return-annotation">) -> <span class="nb">bool</span>:</span></span>
 
@@ -1668,7 +1668,7 @@ parsetypes    </h1>
                             <div id="TypeParser.is_float" class="classattr">
                                         <input id="TypeParser.is_float-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
-
+            
         <span class="def">def</span>
         <span class="name">is_float</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">value</span><span class="p">:</span> <span class="nb">str</span>,</span><span class="param">	<span class="o">*</span>,</span><span class="param">	<span class="n">allow_scientific</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>,</span><span class="param">	<span class="n">allow_inf</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>,</span><span class="param">	<span class="n">allow_nan</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span></span><span class="return-annotation">) -> <span class="nb">bool</span>:</span></span>
 
@@ -1792,7 +1792,7 @@ parsetypes    </h1>
                             <div id="TypeParser.is_decimal" class="classattr">
                                         <input id="TypeParser.is_decimal-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
-
+            
         <span class="def">def</span>
         <span class="name">is_decimal</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">value</span><span class="p">:</span> <span class="nb">str</span>,</span><span class="param">	<span class="o">*</span>,</span><span class="param">	<span class="n">allow_scientific</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>,</span><span class="param">	<span class="n">allow_inf</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>,</span><span class="param">	<span class="n">allow_nan</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span></span><span class="return-annotation">) -> <span class="nb">bool</span>:</span></span>
 
@@ -1818,7 +1818,7 @@ parsetypes    </h1>
                             <div id="TypeParser.parse_none" class="classattr">
                                         <input id="TypeParser.parse_none-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
-
+            
         <span class="def">def</span>
         <span class="name">parse_none</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">value</span><span class="p">:</span> <span class="nb">str</span></span><span class="return-annotation">) -> <span class="kc">None</span>:</span></span>
 
@@ -1894,7 +1894,7 @@ parsetypes    </h1>
                             <div id="TypeParser.parse_bool" class="classattr">
                                         <input id="TypeParser.parse_bool-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
-
+            
         <span class="def">def</span>
         <span class="name">parse_bool</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">value</span><span class="p">:</span> <span class="nb">str</span></span><span class="return-annotation">) -> <span class="nb">bool</span>:</span></span>
 
@@ -1979,7 +1979,7 @@ parsetypes    </h1>
                             <div id="TypeParser.parse_int" class="classattr">
                                         <input id="TypeParser.parse_int-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
-
+            
         <span class="def">def</span>
         <span class="name">parse_int</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">value</span><span class="p">:</span> <span class="nb">str</span>, </span><span class="param"><span class="o">*</span>, </span><span class="param"><span class="n">allow_scientific</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span></span><span class="return-annotation">) -> <span class="nb">int</span>:</span></span>
 
@@ -2078,7 +2078,7 @@ parsetypes    </h1>
                             <div id="TypeParser.parse_float" class="classattr">
                                         <input id="TypeParser.parse_float-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
-
+            
         <span class="def">def</span>
         <span class="name">parse_float</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">value</span><span class="p">:</span> <span class="nb">str</span>,</span><span class="param">	<span class="o">*</span>,</span><span class="param">	<span class="n">allow_scientific</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>,</span><span class="param">	<span class="n">allow_inf</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>,</span><span class="param">	<span class="n">allow_nan</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span></span><span class="return-annotation">) -> <span class="nb">float</span>:</span></span>
 
@@ -2181,7 +2181,7 @@ parsetypes    </h1>
                             <div id="TypeParser.parse_decimal" class="classattr">
                                         <input id="TypeParser.parse_decimal-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
-
+            
         <span class="def">def</span>
         <span class="name">parse_decimal</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">value</span><span class="p">:</span> <span class="nb">str</span>,</span><span class="param">	<span class="o">*</span>,</span><span class="param">	<span class="n">allow_scientific</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>,</span><span class="param">	<span class="n">allow_inf</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>,</span><span class="param">	<span class="n">allow_nan</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span></span><span class="return-annotation">) -> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span>:</span></span>
 
@@ -2284,7 +2284,7 @@ parsetypes    </h1>
                             <div id="TypeParser.infer" class="classattr">
                                         <input id="TypeParser.infer-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
-
+            
         <span class="def">def</span>
         <span class="name">infer</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">value</span><span class="p">:</span> <span class="nb">str</span></span><span class="return-annotation">) -> <span class="n">Type</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">,</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">bool</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="n">NoneType</span><span class="p">]]]</span>:</span></span>
 
@@ -2375,7 +2375,7 @@ parsetypes    </h1>
                             <div id="TypeParser.infer_series" class="classattr">
                                         <input id="TypeParser.infer_series-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
-
+            
         <span class="def">def</span>
         <span class="name">infer_series</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></span><span class="return-annotation">) -> <span class="n">Type</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">,</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">bool</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="n">NoneType</span><span class="p">]]]</span>:</span></span>
 
@@ -2442,7 +2442,7 @@ parsetypes    </h1>
                             <div id="TypeParser.infer_table" class="classattr">
                                         <input id="TypeParser.infer_table-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
-
+            
         <span class="def">def</span>
         <span class="name">infer_table</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">rows</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span></span><span class="return-annotation">) -> <span class="nb">list</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">,</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">bool</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="n">NoneType</span><span class="p">]]]]</span>:</span></span>
 
@@ -2532,7 +2532,7 @@ parsetypes    </h1>
                             <div id="TypeParser.parse" class="classattr">
                                         <input id="TypeParser.parse-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
-
+            
         <span class="def">def</span>
         <span class="name">parse</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">value</span><span class="p">:</span> <span class="nb">str</span></span><span class="return-annotation">) -> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">,</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">bool</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="n">NoneType</span><span class="p">]]</span>:</span></span>
 
@@ -2595,7 +2595,7 @@ parsetypes    </h1>
                             <div id="TypeParser.parse_series" class="classattr">
                                         <input id="TypeParser.parse_series-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
-
+            
         <span class="def">def</span>
         <span class="name">parse_series</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></span><span class="return-annotation">) -> <span class="nb">list</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">,</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">bool</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="n">NoneType</span><span class="p">]]]</span>:</span></span>
 
@@ -2665,7 +2665,7 @@ parsetypes    </h1>
                             <div id="TypeParser.parse_table" class="classattr">
                                         <input id="TypeParser.parse_table-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
-
+            
         <span class="def">def</span>
         <span class="name">parse_table</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">rows</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span></span><span class="return-annotation">) -> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">,</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">bool</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="n">NoneType</span><span class="p">]]]]</span>:</span></span>
 
@@ -2703,7 +2703,7 @@ parsetypes    </h1>
 </span><span id="TypeParser.parse_table-949"><a href="#TypeParser.parse_table-949"><span class="linenos">949</span></a><span class="sd">			table = parser.parse_table([</span>
 </span><span id="TypeParser.parse_table-950"><a href="#TypeParser.parse_table-950"><span class="linenos">950</span></a><span class="sd">				[&quot;1&quot;, &quot;5&quot;,   &quot;true&quot;,  &quot;1&quot;],</span>
 </span><span id="TypeParser.parse_table-951"><a href="#TypeParser.parse_table-951"><span class="linenos">951</span></a><span class="sd">				[&quot;2&quot;, &quot;6.7&quot;, &quot;false&quot;, &quot;2.3&quot;],</span>
-</span><span id="TypeParser.parse_table-952"><a href="#TypeParser.parse_table-952"><span class="linenos">952</span></a><span class="sd">				[&quot;3&quot;, &quot;8.0&quot;, &quot;&quot;,     &quot;abc&quot;],</span>
+</span><span id="TypeParser.parse_table-952"><a href="#TypeParser.parse_table-952"><span class="linenos">952</span></a><span class="sd">				[&quot;3&quot;, &quot;8.0&quot;, &quot;&quot;,      &quot;abc&quot;],</span>
 </span><span id="TypeParser.parse_table-953"><a href="#TypeParser.parse_table-953"><span class="linenos">953</span></a><span class="sd">			]):</span>
 </span><span id="TypeParser.parse_table-954"><a href="#TypeParser.parse_table-954"><span class="linenos">954</span></a><span class="sd">			assert table == [</span>
 </span><span id="TypeParser.parse_table-955"><a href="#TypeParser.parse_table-955"><span class="linenos">955</span></a><span class="sd">				[1, 5.,  True,  &quot;1&quot;],</span>
@@ -2744,7 +2744,7 @@ parsetypes    </h1>
 <span class="n">table</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_table</span><span class="p">([</span>
 	<span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;5&quot;</span><span class="p">,</span>   <span class="s2">&quot;true&quot;</span><span class="p">,</span>  <span class="s2">&quot;1&quot;</span><span class="p">],</span>
 	<span class="p">[</span><span class="s2">&quot;2&quot;</span><span class="p">,</span> <span class="s2">&quot;6.7&quot;</span><span class="p">,</span> <span class="s2">&quot;false&quot;</span><span class="p">,</span> <span class="s2">&quot;2.3&quot;</span><span class="p">],</span>
-	<span class="p">[</span><span class="s2">&quot;3&quot;</span><span class="p">,</span> <span class="s2">&quot;8.0&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>     <span class="s2">&quot;abc&quot;</span><span class="p">],</span>
+	<span class="p">[</span><span class="s2">&quot;3&quot;</span><span class="p">,</span> <span class="s2">&quot;8.0&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>      <span class="s2">&quot;abc&quot;</span><span class="p">],</span>
 <span class="p">]):</span>
 <span class="k">assert</span> <span class="n">table</span> <span class="o">==</span> <span class="p">[</span>
 	<span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">5.</span><span class="p">,</span>  <span class="kc">True</span><span class="p">,</span>  <span class="s2">&quot;1&quot;</span><span class="p">],</span>
@@ -2760,7 +2760,7 @@ parsetypes    </h1>
                             <div id="TypeParser.iterate_table" class="classattr">
                                         <input id="TypeParser.iterate_table-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
-
+            
         <span class="def">def</span>
         <span class="name">iterate_table</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">rows</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span></span><span class="return-annotation">) -> <span class="n">Iterator</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">,</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">bool</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="n">NoneType</span><span class="p">]]]]</span>:</span></span>
 
@@ -2874,7 +2874,7 @@ parsetypes    </h1>
                 <section id="reduce_types">
                             <input id="reduce_types-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
 <div class="attr function">
-
+            
         <span class="def">def</span>
         <span class="name">reduce_types</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">types</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">,</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">bool</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="n">NoneType</span><span class="p">]]]]</span></span><span class="return-annotation">) -> <span class="n">Type</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">,</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="nb">bool</span><span class="p">],</span> <span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span><span class="n">Nullable</span><span class="p">[</span><span class="n">NoneType</span><span class="p">]]]</span>:</span></span>
 
