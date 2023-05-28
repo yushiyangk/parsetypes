@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from decimal import Decimal
-from typing import Generic, Type, TypeAlias, TypeVar, Union
+from typing import Generic, Type, TypeVar, Union
+
+from ._compat import TypeAlias
 
 
 AnyScalar = Union[str, int, float, Decimal, bool, None]
