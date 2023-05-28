@@ -29,33 +29,3 @@ ValueType: TypeAlias = Type[Value]
 
 GenericValue: TypeAlias = str
 """Fallback type when a more specific type cannot be identified"""
-
-type_names: dict[str, ValueType] = {
-	'str': str,
-	'int': int,
-	'float': float,
-	'decimal': Decimal,
-	'bool': bool,
-
-	'none': NoneType,
-	'NoneTypetype': NoneType,
-	'null': NoneType,
-	'nil': NoneType,
-	'void': NoneType,
-
-	'list': list,
-	'sequence': list,
-	'array': list,
-
-	#'dict': dict,
-	#'mapping': dict,
-	#'dictionary': dict,
-	#'map': dict,
-	#'hashmap': dict,
-	#'table': dict,
-	#'hashtable': dict,
-
-	'string': str,
-	'integer': int,
-	'boolean': bool,
-}
