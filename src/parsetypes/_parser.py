@@ -3,7 +3,7 @@ from decimal import Decimal
 from enum import Enum
 from typing import Callable, Iterable, Iterator, Optional, Sequence, TypeVar, cast
 
-from ._common import AnyContained, AnyContainedType, AnyValue, AnyValueType, GenericValue, Nullable
+from ._common import AnyValue, AnyValueType, GenericValue, Nullable
 from ._reduce_types import reduce_types, _decompose_type
 
 from ._compat import NoneType, Union
@@ -750,9 +750,8 @@ class TypeParser:
 			if self.trim:
 				subvalues = [subvalue.strip() for subvalue in subvalues]
 			reduced_type = reduce_types(self.infer(subvalue) for subvalue in subvalues)
-			reduced_type = cast(AnyContainedType, reduced_type)
 			r = list[reduced_type]
-			return r  # type: ignore
+			return r
 
 		return GenericValue
 
@@ -858,7 +857,7 @@ class TypeParser:
 				subvalues = [subvalue.strip() for subvalue in subvalues]
 			if type_args is not None and len(type_args) == 1 and type_args[0] != str:
 				subtype = type_args[0]
-				return cast(AnyContained, [self._convert(subvalue, subtype) for subvalue in subvalues])
+				return [self._convert(subvalue, subtype) for subvalue in subvalues]
 			else:
 				return subvalues
 		else:
