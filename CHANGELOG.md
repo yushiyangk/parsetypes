@@ -8,6 +8,10 @@ The recommended version specifier is <code>generic-path ~= <var>x</var>.<var>y</
 
 - Added support for Python version 3.9; previously only 3.10 and 3.11 were supported
 
+### 0.1.1
+
+- Updated documentation
+
 ### 0.1
 
 - Initial version
