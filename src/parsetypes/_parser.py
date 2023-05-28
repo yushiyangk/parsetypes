@@ -883,9 +883,9 @@ class TypeParser:
 			--------
 			```python
 			parser = TypeParser()
-			parser.infer("true")  # True
-			parser.infer("2.0")   # 2.
-			parser.infer("abc")   # "abc"
+			parser.parse("true")  # True
+			parser.parse("2.0")   # 2.
+			parser.parse("abc")   # "abc"
 			```
 		"""
 		return self._convert(value, self.infer(value))
@@ -910,9 +910,10 @@ class TypeParser:
 			--------
 			```python
 			parser = TypeParser()
-			parser.infer_series(["1", "2", "3.4"])       # [1., 2., 3.4]
-			parser.infer_series(["true", "false", "2"])  # [1, 0, 2]
-			parser.infer_series(["1", "2.3", "abc"])     # ["1", "2.3", "abc"]
+			parser.parse_series(["1", "2", "3"])        # [1, 2, 3]
+			parser.parse_series(["5", "6.7", "8."])     # [5., 6.7, 8.]
+			parser.parse_series(["true", "false", ""])  # [True, False, None]
+			parser.parse_series(["1", "2.3", "abc"])    # ["1", "2.3", "abc"]
 			```
 		"""
 		inferred = self.infer_series(values)
@@ -946,14 +947,14 @@ class TypeParser:
 			```python
 			parser = TypeParser()
 			table = parser.parse_table([
-				["1",   "true",  "1"],
-				["2",   "false", "2.3"],
-				["3.4", "2",     "abc"],
+				["1", "5",   "true",  "1"],
+				["2", "6.7", "false", "2.3"],
+				["3", "8.0", "",     "abc"],
 			]):
 			assert table == [
-				[1.,  1, "1"],
-				[2.,  0, "2.3"],
-				[3.4, 2, "abc"],
+				[1, 5.,  True,  "1"],
+				[2, 6.7, False, "2.3"],
+				[3, 8.,  None,  "abc"],
 			]
 			```
 		"""

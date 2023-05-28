@@ -1,7 +1,10 @@
 """
 	This package provides tools for parsing serialised data to recover their original underlying types.
 
-    The `TypeParser` class provides configurable type inference and parsing. The `reduce_types()` function can be used to obtain consistent types for tabular data.
+	The `TypeParser` class provides configurable type inference and parsing. This can be initialised with different settings to, for example:
+	- treat `inf` as either a float or a normal string
+	- give exact Decimal values instead of floats
+	- detect inline lists
 """
 
 
