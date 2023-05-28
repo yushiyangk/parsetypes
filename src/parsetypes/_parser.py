@@ -948,7 +948,7 @@ class TypeParser:
 			table = parser.parse_table([
 				["1", "5",   "true",  "1"],
 				["2", "6.7", "false", "2.3"],
-				["3", "8.0", "",     "abc"],
+				["3", "8.0", "",      "abc"],
 			]):
 			assert table == [
 				[1, 5.,  True,  "1"],
