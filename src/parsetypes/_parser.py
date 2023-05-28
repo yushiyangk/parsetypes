@@ -4,9 +4,9 @@ import math
 from decimal import Decimal
 from enum import Enum
 from types import NoneType
-from typing import Callable, Iterable, Iterator, Sequence, TypeVar, Union
+from typing import Callable, Iterable, Iterator, Sequence, Type, TypeVar, Union, cast
 
-from ._common import GenericValue, Nullable, Value, ValueType
+from ._common import AnyContained, AnyContainedType, AnyValue, AnyValueType, GenericValue, Nullable
 from ._reduce_types import reduce_types, _decompose_type
 
 
@@ -16,14 +16,14 @@ _FloatLike = TypeVar('_FloatLike', float, Decimal)
 class _TypeTable:
 	__slots__ = ('cols')
 
-	def __init__(self, cols: int | list[list[ValueType]]):
-		self.cols: list[list[ValueType]]
+	def __init__(self, cols: int | list[list[AnyValueType]]):
+		self.cols: list[list[AnyValueType]]
 		if isinstance(cols, int):
 			self.cols = [[] for i in range(cols)]
 		else:
 			self.cols = cols
 
-	def add_row(self, row: Sequence[ValueType]):
+	def add_row(self, row: Sequence[AnyValueType]):
 		if len(row) != len(self.cols):
 			raise ValueError(f"incorrect row length: expected {len(self.cols)}, got {len(row)}")
 		for i, t in enumerate(row):
@@ -707,7 +707,7 @@ class TypeParser:
 		)
 
 
-	def infer(self, value: str) -> ValueType:
+	def infer(self, value: str) -> AnyValueType:
 		"""
 			Infer the underlying type of a string
 
@@ -750,12 +750,15 @@ class TypeParser:
 			subvalues = value.split(self.list_delimiter)
 			if self.trim:
 				subvalues = [subvalue.strip() for subvalue in subvalues]
-			return list[reduce_types(self.infer(subvalue) for subvalue in subvalues)]
+			reduced_type = reduce_types(self.infer(subvalue) for subvalue in subvalues)
+			reduced_type = cast(AnyContainedType, reduced_type)
+			r = list[reduced_type]
+			return r  # type: ignore
 
 		return GenericValue
 
 
-	def infer_series(self, values: Iterable[str]) -> ValueType:
+	def infer_series(self, values: Iterable[str]) -> AnyValueType:
 		"""
 			Infer the underlying common type of a series of strings
 
@@ -782,7 +785,7 @@ class TypeParser:
 		return reduce_types(self.infer(value) for value in values)
 
 
-	def infer_table(self, rows: Iterable[Sequence[str]]) -> list[ValueType]:
+	def infer_table(self, rows: Iterable[Sequence[str]]) -> list[AnyValueType]:
 		"""
 			Infer the underlying common type for each column of a table of strings
 
@@ -827,7 +830,7 @@ class TypeParser:
 		return [reduce_types(col) for col in table.cols]
 
 
-	def _convert(self, value: str, t: ValueType) -> Value:
+	def _convert(self, value: str, t: AnyValueType) -> AnyValue:
 		base, type_args = _decompose_type(t)
 		if base == NoneType:
 			return None
@@ -856,15 +859,15 @@ class TypeParser:
 				subvalues = [subvalue.strip() for subvalue in subvalues]
 			if type_args is not None and len(type_args) == 1 and type_args[0] != str:
 				subtype = type_args[0]
-				return [self._convert(subvalue, subtype) for subvalue in subvalues]
+				return cast(AnyContained, [self._convert(subvalue, subtype) for subvalue in subvalues])
 			else:
 				return subvalues
 		else:
 			return value
 
 
-	def parse(self, value: str) -> Value:
-		"""Value
+	def parse(self, value: str) -> AnyValue:
+		"""
 			Parse a string and convert it to its underlying type
 
 			Parameters
@@ -888,7 +891,7 @@ class TypeParser:
 		return self._convert(value, self.infer(value))
 
 
-	def parse_series(self, values: Iterable[str]) -> list[Value]:
+	def parse_series(self, values: Iterable[str]) -> list[AnyValue]:
 		"""
 			Parse a series of strings and convert them to their underlying common type
 
@@ -916,7 +919,7 @@ class TypeParser:
 		return [self._convert(value, inferred) for value in values]
 
 
-	def parse_table(self, rows: Iterable[Sequence[str]]) -> list[list[Value]]:
+	def parse_table(self, rows: Iterable[Sequence[str]]) -> list[list[AnyValue]]:
 		"""
 			Parse a table of strings and convert them to the underlying common type of each column
 
@@ -957,7 +960,7 @@ class TypeParser:
 		return [converted_row for converted_row in self.iterate_table(rows)]
 
 
-	def iterate_table(self, rows: Iterable[Sequence[str]]) -> Iterator[list[Value]]:
+	def iterate_table(self, rows: Iterable[Sequence[str]]) -> Iterator[list[AnyValue]]:
 		"""
 			Parse a table of strings for the underlying common type of each column, then convert and yield each row
 

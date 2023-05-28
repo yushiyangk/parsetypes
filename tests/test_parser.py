@@ -9,7 +9,7 @@ from unittest.mock import call, patch
 import pytest
 
 import parsetypes
-from parsetypes import Nullable, TypeParser, Value, ValueType
+from parsetypes import AnyScalar, AnyScalarType, AnyValue, AnyValueType, Nullable, TypeParser
 
 
 @pytest.fixture
@@ -1104,7 +1104,7 @@ class TestInfer:
 			("nan", str),
 		]
 	)
-	def test_scalars_default(default_parser: TypeParser, value: str, expected: ValueType):
+	def test_scalars_default(default_parser: TypeParser, value: str, expected: AnyScalarType):
 		result = default_parser.infer(value)
 		assert result == expected
 
@@ -1145,8 +1145,8 @@ class TestInfer:
 		default_parser: TypeParser,
 		value: str,
 		list_parser: TypeParser,
-		delimiter_expected: ValueType,
-		no_delimiter_expected: ValueType
+		delimiter_expected: AnyValueType,
+		no_delimiter_expected: AnyValueType
 	):
 		result = list_parser.infer(value)
 		assert result == delimiter_expected
@@ -1179,7 +1179,7 @@ class TestInfer:
 	def test_use_decimal(
 		value: str,
 		use_decimal_parser: TypeParser,
-		expected: ValueType,
+		expected: AnyValueType,
 	):
 		result = use_decimal_parser.infer(value)
 		assert result == expected
@@ -1198,7 +1198,7 @@ class TestInferSeries:
 			(["1"], [int], int),
 		]
 	)
-	def test(default_parser: TypeParser, values: list[str], individual_types: list[ValueType], expected: ValueType):
+	def test(default_parser: TypeParser, values: list[str], individual_types: list[AnyValueType], expected: AnyValueType):
 		with (
 			patch.object(default_parser, 'infer', side_effect=individual_types) as mocked_infer,
 			patch('parsetypes._parser.reduce_types', wraps=parsetypes._parser.reduce_types) as mocked_reduce_types,
@@ -1247,7 +1247,7 @@ class TestInferTable:
 			)
 		]
 	)
-	def test(default_parser: TypeParser, rows: list[list[str]], type_rows: list[list[ValueType]], expected: list[ValueType]):
+	def test(default_parser: TypeParser, rows: list[list[str]], type_rows: list[list[AnyValueType]], expected: list[AnyValueType]):
 		with (
 			patch.object(default_parser, 'infer', side_effect=itertools.chain(*zip(*type_rows))) as mocked_infer,
 			patch('parsetypes._parser.reduce_types', wraps=parsetypes._parser.reduce_types) as mocked_reduce_types,
@@ -1327,7 +1327,7 @@ class TestParse():
 			("nan", str, "nan"),
 		]
 	)
-	def test_scalars_and_nullables(default_parser: TypeParser, value: str, expected_type: ValueType, expected: Value):
+	def test_scalars_and_nullables(default_parser: TypeParser, value: str, expected_type: AnyScalarType, expected: AnyScalar):
 		with patch.object(default_parser, 'infer', return_value=expected_type) as mocked_infer:
 			result = default_parser.parse(value)
 			mocked_infer.assert_called_once_with(value)
@@ -1379,8 +1379,8 @@ class TestParse():
 	def test_lists(
 		value: str,
 		list_parser: TypeParser,
-		expected_type: ValueType,
-		expected: Value,
+		expected_type: AnyValueType,
+		expected: AnyValue,
 	):
 		with patch.object(list_parser, 'infer', return_value=expected_type) as mocked_infer:
 			result = list_parser.parse(value)
@@ -1401,7 +1401,7 @@ class TestParseSeries:
 			(["1"], int, [1]),
 		]
 	)
-	def test(default_parser: TypeParser, values: list[str], type: ValueType, expected: Value):
+	def test(default_parser: TypeParser, values: list[str], type: AnyValueType, expected: AnyValue):
 		with patch.object(default_parser, 'infer_series', return_value=type) as mocked_infer_series:
 			result = default_parser.parse_series(values)
 			mocked_infer_series.assert_called_once_with(values)
@@ -1441,7 +1441,7 @@ class TestParseIterateTable:
 			)
 		]
 	)
-	def test(default_parser: TypeParser, rows: list[list[str]], types: list[ValueType], expected: list[list[Value]]):
+	def test(default_parser: TypeParser, rows: list[list[str]], types: list[AnyValueType], expected: list[list[AnyValue]]):
 		with patch.object(default_parser, 'infer_table', return_value=types) as mocked_infer_table:
 			result = default_parser.parse_table(rows)
 			mocked_infer_table.assert_called_once_with(rows)

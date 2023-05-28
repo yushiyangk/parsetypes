@@ -1,24 +1,34 @@
+
 import typing
 from decimal import Decimal
 from types import NoneType
 from typing import Final, Iterable, cast
 
-from ._common import GenericValue, Nullable, ValueType
+from ._common import AnyBaseType, AnyContainedType, AnyContainerBaseType, AnyNullableType, AnyScalarType, AnyValueType, GenericValue, Nullable
 
 
-_TerminalValue: Final[ValueType] = list
+_TerminalValue: Final[AnyBaseType] = list
 
-_scalar_hierarchy: Final[dict[ValueType, ValueType | None]] = {
+_scalar_hierarchy: Final[dict[AnyBaseType, AnyBaseType | None]] = {
 	bool: int,
 	int: Decimal,
 	Decimal: float,
 	float: str,
 	str: None,
 }
-_containers: Final[set[ValueType]] = {Nullable, list}
+_containers: Final[set[AnyBaseType]] = {Nullable, list}
+_type_hierarchy: Final[dict[AnyBaseType, AnyBaseType | None]] = {
+	bool: int,
+	int: Decimal,
+	Decimal: float,
+	float: str,
+	str: Nullable,
+	Nullable: list,
+	list: None,
+}
 
 
-def _is_valid_type(t: ValueType) -> bool:
+def _is_valid_type(t: AnyValueType) -> bool:
 	if t == NoneType:
 		return True
 	base = typing.get_origin(t)
@@ -33,15 +43,18 @@ def _is_valid_type(t: ValueType) -> bool:
 		return True
 
 
-def _decompose_type(t: ValueType) -> tuple[ValueType, tuple[ValueType, ...] | None]:
+def _decompose_type(t: AnyValueType) -> tuple[AnyBaseType, tuple[AnyContainedType, ...] | None]:
 	base = typing.get_origin(t)
 	if base is None:
 		return t, None
 	else:
-		return cast(ValueType, base), tuple(cast(ValueType, arg) for arg in typing.get_args(t))
+		return base, typing.get_args(t)
 
 
-def _broaden_type(t: ValueType, cue: ValueType | None=None) -> ValueType | None:
+def _broaden_type(t: AnyValueType, cue: AnyValueType | None=None) -> AnyValueType | None:
+	"""
+		`cue` should always come before `t` in `_type_hierarchy`
+	"""
 	base, type_args = _decompose_type(t)
 	if base == str:
 		if cue is None:
@@ -50,23 +63,31 @@ def _broaden_type(t: ValueType, cue: ValueType | None=None) -> ValueType | None:
 			cue_base, cue_args = _decompose_type(cue)
 			if cue_base == Nullable:
 				if cue_args is not None and len(cue_args) == 1:
-					return Nullable[cue_args[0]]
+					cue_arg = cast(AnyScalarType, cue_args[0])
+					r = Nullable[cue_arg]
+					return r  # type: ignore
 				else:
 					return Nullable
 			elif cue_base == list:
 				return None
 			else:
-				return Nullable[cue_base]
+				cue_base = cast(AnyScalarType, cue_base)
+				r = Nullable[cue_base]
+				return r  # type: ignore
 	elif base == Nullable:
 		if type_args is not None and len(type_args) == 1:
-			return list[type_args[0]]
+			type_arg = cast(AnyScalarType, type_args[0])
+			r = list[type_arg]
+			return r  # type: ignore
 		else:
 			if cue is None:
 				return list
 			else:
 				cue_base, cue_args = _decompose_type(cue)
 				if cue_base == Nullable:
-					return list[cue]
+					cue = cast(AnyNullableType, cue)
+					r = list[cue]
+					return r  # type: ignore
 				elif cue_base == list:
 					return None
 				else:
@@ -77,14 +98,14 @@ def _broaden_type(t: ValueType, cue: ValueType | None=None) -> ValueType | None:
 		return _scalar_hierarchy[base]
 
 
-def _merge_types(t1: ValueType, t2: ValueType) -> ValueType:
+def _merge_types(t1: AnyValueType, t2: AnyValueType) -> AnyValueType:
 	if t1 == t2:
 		return t1
 	if (not _is_valid_type(t1)) or (not _is_valid_type(t2)):
 		return GenericValue
 
-	c: ValueType | None = t1
-	visited: dict[ValueType, tuple[ValueType, ...] | None] = {}
+	c: AnyValueType | None = t1
+	visited: dict[AnyValueType, tuple[AnyValueType, ...] | None] = {}
 	if t1 == NoneType:
 		visited[NoneType] = None
 		visited[Nullable] = None
@@ -108,14 +129,22 @@ def _merge_types(t1: ValueType, t2: ValueType) -> ValueType:
 		if base in visited:
 			visited_args = visited[base]
 			if type_args is not None and len(type_args) == 1:
+				base = cast(AnyContainerBaseType, base)
+				type_arg = type_args[0]
 				if visited_args is not None and len(visited_args) == 1:
-					merged_arg = _merge_types(type_args[0], visited_args[0])
-					return base[merged_arg]
+					visited_arg = visited_args[0]
+					merged_arg = _merge_types(type_arg, visited_arg)
+					r = base[merged_arg]  # type: ignore
+					return r
 				else:
-					return base[type_args[0]]
+					r = base[type_arg]  # type: ignore
+					return r
 			else:
 				if visited_args is not None and len(visited_args) == 1:
-					return base[visited_args[0]]
+					base = cast(AnyContainerBaseType, base)  # visited_args were derived from the same base as base, so base must be a container
+					visited_arg = visited_args[0]
+					r = base[visited_arg]  # type: ignore
+					return r
 				else:
 					return base
 		else:
@@ -124,7 +153,7 @@ def _merge_types(t1: ValueType, t2: ValueType) -> ValueType:
 	return GenericValue
 
 
-def reduce_types(types: Iterable[ValueType]) -> ValueType:
+def reduce_types(types: Iterable[AnyValueType]) -> AnyValueType:
 	"""
 		Reduce multiple types into a single common type.
 
@@ -149,7 +178,7 @@ def reduce_types(types: Iterable[ValueType]) -> ValueType:
 		reduce_types([int, float, str])   # str
 		```
 	"""
-	reduced_type: ValueType | None = None
+	reduced_type: AnyValueType | None = None
 	for t in types:
 		if reduced_type is None:
 			reduced_type = t

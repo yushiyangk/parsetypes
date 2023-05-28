@@ -7,7 +7,7 @@
 
 __version__ = "0.1dev"
 
-from ._common import GenericValue, Nullable, Scalar, Value, ValueType
+from ._common import AnyScalar, AnyScalarType, AnyValue, AnyValueType, GenericValue, Nullable
 from ._parser import TypeParser
 from ._reduce_types import reduce_types
 

@@ -3,7 +3,7 @@ from types import NoneType
 
 import pytest
 
-from parsetypes import reduce_types, ValueType, Nullable
+from parsetypes import reduce_types, AnyValueType, Nullable
 
 
 @pytest.mark.parametrize(
@@ -34,7 +34,7 @@ from parsetypes import reduce_types, ValueType, Nullable
 		([], str),
 	]
 )
-def test_reduce_scalar_types(types: list[ValueType], expected: ValueType):
+def test_reduce_scalar_types(types: list[AnyValueType], expected: AnyValueType):
 	result = reduce_types(types)
 	assert result == expected
 
@@ -84,7 +84,7 @@ def test_reduce_scalar_types(types: list[ValueType], expected: ValueType):
 		#([list[list[float]], list[str]], list[list[str]]),
 	]
 )
-def test_reduce_list_types(types: list[ValueType], expected: ValueType):
+def test_reduce_list_types(types: list[AnyValueType], expected: AnyValueType):
 	result = reduce_types(types)
 	assert result == expected
 
@@ -130,7 +130,7 @@ def test_reduce_list_types(types: list[ValueType], expected: ValueType):
 		([int, Nullable[str]], Nullable[str]),
 	]
 )
-def test_reduce_nullable_types(types: list[ValueType], expected: ValueType):
+def test_reduce_nullable_types(types: list[AnyValueType], expected: AnyValueType):
 	result = reduce_types(types)
 	assert result == expected
 
@@ -152,7 +152,7 @@ def test_reduce_nullable_types(types: list[ValueType], expected: ValueType):
 		([list[bool], Nullable[int], Nullable[Decimal], Nullable[float], Nullable[str]], list[str]),
 	]
 )
-def test_reduce_between_container_types(types: list[ValueType], expected: ValueType):
+def test_reduce_between_container_types(types: list[AnyValueType], expected: AnyValueType):
 	result = reduce_types(types)
 	assert result == expected
 
@@ -189,7 +189,7 @@ def test_reduce_between_container_types(types: list[ValueType], expected: ValueT
 		([float, NoneType, list[str]], list[str]),
 	]
 )
-def test_reduce_none_types(types: list[ValueType], expected: ValueType):
+def test_reduce_none_types(types: list[AnyValueType], expected: AnyValueType):
 	result = reduce_types(types)
 	assert result == expected
 
@@ -229,6 +229,6 @@ def test_reduce_none_types(types: list[ValueType], expected: ValueType):
 		([list[Nullable[float]], list[str]], list[Nullable[str]]),
 	]
 )
-def test_reduce_list_nullable_types(types: list[ValueType], expected: ValueType):
+def test_reduce_list_nullable_types(types: list[AnyValueType], expected: AnyValueType):
 	result = reduce_types(types)
 	assert result == expected
