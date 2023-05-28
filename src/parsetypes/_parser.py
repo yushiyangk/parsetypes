@@ -828,10 +828,44 @@ class TypeParser:
 		return [reduce_types(col) for col in table.cols]
 
 
-	def _convert(self, value: str, t: AnyValueType) -> AnyValue:
-		base, type_args = _decompose_type(t)
+	def convert(self, value: str, target_type: AnyValueType) -> AnyValue:
+		"""
+			Convert a string to the specified target type if possible
+
+			Valid values for `target_type` include any return value from `infer()`, `infer_series()` and `infer_table()`. To infer and convert the string automatically, use `parse()`, `parse_series()` or `parse_table()` instead.
+
+			Parameters
+			----------
+			`value`
+			: the string to be converted
+
+			`target_type`
+			: type to which the value should be converted
+
+			Returns
+			-------
+			converted value
+
+			Raises
+			-------
+			`ValueError`
+			: if `value` cannot be converted to `target_type`
+
+			`TypeError`
+			: if `target_type` is not a valid type
+
+			Examples
+			--------
+			```python
+			parser = TypeParser()
+			parser.convert("true", bool)  # True
+			parser.convert("2", int)      # 2
+			parser.convert("2", float)    # 2.
+			```
+		"""
+		base, type_args = _decompose_type(target_type)
 		if base == NoneType:
-			return None
+			return self.parse_none(value)
 		elif base == bool:
 			return self.parse_bool(value)
 		elif base == int:
@@ -848,7 +882,7 @@ class TypeParser:
 			else:
 				if type_args is not  None and len(type_args) == 1 and type_args[0] != str:
 					inner_type = type_args[0]
-					return self._convert(value, inner_type)
+					return self.convert(value, inner_type)
 				else:
 					return value
 		elif base == list:
@@ -857,11 +891,11 @@ class TypeParser:
 				subvalues = [subvalue.strip() for subvalue in subvalues]
 			if type_args is not None and len(type_args) == 1 and type_args[0] != str:
 				subtype = type_args[0]
-				return [self._convert(subvalue, subtype) for subvalue in subvalues]
+				return [self.convert(subvalue, subtype) for subvalue in subvalues]
 			else:
 				return subvalues
 		else:
-			return value
+			raise TypeError(f"cannot convert to type: {target_type}")
 
 
 	def parse(self, value: str) -> AnyValue:
@@ -886,7 +920,7 @@ class TypeParser:
 			parser.parse("abc")   # "abc"
 			```
 		"""
-		return self._convert(value, self.infer(value))
+		return self.convert(value, self.infer(value))
 
 
 	def parse_series(self, values: Iterable[str]) -> list[AnyValue]:
@@ -915,7 +949,7 @@ class TypeParser:
 			```
 		"""
 		inferred = self.infer_series(values)
-		return [self._convert(value, inferred) for value in values]
+		return [self.convert(value, inferred) for value in values]
 
 
 	def parse_table(self, rows: Iterable[Sequence[str]]) -> list[list[AnyValue]]:
@@ -993,4 +1027,4 @@ class TypeParser:
 		inferred_types = self.infer_table(rows)
 
 		for row in rows:
-			yield [self._convert(value, inferred) for value, inferred in zip(row, inferred_types)]
+			yield [self.convert(value, inferred) for value, inferred in zip(row, inferred_types)]
