@@ -8,7 +8,7 @@
 """
 
 
-__version__ = "0.1dev"
+__version__ = "0.1"
 
 from ._common import AnyScalar, AnyScalarType, AnyValue, AnyValueType, GenericValue, Nullable
 from ._parser import TypeParser
