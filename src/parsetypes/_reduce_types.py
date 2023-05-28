@@ -1,23 +1,21 @@
 import typing
 from decimal import Decimal
 from types import NoneType
-from typing import Iterable, cast
+from typing import Final, Iterable, cast
 
 from ._common import GenericValue, Nullable, ValueType
 
 
-_TerminalValue = list
+_TerminalValue: Final[ValueType] = list
 
-_type_hierarchy: dict[ValueType, ValueType | None] = {
+_scalar_hierarchy: Final[dict[ValueType, ValueType | None]] = {
 	bool: int,
 	int: Decimal,
 	Decimal: float,
 	float: str,
-	str: Nullable,
-	Nullable: list,
-	list: None,
+	str: None,
 }
-_containers: set[ValueType] = {Nullable, list}
+_containers: Final[set[ValueType]] = {Nullable, list}
 
 
 def _is_valid_type(t: ValueType) -> bool:
@@ -25,11 +23,9 @@ def _is_valid_type(t: ValueType) -> bool:
 		return True
 	base = typing.get_origin(t)
 	if base is None:
-		return (t in _type_hierarchy)
+		return (t in _scalar_hierarchy or base in _containers)
 	else:
-		if base not in _type_hierarchy:
-			return False
-		if base not in _containers:
+		if base not in _scalar_hierarchy and base not in _containers:
 			return False
 		for arg in typing.get_args(t):
 			if not _is_valid_type(arg):
@@ -47,30 +43,38 @@ def _decompose_type(t: ValueType) -> tuple[ValueType, tuple[ValueType, ...] | No
 
 def _broaden_type(t: ValueType, cue: ValueType | None=None) -> ValueType | None:
 	base, type_args = _decompose_type(t)
-	broadened = _type_hierarchy[base]
-	if broadened is None:
-		return None
-	if base in _containers:
-		if broadened in _containers:
-			if type_args is not None and len(type_args) == 1:
-				return broadened[type_args[0]]
-			else:
-				return broadened  # Must be able to broaden generic Nullable to list
+	if base == str:
+		if cue is None:
+			return Nullable
 		else:
-			return broadened
-	else:
-		# base is Scalar
-		if broadened in _containers:
-			if cue is not None:
-				cue_base, cue_args = _decompose_type(cue)
-				if cue_base not in _containers:
-					return broadened[cue_base]
+			cue_base, cue_args = _decompose_type(cue)
+			if cue_base == Nullable:
+				if cue_args is not None and len(cue_args) == 1:
+					return Nullable[cue_args[0]]
 				else:
-					assert False  # cue should have come before base, so should also be Scalar
+					return Nullable
+			elif cue_base == list:
+				return None
 			else:
-				assert False  # Cue should always be given
+				return Nullable[cue_base]
+	elif base == Nullable:
+		if type_args is not None and len(type_args) == 1:
+			return list[type_args[0]]
 		else:
-			return broadened
+			if cue is None:
+				return list
+			else:
+				cue_base, cue_args = _decompose_type(cue)
+				if cue_base == Nullable:
+					return list[cue]
+				elif cue_base == list:
+					return None
+				else:
+					return list
+	elif base == list:
+		return None
+	else:
+		return _scalar_hierarchy[base]
 
 
 def _merge_types(t1: ValueType, t2: ValueType) -> ValueType:
@@ -101,9 +105,7 @@ def _merge_types(t1: ValueType, t2: ValueType) -> ValueType:
 		c = t2
 	while c is not None:
 		base, type_args = _decompose_type(c)
-		if base not in visited:
-			c = _broaden_type(c, t2)
-		else:
+		if base in visited:
 			visited_args = visited[base]
 			if type_args is not None and len(type_args) == 1:
 				if visited_args is not None and len(visited_args) == 1:
@@ -116,6 +118,8 @@ def _merge_types(t1: ValueType, t2: ValueType) -> ValueType:
 					return base[visited_args[0]]
 				else:
 					return base
+		else:
+			c = _broaden_type(c, t2)
 
 	return GenericValue
 
