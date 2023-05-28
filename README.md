@@ -2,6 +2,8 @@
 
 This Python package provides tools for parsing serialised data to recover their original underlying types.
 
+[![](https://img.shields.io/badge/PyPI--inactive?style=social&logo=pypi)](https://pypi.org/project/parsetypes/) [![](https://img.shields.io/badge/GitHub--inactive?style=social&logo=github)](https://github.com/yushiyangk/parsetypes) [![](https://img.shields.io/badge/Documentation--inactive?style=social&logo=readthedocs)](https://parsetypes.gnayihs.uy/)
+
 ## Overview
 
 The `TypeParser` class provides configurable type inference and parsing. This can be initialised with different settings to, for example:

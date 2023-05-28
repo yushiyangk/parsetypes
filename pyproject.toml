@@ -43,6 +43,12 @@ packagetest = ["twine ~= 4.0.2"]
 ci = ["tox ~= 4.5.1", "tox-extras >= 0.0.1"]
 publish = ["twine ~= 4.0.2"]
 
+[project.urls]
+# key is used verbatim on PyPI
+Homepage = "https://github.com/yushiyangk/parsetypes"
+Documentation = "https://parsetypes.gnayihs.uy/"
+Issues = "https://github.com/yushiyangk/parsetypes/issues"
+
 [tool.pytest.ini_options]
 addopts = "tests"
 
