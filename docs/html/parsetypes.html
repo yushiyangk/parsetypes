@@ -478,7 +478,7 @@ parsetypes    </h1>
 </span><span id="TypeParser-307"><a href="#TypeParser-307"><span class="linenos">307</span></a><span class="sd">			: whether to accept signed values. If False, it implies that `allow_negative` is False also.</span>
 </span><span id="TypeParser-308"><a href="#TypeParser-308"><span class="linenos">308</span></a>
 </span><span id="TypeParser-309"><a href="#TypeParser-309"><span class="linenos">309</span></a><span class="sd">			`allow_scientific`</span>
-</span><span id="TypeParser-310"><a href="#TypeParser-310"><span class="linenos">310</span></a><span class="sd">			: whether to accept scientific notation. If True, strings of the form `&quot;&lt;var&gt;M&lt;/var&gt;e&lt;var&gt;X&lt;/var&gt;&quot;` will be interpreted as the expression `&lt;var&gt;M&lt;/var&gt; * (10 ** &lt;var&gt;X&lt;/var&gt;)`, where &lt;var&gt;M&lt;/var&gt; is the mantissa/significand and &lt;var&gt;X&lt;/var&gt; is the exponent. Note &lt;var&gt;M&lt;/var&gt; *must* be an integer and &lt;var&gt;X&lt;/var&gt; *must* be a non-negative integer, even in cases where the above expression evaluates mathematically to an integer.</span>
+</span><span id="TypeParser-310"><a href="#TypeParser-310"><span class="linenos">310</span></a><span class="sd">			: whether to accept scientific notation. If True, strings of the form &lt;code&gt;&quot;&lt;var&gt;M&lt;/var&gt;e&lt;var&gt;X&lt;/var&gt;&quot;&lt;/code&gt; will be interpreted as the expression &lt;code&gt;&lt;var&gt;M&lt;/var&gt; * (10 ** &lt;var&gt;X&lt;/var&gt;)&lt;/code&gt;, where &lt;var&gt;M&lt;/var&gt; is the mantissa/significand and &lt;var&gt;X&lt;/var&gt; is the exponent. Note &lt;var&gt;M&lt;/var&gt; *must* be an integer and &lt;var&gt;X&lt;/var&gt; *must* be a non-negative integer, even in cases where the above expression evaluates mathematically to an integer.</span>
 </span><span id="TypeParser-311"><a href="#TypeParser-311"><span class="linenos">311</span></a>
 </span><span id="TypeParser-312"><a href="#TypeParser-312"><span class="linenos">312</span></a><span class="sd">			Returns</span>
 </span><span id="TypeParser-313"><a href="#TypeParser-313"><span class="linenos">313</span></a><span class="sd">			-------</span>
@@ -547,7 +547,7 @@ parsetypes    </h1>
 </span><span id="TypeParser-376"><a href="#TypeParser-376"><span class="linenos">376</span></a><span class="sd">			: string to be checked</span>
 </span><span id="TypeParser-377"><a href="#TypeParser-377"><span class="linenos">377</span></a>
 </span><span id="TypeParser-378"><a href="#TypeParser-378"><span class="linenos">378</span></a><span class="sd">			`allow_scientific`</span>
-</span><span id="TypeParser-379"><a href="#TypeParser-379"><span class="linenos">379</span></a><span class="sd">			: whether to accept scientific notation. If True, strings of the form `&quot;&lt;var&gt;M&lt;/var&gt;e&lt;var&gt;X&lt;/var&gt;&quot;` will be interpreted as the expression `&lt;var&gt;M&lt;/var&gt; * (10 ** &lt;var&gt;X&lt;/var&gt;)`, where &lt;var&gt;M&lt;/var&gt; is the mantissa/significand and &lt;var&gt;X&lt;/var&gt; is the exponent. Note that &lt;var&gt;X&lt;/var&gt; must be an integer, but can be negative.</span>
+</span><span id="TypeParser-379"><a href="#TypeParser-379"><span class="linenos">379</span></a><span class="sd">			: whether to accept scientific notation. If True, strings of the form &lt;code&gt;&quot;&lt;var&gt;M&lt;/var&gt;e&lt;var&gt;X&lt;/var&gt;&quot;&lt;/code&gt; will be interpreted as the expression &lt;code&gt;&lt;var&gt;M&lt;/var&gt; * (10 ** &lt;var&gt;X&lt;/var&gt;)&lt;/code&gt;, where &lt;var&gt;M&lt;/var&gt; is the mantissa/significand and &lt;var&gt;X&lt;/var&gt; is the exponent. Note that &lt;var&gt;X&lt;/var&gt; must be an integer, but can be negative.</span>
 </span><span id="TypeParser-380"><a href="#TypeParser-380"><span class="linenos">380</span></a>
 </span><span id="TypeParser-381"><a href="#TypeParser-381"><span class="linenos">381</span></a><span class="sd">			`allow_inf`</span>
 </span><span id="TypeParser-382"><a href="#TypeParser-382"><span class="linenos">382</span></a><span class="sd">			: whether to accept positive and negative infinity values. If True, strings that match the values in `self.inf_values` (empty by default) are interpreted as infinity, or as negative infinity if prepended by a negative sign. The case sensitivity of this matching depends on `self.float_case_sensitive`, which is False by default.</span>
@@ -699,7 +699,7 @@ parsetypes    </h1>
 </span><span id="TypeParser-528"><a href="#TypeParser-528"><span class="linenos">528</span></a><span class="sd">			: string to be parsed</span>
 </span><span id="TypeParser-529"><a href="#TypeParser-529"><span class="linenos">529</span></a>
 </span><span id="TypeParser-530"><a href="#TypeParser-530"><span class="linenos">530</span></a><span class="sd">			`allow_scientific`</span>
-</span><span id="TypeParser-531"><a href="#TypeParser-531"><span class="linenos">531</span></a><span class="sd">			: whether to accept scientific notation. If True, strings of the form `&quot;&lt;var&gt;M&lt;/var&gt;e&lt;var&gt;X&lt;/var&gt;&quot;` will be interpreted as the expression `&lt;var&gt;M&lt;/var&gt; * (10 ** &lt;var&gt;X&lt;/var&gt;)`, where &lt;var&gt;M&lt;/var&gt; is the mantissa/significand and &lt;var&gt;X&lt;/var&gt; is the exponent. Note &lt;var&gt;M&lt;/var&gt; *must* be an integer and &lt;var&gt;X&lt;/var&gt; *must* be a non-negative integer, even in cases where the above expression evaluates mathematically to an integer.</span>
+</span><span id="TypeParser-531"><a href="#TypeParser-531"><span class="linenos">531</span></a><span class="sd">			: whether to accept scientific notation. If True, strings of the form &lt;code&gt;&quot;&lt;var&gt;M&lt;/var&gt;e&lt;var&gt;X&lt;/var&gt;&quot;&lt;/code&gt; will be interpreted as the expression &lt;code&gt;&lt;var&gt;M&lt;/var&gt; * (10 ** &lt;var&gt;X&lt;/var&gt;)&lt;/code&gt;, where &lt;var&gt;M&lt;/var&gt; is the mantissa/significand and &lt;var&gt;X&lt;/var&gt; is the exponent. Note &lt;var&gt;M&lt;/var&gt; *must* be an integer and &lt;var&gt;X&lt;/var&gt; *must* be a non-negative integer, even in cases where the above expression evaluates mathematically to an integer.</span>
 </span><span id="TypeParser-532"><a href="#TypeParser-532"><span class="linenos">532</span></a>
 </span><span id="TypeParser-533"><a href="#TypeParser-533"><span class="linenos">533</span></a><span class="sd">			Returns</span>
 </span><span id="TypeParser-534"><a href="#TypeParser-534"><span class="linenos">534</span></a><span class="sd">			-------</span>
@@ -798,7 +798,7 @@ parsetypes    </h1>
 </span><span id="TypeParser-627"><a href="#TypeParser-627"><span class="linenos">627</span></a><span class="sd">			: string to be parsed</span>
 </span><span id="TypeParser-628"><a href="#TypeParser-628"><span class="linenos">628</span></a>
 </span><span id="TypeParser-629"><a href="#TypeParser-629"><span class="linenos">629</span></a><span class="sd">			`allow_scientific`</span>
-</span><span id="TypeParser-630"><a href="#TypeParser-630"><span class="linenos">630</span></a><span class="sd">			: whether to accept scientific notation. If True, strings of the form `&quot;&lt;var&gt;M&lt;/var&gt;e&lt;var&gt;X&lt;/var&gt;&quot;` will be interpreted as the expression `&lt;var&gt;M&lt;/var&gt; * (10 ** &lt;var&gt;X&lt;/var&gt;)`, where &lt;var&gt;M&lt;/var&gt; is the mantissa/significand and &lt;var&gt;X&lt;/var&gt; is the exponent. Note that &lt;var&gt;X&lt;/var&gt; must be an integer, but can be negative.</span>
+</span><span id="TypeParser-630"><a href="#TypeParser-630"><span class="linenos">630</span></a><span class="sd">			: whether to accept scientific notation. If True, strings of the form &lt;code&gt;&quot;&lt;var&gt;M&lt;/var&gt;e&lt;var&gt;X&lt;/var&gt;&quot;&lt;/code&gt; will be interpreted as the expression &lt;code&gt;&lt;var&gt;M&lt;/var&gt; * (10 ** &lt;var&gt;X&lt;/var&gt;)&lt;/code&gt;, where &lt;var&gt;M&lt;/var&gt; is the mantissa/significand and &lt;var&gt;X&lt;/var&gt; is the exponent. Note that &lt;var&gt;X&lt;/var&gt; must be an integer, but can be negative.</span>
 </span><span id="TypeParser-631"><a href="#TypeParser-631"><span class="linenos">631</span></a>
 </span><span id="TypeParser-632"><a href="#TypeParser-632"><span class="linenos">632</span></a><span class="sd">			`allow_inf`</span>
 </span><span id="TypeParser-633"><a href="#TypeParser-633"><span class="linenos">633</span></a><span class="sd">			: whether to accept positive and negative infinity values. If True, strings that match the values in `self.inf_values` (empty by default) are interpreted as infinity, or as negative infinity if prepended by a negative sign. The case sensitivity of this matching depends on `self.float_case_sensitive`, which is False by default.</span>
@@ -845,7 +845,7 @@ parsetypes    </h1>
 </span><span id="TypeParser-674"><a href="#TypeParser-674"><span class="linenos">674</span></a><span class="sd">			: string to be parsed</span>
 </span><span id="TypeParser-675"><a href="#TypeParser-675"><span class="linenos">675</span></a>
 </span><span id="TypeParser-676"><a href="#TypeParser-676"><span class="linenos">676</span></a><span class="sd">			`allow_scientific`</span>
-</span><span id="TypeParser-677"><a href="#TypeParser-677"><span class="linenos">677</span></a><span class="sd">			: whether to accept scientific notation. If True, strings of the form `&quot;&lt;var&gt;M&lt;/var&gt;e&lt;var&gt;X&lt;/var&gt;&quot;` will be interpreted as the expression `&lt;var&gt;M&lt;/var&gt; * (10 ** &lt;var&gt;X&lt;/var&gt;)`, where &lt;var&gt;M&lt;/var&gt; is the mantissa/significand and &lt;var&gt;X&lt;/var&gt; is the exponent. Note that &lt;var&gt;X&lt;/var&gt; must be an integer, but can be negative.</span>
+</span><span id="TypeParser-677"><a href="#TypeParser-677"><span class="linenos">677</span></a><span class="sd">			: whether to accept scientific notation. If True, strings of the form &lt;code&gt;&quot;&lt;var&gt;M&lt;/var&gt;e&lt;var&gt;X&lt;/var&gt;&quot;&lt;/code&gt; will be interpreted as the expression &lt;code&gt;&lt;var&gt;M&lt;/var&gt; * (10 ** &lt;var&gt;X&lt;/var&gt;)&lt;/code&gt;, where &lt;var&gt;M&lt;/var&gt; is the mantissa/significand and &lt;var&gt;X&lt;/var&gt; is the exponent. Note that &lt;var&gt;X&lt;/var&gt; must be an integer, but can be negative.</span>
 </span><span id="TypeParser-678"><a href="#TypeParser-678"><span class="linenos">678</span></a>
 </span><span id="TypeParser-679"><a href="#TypeParser-679"><span class="linenos">679</span></a><span class="sd">			`allow_inf`</span>
 </span><span id="TypeParser-680"><a href="#TypeParser-680"><span class="linenos">680</span></a><span class="sd">			: whether to accept positive and negative infinity values. If True, strings that match the values in `self.inf_values` (empty by default) are interpreted as infinity, or as negative infinity if prepended by a negative sign. The case sensitivity of this matching depends on `self.float_case_sensitive`, which is False by default.</span>
@@ -961,7 +961,7 @@ parsetypes    </h1>
 </span><span id="TypeParser-790"><a href="#TypeParser-790"><span class="linenos">790</span></a>
 </span><span id="TypeParser-791"><a href="#TypeParser-791"><span class="linenos">791</span></a><span class="sd">			For each column, if the values do not have the same apparent type, the resulting type will be narrowest possible type that will encompass all values in the column. See `parsetypes.reduce_types()` for more information.</span>
 </span><span id="TypeParser-792"><a href="#TypeParser-792"><span class="linenos">792</span></a>
-</span><span id="TypeParser-793"><a href="#TypeParser-793"><span class="linenos">793</span></a><span class="sd">			Note that the inferred types of every individual value must all be able to fit into memory at once.</span>
+</span><span id="TypeParser-793"><a href="#TypeParser-793"><span class="linenos">793</span></a><span class="sd">			Note that the individual inferred types of every value in the table must be able to fit into memory.</span>
 </span><span id="TypeParser-794"><a href="#TypeParser-794"><span class="linenos">794</span></a>
 </span><span id="TypeParser-795"><a href="#TypeParser-795"><span class="linenos">795</span></a><span class="sd">			Parameters</span>
 </span><span id="TypeParser-796"><a href="#TypeParser-796"><span class="linenos">796</span></a><span class="sd">			----------</span>
@@ -1096,7 +1096,7 @@ parsetypes    </h1>
 </span><span id="TypeParser-925"><a href="#TypeParser-925"><span class="linenos">925</span></a>
 </span><span id="TypeParser-926"><a href="#TypeParser-926"><span class="linenos">926</span></a><span class="sd">			For each column, if the values do not have the same apparent type, the common type is taken as the narrowest possible type that will encompass all values in the column. See `parsetypes.reduce_types()` for more information.</span>
 </span><span id="TypeParser-927"><a href="#TypeParser-927"><span class="linenos">927</span></a>
-</span><span id="TypeParser-928"><a href="#TypeParser-928"><span class="linenos">928</span></a><span class="sd">			Note that the type inference requires that the inferred types of every individual value must all be able to fit into memory at once.</span>
+</span><span id="TypeParser-928"><a href="#TypeParser-928"><span class="linenos">928</span></a><span class="sd">			Note that the type to which the values should be converted is determined by `infer_table()`, and so the individual inferred types of every value in the table must be able to fit into memory.</span>
 </span><span id="TypeParser-929"><a href="#TypeParser-929"><span class="linenos">929</span></a>
 </span><span id="TypeParser-930"><a href="#TypeParser-930"><span class="linenos">930</span></a><span class="sd">			This is a function that computes the entire table and returns it all at once. The generator `iterate_table()` behaves analogously, except that it computes and yields each row one at a time.</span>
 </span><span id="TypeParser-931"><a href="#TypeParser-931"><span class="linenos">931</span></a>
@@ -1137,7 +1137,7 @@ parsetypes    </h1>
 </span><span id="TypeParser-966"><a href="#TypeParser-966"><span class="linenos">966</span></a>
 </span><span id="TypeParser-967"><a href="#TypeParser-967"><span class="linenos">967</span></a><span class="sd">			For each column, if the values do not have the same apparent type, the common type is taken as the narrowest possible type that will encompass all values in the column. See `parsetypes.reduce_types()` for more information.</span>
 </span><span id="TypeParser-968"><a href="#TypeParser-968"><span class="linenos">968</span></a>
-</span><span id="TypeParser-969"><a href="#TypeParser-969"><span class="linenos">969</span></a><span class="sd">			This is a generator that computes and yields each row one at a time. The function `parse_table()` behaves analogously, except that it computes the entire table and returns it as a list of lists. However, note that although this is a generator, the type inference still requires that the inferred types of every individual value must all be able to fit into memory at once.</span>
+</span><span id="TypeParser-969"><a href="#TypeParser-969"><span class="linenos">969</span></a><span class="sd">			This is a generator that computes and yields each row one at a time. The function `parse_table()` behaves analogously, except that it computes the entire table and returns it as a list of lists. However, note that although this is a generator, the type to which the value sshould be converted is still determined by `infer_table()`, and so the individual inferred types of every value in the table must be able to fit into memory.</span>
 </span><span id="TypeParser-970"><a href="#TypeParser-970"><span class="linenos">970</span></a>
 </span><span id="TypeParser-971"><a href="#TypeParser-971"><span class="linenos">971</span></a><span class="sd">			Parameters</span>
 </span><span id="TypeParser-972"><a href="#TypeParser-972"><span class="linenos">972</span></a><span class="sd">			----------</span>
@@ -1573,7 +1573,7 @@ parsetypes    </h1>
 </span><span id="TypeParser.is_int-307"><a href="#TypeParser.is_int-307"><span class="linenos">307</span></a><span class="sd">			: whether to accept signed values. If False, it implies that `allow_negative` is False also.</span>
 </span><span id="TypeParser.is_int-308"><a href="#TypeParser.is_int-308"><span class="linenos">308</span></a>
 </span><span id="TypeParser.is_int-309"><a href="#TypeParser.is_int-309"><span class="linenos">309</span></a><span class="sd">			`allow_scientific`</span>
-</span><span id="TypeParser.is_int-310"><a href="#TypeParser.is_int-310"><span class="linenos">310</span></a><span class="sd">			: whether to accept scientific notation. If True, strings of the form `&quot;&lt;var&gt;M&lt;/var&gt;e&lt;var&gt;X&lt;/var&gt;&quot;` will be interpreted as the expression `&lt;var&gt;M&lt;/var&gt; * (10 ** &lt;var&gt;X&lt;/var&gt;)`, where &lt;var&gt;M&lt;/var&gt; is the mantissa/significand and &lt;var&gt;X&lt;/var&gt; is the exponent. Note &lt;var&gt;M&lt;/var&gt; *must* be an integer and &lt;var&gt;X&lt;/var&gt; *must* be a non-negative integer, even in cases where the above expression evaluates mathematically to an integer.</span>
+</span><span id="TypeParser.is_int-310"><a href="#TypeParser.is_int-310"><span class="linenos">310</span></a><span class="sd">			: whether to accept scientific notation. If True, strings of the form &lt;code&gt;&quot;&lt;var&gt;M&lt;/var&gt;e&lt;var&gt;X&lt;/var&gt;&quot;&lt;/code&gt; will be interpreted as the expression &lt;code&gt;&lt;var&gt;M&lt;/var&gt; * (10 ** &lt;var&gt;X&lt;/var&gt;)&lt;/code&gt;, where &lt;var&gt;M&lt;/var&gt; is the mantissa/significand and &lt;var&gt;X&lt;/var&gt; is the exponent. Note &lt;var&gt;M&lt;/var&gt; *must* be an integer and &lt;var&gt;X&lt;/var&gt; *must* be a non-negative integer, even in cases where the above expression evaluates mathematically to an integer.</span>
 </span><span id="TypeParser.is_int-311"><a href="#TypeParser.is_int-311"><span class="linenos">311</span></a>
 </span><span id="TypeParser.is_int-312"><a href="#TypeParser.is_int-312"><span class="linenos">312</span></a><span class="sd">			Returns</span>
 </span><span id="TypeParser.is_int-313"><a href="#TypeParser.is_int-313"><span class="linenos">313</span></a><span class="sd">			-------</span>
@@ -1644,7 +1644,7 @@ parsetypes    </h1>
 : whether to accept signed values. If False, it implies that <code>allow_negative</code> is False also.</p>
 
 <p><code>allow_scientific</code>
-: whether to accept scientific notation. If True, strings of the form <code>"&lt;var&gt;M&lt;/var&gt;e&lt;var&gt;X&lt;/var&gt;"</code> will be interpreted as the expression <code>&lt;var&gt;M&lt;/var&gt; * (10 ** &lt;var&gt;X&lt;/var&gt;)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note <var>M</var> <em>must</em> be an integer and <var>X</var> <em>must</em> be a non-negative integer, even in cases where the above expression evaluates mathematically to an integer.</p>
+: whether to accept scientific notation. If True, strings of the form <code>"<var>M</var>e<var>X</var>"</code> will be interpreted as the expression <code><var>M</var> * (10 <em>* <var>X</var>)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note <var>M</var> *must</em> be an integer and <var>X</var> <em>must</em> be a non-negative integer, even in cases where the above expression evaluates mathematically to an integer.</p>
 
 <h2 id="returns">Returns</h2>
 
@@ -1690,7 +1690,7 @@ parsetypes    </h1>
 </span><span id="TypeParser.is_float-376"><a href="#TypeParser.is_float-376"><span class="linenos">376</span></a><span class="sd">			: string to be checked</span>
 </span><span id="TypeParser.is_float-377"><a href="#TypeParser.is_float-377"><span class="linenos">377</span></a>
 </span><span id="TypeParser.is_float-378"><a href="#TypeParser.is_float-378"><span class="linenos">378</span></a><span class="sd">			`allow_scientific`</span>
-</span><span id="TypeParser.is_float-379"><a href="#TypeParser.is_float-379"><span class="linenos">379</span></a><span class="sd">			: whether to accept scientific notation. If True, strings of the form `&quot;&lt;var&gt;M&lt;/var&gt;e&lt;var&gt;X&lt;/var&gt;&quot;` will be interpreted as the expression `&lt;var&gt;M&lt;/var&gt; * (10 ** &lt;var&gt;X&lt;/var&gt;)`, where &lt;var&gt;M&lt;/var&gt; is the mantissa/significand and &lt;var&gt;X&lt;/var&gt; is the exponent. Note that &lt;var&gt;X&lt;/var&gt; must be an integer, but can be negative.</span>
+</span><span id="TypeParser.is_float-379"><a href="#TypeParser.is_float-379"><span class="linenos">379</span></a><span class="sd">			: whether to accept scientific notation. If True, strings of the form &lt;code&gt;&quot;&lt;var&gt;M&lt;/var&gt;e&lt;var&gt;X&lt;/var&gt;&quot;&lt;/code&gt; will be interpreted as the expression &lt;code&gt;&lt;var&gt;M&lt;/var&gt; * (10 ** &lt;var&gt;X&lt;/var&gt;)&lt;/code&gt;, where &lt;var&gt;M&lt;/var&gt; is the mantissa/significand and &lt;var&gt;X&lt;/var&gt; is the exponent. Note that &lt;var&gt;X&lt;/var&gt; must be an integer, but can be negative.</span>
 </span><span id="TypeParser.is_float-380"><a href="#TypeParser.is_float-380"><span class="linenos">380</span></a>
 </span><span id="TypeParser.is_float-381"><a href="#TypeParser.is_float-381"><span class="linenos">381</span></a><span class="sd">			`allow_inf`</span>
 </span><span id="TypeParser.is_float-382"><a href="#TypeParser.is_float-382"><span class="linenos">382</span></a><span class="sd">			: whether to accept positive and negative infinity values. If True, strings that match the values in `self.inf_values` (empty by default) are interpreted as infinity, or as negative infinity if prepended by a negative sign. The case sensitivity of this matching depends on `self.float_case_sensitive`, which is False by default.</span>
@@ -1762,7 +1762,7 @@ parsetypes    </h1>
 : string to be checked</p>
 
 <p><code>allow_scientific</code>
-: whether to accept scientific notation. If True, strings of the form <code>"&lt;var&gt;M&lt;/var&gt;e&lt;var&gt;X&lt;/var&gt;"</code> will be interpreted as the expression <code>&lt;var&gt;M&lt;/var&gt; * (10 ** &lt;var&gt;X&lt;/var&gt;)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note that <var>X</var> must be an integer, but can be negative.</p>
+: whether to accept scientific notation. If True, strings of the form <code>"<var>M</var>e<var>X</var>"</code> will be interpreted as the expression <code><var>M</var> * (10 ** <var>X</var>)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note that <var>X</var> must be an integer, but can be negative.</p>
 
 <p><code>allow_inf</code>
 : whether to accept positive and negative infinity values. If True, strings that match the values in <code>self.inf_values</code> (empty by default) are interpreted as infinity, or as negative infinity if prepended by a negative sign. The case sensitivity of this matching depends on <code>self.float_case_sensitive</code>, which is False by default.</p>
@@ -1999,7 +1999,7 @@ parsetypes    </h1>
 </span><span id="TypeParser.parse_int-528"><a href="#TypeParser.parse_int-528"><span class="linenos">528</span></a><span class="sd">			: string to be parsed</span>
 </span><span id="TypeParser.parse_int-529"><a href="#TypeParser.parse_int-529"><span class="linenos">529</span></a>
 </span><span id="TypeParser.parse_int-530"><a href="#TypeParser.parse_int-530"><span class="linenos">530</span></a><span class="sd">			`allow_scientific`</span>
-</span><span id="TypeParser.parse_int-531"><a href="#TypeParser.parse_int-531"><span class="linenos">531</span></a><span class="sd">			: whether to accept scientific notation. If True, strings of the form `&quot;&lt;var&gt;M&lt;/var&gt;e&lt;var&gt;X&lt;/var&gt;&quot;` will be interpreted as the expression `&lt;var&gt;M&lt;/var&gt; * (10 ** &lt;var&gt;X&lt;/var&gt;)`, where &lt;var&gt;M&lt;/var&gt; is the mantissa/significand and &lt;var&gt;X&lt;/var&gt; is the exponent. Note &lt;var&gt;M&lt;/var&gt; *must* be an integer and &lt;var&gt;X&lt;/var&gt; *must* be a non-negative integer, even in cases where the above expression evaluates mathematically to an integer.</span>
+</span><span id="TypeParser.parse_int-531"><a href="#TypeParser.parse_int-531"><span class="linenos">531</span></a><span class="sd">			: whether to accept scientific notation. If True, strings of the form &lt;code&gt;&quot;&lt;var&gt;M&lt;/var&gt;e&lt;var&gt;X&lt;/var&gt;&quot;&lt;/code&gt; will be interpreted as the expression &lt;code&gt;&lt;var&gt;M&lt;/var&gt; * (10 ** &lt;var&gt;X&lt;/var&gt;)&lt;/code&gt;, where &lt;var&gt;M&lt;/var&gt; is the mantissa/significand and &lt;var&gt;X&lt;/var&gt; is the exponent. Note &lt;var&gt;M&lt;/var&gt; *must* be an integer and &lt;var&gt;X&lt;/var&gt; *must* be a non-negative integer, even in cases where the above expression evaluates mathematically to an integer.</span>
 </span><span id="TypeParser.parse_int-532"><a href="#TypeParser.parse_int-532"><span class="linenos">532</span></a>
 </span><span id="TypeParser.parse_int-533"><a href="#TypeParser.parse_int-533"><span class="linenos">533</span></a><span class="sd">			Returns</span>
 </span><span id="TypeParser.parse_int-534"><a href="#TypeParser.parse_int-534"><span class="linenos">534</span></a><span class="sd">			-------</span>
@@ -2051,7 +2051,7 @@ parsetypes    </h1>
 : string to be parsed</p>
 
 <p><code>allow_scientific</code>
-: whether to accept scientific notation. If True, strings of the form <code>"&lt;var&gt;M&lt;/var&gt;e&lt;var&gt;X&lt;/var&gt;"</code> will be interpreted as the expression <code>&lt;var&gt;M&lt;/var&gt; * (10 ** &lt;var&gt;X&lt;/var&gt;)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note <var>M</var> <em>must</em> be an integer and <var>X</var> <em>must</em> be a non-negative integer, even in cases where the above expression evaluates mathematically to an integer.</p>
+: whether to accept scientific notation. If True, strings of the form <code>"<var>M</var>e<var>X</var>"</code> will be interpreted as the expression <code><var>M</var> * (10 <em>* <var>X</var>)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note <var>M</var> *must</em> be an integer and <var>X</var> <em>must</em> be a non-negative integer, even in cases where the above expression evaluates mathematically to an integer.</p>
 
 <h2 id="returns">Returns</h2>
 
@@ -2100,7 +2100,7 @@ parsetypes    </h1>
 </span><span id="TypeParser.parse_float-627"><a href="#TypeParser.parse_float-627"><span class="linenos">627</span></a><span class="sd">			: string to be parsed</span>
 </span><span id="TypeParser.parse_float-628"><a href="#TypeParser.parse_float-628"><span class="linenos">628</span></a>
 </span><span id="TypeParser.parse_float-629"><a href="#TypeParser.parse_float-629"><span class="linenos">629</span></a><span class="sd">			`allow_scientific`</span>
-</span><span id="TypeParser.parse_float-630"><a href="#TypeParser.parse_float-630"><span class="linenos">630</span></a><span class="sd">			: whether to accept scientific notation. If True, strings of the form `&quot;&lt;var&gt;M&lt;/var&gt;e&lt;var&gt;X&lt;/var&gt;&quot;` will be interpreted as the expression `&lt;var&gt;M&lt;/var&gt; * (10 ** &lt;var&gt;X&lt;/var&gt;)`, where &lt;var&gt;M&lt;/var&gt; is the mantissa/significand and &lt;var&gt;X&lt;/var&gt; is the exponent. Note that &lt;var&gt;X&lt;/var&gt; must be an integer, but can be negative.</span>
+</span><span id="TypeParser.parse_float-630"><a href="#TypeParser.parse_float-630"><span class="linenos">630</span></a><span class="sd">			: whether to accept scientific notation. If True, strings of the form &lt;code&gt;&quot;&lt;var&gt;M&lt;/var&gt;e&lt;var&gt;X&lt;/var&gt;&quot;&lt;/code&gt; will be interpreted as the expression &lt;code&gt;&lt;var&gt;M&lt;/var&gt; * (10 ** &lt;var&gt;X&lt;/var&gt;)&lt;/code&gt;, where &lt;var&gt;M&lt;/var&gt; is the mantissa/significand and &lt;var&gt;X&lt;/var&gt; is the exponent. Note that &lt;var&gt;X&lt;/var&gt; must be an integer, but can be negative.</span>
 </span><span id="TypeParser.parse_float-631"><a href="#TypeParser.parse_float-631"><span class="linenos">631</span></a>
 </span><span id="TypeParser.parse_float-632"><a href="#TypeParser.parse_float-632"><span class="linenos">632</span></a><span class="sd">			`allow_inf`</span>
 </span><span id="TypeParser.parse_float-633"><a href="#TypeParser.parse_float-633"><span class="linenos">633</span></a><span class="sd">			: whether to accept positive and negative infinity values. If True, strings that match the values in `self.inf_values` (empty by default) are interpreted as infinity, or as negative infinity if prepended by a negative sign. The case sensitivity of this matching depends on `self.float_case_sensitive`, which is False by default.</span>
@@ -2147,7 +2147,7 @@ parsetypes    </h1>
 : string to be parsed</p>
 
 <p><code>allow_scientific</code>
-: whether to accept scientific notation. If True, strings of the form <code>"&lt;var&gt;M&lt;/var&gt;e&lt;var&gt;X&lt;/var&gt;"</code> will be interpreted as the expression <code>&lt;var&gt;M&lt;/var&gt; * (10 ** &lt;var&gt;X&lt;/var&gt;)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note that <var>X</var> must be an integer, but can be negative.</p>
+: whether to accept scientific notation. If True, strings of the form <code>"<var>M</var>e<var>X</var>"</code> will be interpreted as the expression <code><var>M</var> * (10 ** <var>X</var>)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note that <var>X</var> must be an integer, but can be negative.</p>
 
 <p><code>allow_inf</code>
 : whether to accept positive and negative infinity values. If True, strings that match the values in <code>self.inf_values</code> (empty by default) are interpreted as infinity, or as negative infinity if prepended by a negative sign. The case sensitivity of this matching depends on <code>self.float_case_sensitive</code>, which is False by default.</p>
@@ -2203,7 +2203,7 @@ parsetypes    </h1>
 </span><span id="TypeParser.parse_decimal-674"><a href="#TypeParser.parse_decimal-674"><span class="linenos">674</span></a><span class="sd">			: string to be parsed</span>
 </span><span id="TypeParser.parse_decimal-675"><a href="#TypeParser.parse_decimal-675"><span class="linenos">675</span></a>
 </span><span id="TypeParser.parse_decimal-676"><a href="#TypeParser.parse_decimal-676"><span class="linenos">676</span></a><span class="sd">			`allow_scientific`</span>
-</span><span id="TypeParser.parse_decimal-677"><a href="#TypeParser.parse_decimal-677"><span class="linenos">677</span></a><span class="sd">			: whether to accept scientific notation. If True, strings of the form `&quot;&lt;var&gt;M&lt;/var&gt;e&lt;var&gt;X&lt;/var&gt;&quot;` will be interpreted as the expression `&lt;var&gt;M&lt;/var&gt; * (10 ** &lt;var&gt;X&lt;/var&gt;)`, where &lt;var&gt;M&lt;/var&gt; is the mantissa/significand and &lt;var&gt;X&lt;/var&gt; is the exponent. Note that &lt;var&gt;X&lt;/var&gt; must be an integer, but can be negative.</span>
+</span><span id="TypeParser.parse_decimal-677"><a href="#TypeParser.parse_decimal-677"><span class="linenos">677</span></a><span class="sd">			: whether to accept scientific notation. If True, strings of the form &lt;code&gt;&quot;&lt;var&gt;M&lt;/var&gt;e&lt;var&gt;X&lt;/var&gt;&quot;&lt;/code&gt; will be interpreted as the expression &lt;code&gt;&lt;var&gt;M&lt;/var&gt; * (10 ** &lt;var&gt;X&lt;/var&gt;)&lt;/code&gt;, where &lt;var&gt;M&lt;/var&gt; is the mantissa/significand and &lt;var&gt;X&lt;/var&gt; is the exponent. Note that &lt;var&gt;X&lt;/var&gt; must be an integer, but can be negative.</span>
 </span><span id="TypeParser.parse_decimal-678"><a href="#TypeParser.parse_decimal-678"><span class="linenos">678</span></a>
 </span><span id="TypeParser.parse_decimal-679"><a href="#TypeParser.parse_decimal-679"><span class="linenos">679</span></a><span class="sd">			`allow_inf`</span>
 </span><span id="TypeParser.parse_decimal-680"><a href="#TypeParser.parse_decimal-680"><span class="linenos">680</span></a><span class="sd">			: whether to accept positive and negative infinity values. If True, strings that match the values in `self.inf_values` (empty by default) are interpreted as infinity, or as negative infinity if prepended by a negative sign. The case sensitivity of this matching depends on `self.float_case_sensitive`, which is False by default.</span>
@@ -2250,7 +2250,7 @@ parsetypes    </h1>
 : string to be parsed</p>
 
 <p><code>allow_scientific</code>
-: whether to accept scientific notation. If True, strings of the form <code>"&lt;var&gt;M&lt;/var&gt;e&lt;var&gt;X&lt;/var&gt;"</code> will be interpreted as the expression <code>&lt;var&gt;M&lt;/var&gt; * (10 ** &lt;var&gt;X&lt;/var&gt;)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note that <var>X</var> must be an integer, but can be negative.</p>
+: whether to accept scientific notation. If True, strings of the form <code>"<var>M</var>e<var>X</var>"</code> will be interpreted as the expression <code><var>M</var> * (10 ** <var>X</var>)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note that <var>X</var> must be an integer, but can be negative.</p>
 
 <p><code>allow_inf</code>
 : whether to accept positive and negative infinity values. If True, strings that match the values in <code>self.inf_values</code> (empty by default) are interpreted as infinity, or as negative infinity if prepended by a negative sign. The case sensitivity of this matching depends on <code>self.float_case_sensitive</code>, which is False by default.</p>
@@ -2455,7 +2455,7 @@ parsetypes    </h1>
 </span><span id="TypeParser.infer_table-790"><a href="#TypeParser.infer_table-790"><span class="linenos">790</span></a>
 </span><span id="TypeParser.infer_table-791"><a href="#TypeParser.infer_table-791"><span class="linenos">791</span></a><span class="sd">			For each column, if the values do not have the same apparent type, the resulting type will be narrowest possible type that will encompass all values in the column. See `parsetypes.reduce_types()` for more information.</span>
 </span><span id="TypeParser.infer_table-792"><a href="#TypeParser.infer_table-792"><span class="linenos">792</span></a>
-</span><span id="TypeParser.infer_table-793"><a href="#TypeParser.infer_table-793"><span class="linenos">793</span></a><span class="sd">			Note that the inferred types of every individual value must all be able to fit into memory at once.</span>
+</span><span id="TypeParser.infer_table-793"><a href="#TypeParser.infer_table-793"><span class="linenos">793</span></a><span class="sd">			Note that the individual inferred types of every value in the table must be able to fit into memory.</span>
 </span><span id="TypeParser.infer_table-794"><a href="#TypeParser.infer_table-794"><span class="linenos">794</span></a>
 </span><span id="TypeParser.infer_table-795"><a href="#TypeParser.infer_table-795"><span class="linenos">795</span></a><span class="sd">			Parameters</span>
 </span><span id="TypeParser.infer_table-796"><a href="#TypeParser.infer_table-796"><span class="linenos">796</span></a><span class="sd">			----------</span>
@@ -2500,7 +2500,7 @@ parsetypes    </h1>
 
 <p>For each column, if the values do not have the same apparent type, the resulting type will be narrowest possible type that will encompass all values in the column. See <code><a href="#reduce_types">parsetypes.reduce_types()</a></code> for more information.</p>
 
-<p>Note that the inferred types of every individual value must all be able to fit into memory at once.</p>
+<p>Note that the individual inferred types of every value in the table must be able to fit into memory.</p>
 
 <h2 id="parameters">Parameters</h2>
 
@@ -2678,7 +2678,7 @@ parsetypes    </h1>
 </span><span id="TypeParser.parse_table-925"><a href="#TypeParser.parse_table-925"><span class="linenos">925</span></a>
 </span><span id="TypeParser.parse_table-926"><a href="#TypeParser.parse_table-926"><span class="linenos">926</span></a><span class="sd">			For each column, if the values do not have the same apparent type, the common type is taken as the narrowest possible type that will encompass all values in the column. See `parsetypes.reduce_types()` for more information.</span>
 </span><span id="TypeParser.parse_table-927"><a href="#TypeParser.parse_table-927"><span class="linenos">927</span></a>
-</span><span id="TypeParser.parse_table-928"><a href="#TypeParser.parse_table-928"><span class="linenos">928</span></a><span class="sd">			Note that the type inference requires that the inferred types of every individual value must all be able to fit into memory at once.</span>
+</span><span id="TypeParser.parse_table-928"><a href="#TypeParser.parse_table-928"><span class="linenos">928</span></a><span class="sd">			Note that the type to which the values should be converted is determined by `infer_table()`, and so the individual inferred types of every value in the table must be able to fit into memory.</span>
 </span><span id="TypeParser.parse_table-929"><a href="#TypeParser.parse_table-929"><span class="linenos">929</span></a>
 </span><span id="TypeParser.parse_table-930"><a href="#TypeParser.parse_table-930"><span class="linenos">930</span></a><span class="sd">			This is a function that computes the entire table and returns it all at once. The generator `iterate_table()` behaves analogously, except that it computes and yields each row one at a time.</span>
 </span><span id="TypeParser.parse_table-931"><a href="#TypeParser.parse_table-931"><span class="linenos">931</span></a>
@@ -2719,7 +2719,7 @@ parsetypes    </h1>
 
 <p>For each column, if the values do not have the same apparent type, the common type is taken as the narrowest possible type that will encompass all values in the column. See <code><a href="#reduce_types">parsetypes.reduce_types()</a></code> for more information.</p>
 
-<p>Note that the type inference requires that the inferred types of every individual value must all be able to fit into memory at once.</p>
+<p>Note that the type to which the values should be converted is determined by <code><a href="#TypeParser.infer_table">infer_table()</a></code>, and so the individual inferred types of every value in the table must be able to fit into memory.</p>
 
 <p>This is a function that computes the entire table and returns it all at once. The generator <code><a href="#TypeParser.iterate_table">iterate_table()</a></code> behaves analogously, except that it computes and yields each row one at a time.</p>
 
@@ -2773,7 +2773,7 @@ parsetypes    </h1>
 </span><span id="TypeParser.iterate_table-966"><a href="#TypeParser.iterate_table-966"><span class="linenos">966</span></a>
 </span><span id="TypeParser.iterate_table-967"><a href="#TypeParser.iterate_table-967"><span class="linenos">967</span></a><span class="sd">			For each column, if the values do not have the same apparent type, the common type is taken as the narrowest possible type that will encompass all values in the column. See `parsetypes.reduce_types()` for more information.</span>
 </span><span id="TypeParser.iterate_table-968"><a href="#TypeParser.iterate_table-968"><span class="linenos">968</span></a>
-</span><span id="TypeParser.iterate_table-969"><a href="#TypeParser.iterate_table-969"><span class="linenos">969</span></a><span class="sd">			This is a generator that computes and yields each row one at a time. The function `parse_table()` behaves analogously, except that it computes the entire table and returns it as a list of lists. However, note that although this is a generator, the type inference still requires that the inferred types of every individual value must all be able to fit into memory at once.</span>
+</span><span id="TypeParser.iterate_table-969"><a href="#TypeParser.iterate_table-969"><span class="linenos">969</span></a><span class="sd">			This is a generator that computes and yields each row one at a time. The function `parse_table()` behaves analogously, except that it computes the entire table and returns it as a list of lists. However, note that although this is a generator, the type to which the value sshould be converted is still determined by `infer_table()`, and so the individual inferred types of every value in the table must be able to fit into memory.</span>
 </span><span id="TypeParser.iterate_table-970"><a href="#TypeParser.iterate_table-970"><span class="linenos">970</span></a>
 </span><span id="TypeParser.iterate_table-971"><a href="#TypeParser.iterate_table-971"><span class="linenos">971</span></a><span class="sd">			Parameters</span>
 </span><span id="TypeParser.iterate_table-972"><a href="#TypeParser.iterate_table-972"><span class="linenos">972</span></a><span class="sd">			----------</span>
@@ -2810,7 +2810,7 @@ parsetypes    </h1>
 
 <p>For each column, if the values do not have the same apparent type, the common type is taken as the narrowest possible type that will encompass all values in the column. See <code><a href="#reduce_types">parsetypes.reduce_types()</a></code> for more information.</p>
 
-<p>This is a generator that computes and yields each row one at a time. The function <code><a href="#TypeParser.parse_table">parse_table()</a></code> behaves analogously, except that it computes the entire table and returns it as a list of lists. However, note that although this is a generator, the type inference still requires that the inferred types of every individual value must all be able to fit into memory at once.</p>
+<p>This is a generator that computes and yields each row one at a time. The function <code><a href="#TypeParser.parse_table">parse_table()</a></code> behaves analogously, except that it computes the entire table and returns it as a list of lists. However, note that although this is a generator, the type to which the value sshould be converted is still determined by <code><a href="#TypeParser.infer_table">infer_table()</a></code>, and so the individual inferred types of every value in the table must be able to fit into memory.</p>
 
 <h2 id="parameters">Parameters</h2>
 

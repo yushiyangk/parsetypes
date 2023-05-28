@@ -306,7 +306,7 @@ class TypeParser:
 			: whether to accept signed values. If False, it implies that `allow_negative` is False also.
 
 			`allow_scientific`
-			: whether to accept scientific notation. If True, strings of the form `"<var>M</var>e<var>X</var>"` will be interpreted as the expression `<var>M</var> * (10 ** <var>X</var>)`, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note <var>M</var> *must* be an integer and <var>X</var> *must* be a non-negative integer, even in cases where the above expression evaluates mathematically to an integer.
+			: whether to accept scientific notation. If True, strings of the form <code>"<var>M</var>e<var>X</var>"</code> will be interpreted as the expression <code><var>M</var> * (10 ** <var>X</var>)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note <var>M</var> *must* be an integer and <var>X</var> *must* be a non-negative integer, even in cases where the above expression evaluates mathematically to an integer.
 
 			Returns
 			-------
@@ -375,7 +375,7 @@ class TypeParser:
 			: string to be checked
 
 			`allow_scientific`
-			: whether to accept scientific notation. If True, strings of the form `"<var>M</var>e<var>X</var>"` will be interpreted as the expression `<var>M</var> * (10 ** <var>X</var>)`, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note that <var>X</var> must be an integer, but can be negative.
+			: whether to accept scientific notation. If True, strings of the form <code>"<var>M</var>e<var>X</var>"</code> will be interpreted as the expression <code><var>M</var> * (10 ** <var>X</var>)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note that <var>X</var> must be an integer, but can be negative.
 
 			`allow_inf`
 			: whether to accept positive and negative infinity values. If True, strings that match the values in `self.inf_values` (empty by default) are interpreted as infinity, or as negative infinity if prepended by a negative sign. The case sensitivity of this matching depends on `self.float_case_sensitive`, which is False by default.
@@ -527,7 +527,7 @@ class TypeParser:
 			: string to be parsed
 
 			`allow_scientific`
-			: whether to accept scientific notation. If True, strings of the form `"<var>M</var>e<var>X</var>"` will be interpreted as the expression `<var>M</var> * (10 ** <var>X</var>)`, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note <var>M</var> *must* be an integer and <var>X</var> *must* be a non-negative integer, even in cases where the above expression evaluates mathematically to an integer.
+			: whether to accept scientific notation. If True, strings of the form <code>"<var>M</var>e<var>X</var>"</code> will be interpreted as the expression <code><var>M</var> * (10 ** <var>X</var>)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note <var>M</var> *must* be an integer and <var>X</var> *must* be a non-negative integer, even in cases where the above expression evaluates mathematically to an integer.
 
 			Returns
 			-------
@@ -626,7 +626,7 @@ class TypeParser:
 			: string to be parsed
 
 			`allow_scientific`
-			: whether to accept scientific notation. If True, strings of the form `"<var>M</var>e<var>X</var>"` will be interpreted as the expression `<var>M</var> * (10 ** <var>X</var>)`, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note that <var>X</var> must be an integer, but can be negative.
+			: whether to accept scientific notation. If True, strings of the form <code>"<var>M</var>e<var>X</var>"</code> will be interpreted as the expression <code><var>M</var> * (10 ** <var>X</var>)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note that <var>X</var> must be an integer, but can be negative.
 
 			`allow_inf`
 			: whether to accept positive and negative infinity values. If True, strings that match the values in `self.inf_values` (empty by default) are interpreted as infinity, or as negative infinity if prepended by a negative sign. The case sensitivity of this matching depends on `self.float_case_sensitive`, which is False by default.
@@ -673,7 +673,7 @@ class TypeParser:
 			: string to be parsed
 
 			`allow_scientific`
-			: whether to accept scientific notation. If True, strings of the form `"<var>M</var>e<var>X</var>"` will be interpreted as the expression `<var>M</var> * (10 ** <var>X</var>)`, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note that <var>X</var> must be an integer, but can be negative.
+			: whether to accept scientific notation. If True, strings of the form <code>"<var>M</var>e<var>X</var>"</code> will be interpreted as the expression <code><var>M</var> * (10 ** <var>X</var>)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note that <var>X</var> must be an integer, but can be negative.
 
 			`allow_inf`
 			: whether to accept positive and negative infinity values. If True, strings that match the values in `self.inf_values` (empty by default) are interpreted as infinity, or as negative infinity if prepended by a negative sign. The case sensitivity of this matching depends on `self.float_case_sensitive`, which is False by default.
@@ -789,7 +789,7 @@ class TypeParser:
 
 			For each column, if the values do not have the same apparent type, the resulting type will be narrowest possible type that will encompass all values in the column. See `parsetypes.reduce_types()` for more information.
 
-			Note that the inferred types of every individual value must all be able to fit into memory at once.
+			Note that the individual inferred types of every value in the table must be able to fit into memory.
 
 			Parameters
 			----------
@@ -924,7 +924,7 @@ class TypeParser:
 
 			For each column, if the values do not have the same apparent type, the common type is taken as the narrowest possible type that will encompass all values in the column. See `parsetypes.reduce_types()` for more information.
 
-			Note that the type inference requires that the inferred types of every individual value must all be able to fit into memory at once.
+			Note that the type to which the values should be converted is determined by `infer_table()`, and so the individual inferred types of every value in the table must be able to fit into memory.
 
 			This is a function that computes the entire table and returns it all at once. The generator `iterate_table()` behaves analogously, except that it computes and yields each row one at a time.
 
@@ -965,7 +965,7 @@ class TypeParser:
 
 			For each column, if the values do not have the same apparent type, the common type is taken as the narrowest possible type that will encompass all values in the column. See `parsetypes.reduce_types()` for more information.
 
-			This is a generator that computes and yields each row one at a time. The function `parse_table()` behaves analogously, except that it computes the entire table and returns it as a list of lists. However, note that although this is a generator, the type inference still requires that the inferred types of every individual value must all be able to fit into memory at once.
+			This is a generator that computes and yields each row one at a time. The function `parse_table()` behaves analogously, except that it computes the entire table and returns it as a list of lists. However, note that although this is a generator, the type to which the value sshould be converted is still determined by `infer_table()`, and so the individual inferred types of every value in the table must be able to fit into memory.
 
 			Parameters
 			----------
