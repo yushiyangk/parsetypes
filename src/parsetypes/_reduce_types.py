@@ -1,23 +1,23 @@
-
 import typing
 from decimal import Decimal
-from types import NoneType
-from typing import Final, Iterable, cast
+from typing import Iterable, Optional, cast
 
 from ._common import AnyBaseType, AnyContainedType, AnyContainerBaseType, AnyNullableType, AnyScalarType, AnyValueType, GenericValue, Nullable
 
+from ._compat import Final, NoneType, Union
 
-_TerminalValue: Final[AnyBaseType] = list
 
-_scalar_hierarchy: Final[dict[AnyBaseType, AnyBaseType | None]] = {
+_TerminalValue: 'Final[AnyBaseType]' = list
+
+_scalar_hierarchy: 'Final[dict[AnyBaseType, Union[AnyBaseType, None]]]' = {
 	bool: int,
 	int: Decimal,
 	Decimal: float,
 	float: str,
 	str: None,
 }
-_containers: Final[set[AnyBaseType]] = {Nullable, list}
-_type_hierarchy: Final[dict[AnyBaseType, AnyBaseType | None]] = {
+_containers: 'Final[set[AnyBaseType]]' = {Nullable, list}
+_type_hierarchy: 'Final[dict[AnyBaseType, Union[AnyBaseType, None]]]' = {
 	bool: int,
 	int: Decimal,
 	Decimal: float,
@@ -43,7 +43,7 @@ def _is_valid_type(t: AnyValueType) -> bool:
 		return True
 
 
-def _decompose_type(t: AnyValueType) -> tuple[AnyBaseType, tuple[AnyContainedType, ...] | None]:
+def _decompose_type(t: AnyValueType) -> tuple[AnyBaseType, Union[tuple[AnyContainedType, ...], None]]:
 	base = typing.get_origin(t)
 	if base is None:
 		return t, None
@@ -51,7 +51,7 @@ def _decompose_type(t: AnyValueType) -> tuple[AnyBaseType, tuple[AnyContainedTyp
 		return base, typing.get_args(t)
 
 
-def _broaden_type(t: AnyValueType, cue: AnyValueType | None=None) -> AnyValueType | None:
+def _broaden_type(t: AnyValueType, cue: Optional[AnyValueType]=None) -> Union[AnyValueType, None]:
 	"""
 		`cue` should always come before `t` in `_type_hierarchy`
 	"""
@@ -104,8 +104,8 @@ def _merge_types(t1: AnyValueType, t2: AnyValueType) -> AnyValueType:
 	if (not _is_valid_type(t1)) or (not _is_valid_type(t2)):
 		return GenericValue
 
-	c: AnyValueType | None = t1
-	visited: dict[AnyValueType, tuple[AnyValueType, ...] | None] = {}
+	c: Union[AnyValueType, None] = t1
+	visited: dict[AnyValueType, Union[tuple[AnyValueType, ...], None]] = {}
 	if t1 == NoneType:
 		visited[NoneType] = None
 		visited[Nullable] = None
@@ -178,7 +178,7 @@ def reduce_types(types: Iterable[AnyValueType]) -> AnyValueType:
 		reduce_types([int, float, str])   # str
 		```
 	"""
-	reduced_type: AnyValueType | None = None
+	reduced_type: Union[AnyValueType, None] = None
 	for t in types:
 		if reduced_type is None:
 			reduced_type = t

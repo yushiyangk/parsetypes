@@ -1,7 +1,7 @@
-from __future__ import annotations
-
 from decimal import Decimal
-from typing import Generic, Type, TypeAlias, TypeVar, Union
+from typing import Generic, Type, TypeVar, Union
+
+from ._compat import TypeAlias
 
 
 AnyScalar = Union[str, int, float, Decimal, bool, None]
@@ -42,8 +42,8 @@ AnyContainedType: TypeAlias = Type[AnyContained]
 AnyValue = Union[
 	str, int, float, Decimal, bool, None,
 	Nullable[str], Nullable[int], Nullable[float], Nullable[Decimal], Nullable[bool], Nullable[None],
-	list[str], list[int], list[float], list[Decimal], list[bool], list[None],
-	list[Nullable[str]], list[Nullable[int]], list[Nullable[float]], list[Nullable[Decimal]], list[Nullable[bool]], list[Nullable[None]],
+	#list[str], list[int], list[float], list[Decimal], list[bool], list[None],
+	#list[Nullable[str]], list[Nullable[int]], list[Nullable[float]], list[Nullable[Decimal]], list[Nullable[bool]], list[Nullable[None]],
 ]
 """Union of all types recognised by `parsetypes`"""
 
