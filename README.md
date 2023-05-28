@@ -6,7 +6,7 @@ This Python package provides tools for parsing serialised data to recover their 
 
 ## Overview
 
-The `TypeParser` class provides configurable type inference and parsing. This can be initialised with different settings to, for example:
+The `TypeParser` class provides configurable type inference and parsing. This can be [initialised with different settings](https://parsetypes.gnayihs.uy/parsetypes.html#TypeParser.__init__) to, for example:
 - treat `inf` as either a float or a normal string
 - give exact Decimal values instead of floats
 - detect inline lists
