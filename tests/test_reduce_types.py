@@ -1,9 +1,10 @@
 from decimal import Decimal
-from types import NoneType
 
 import pytest
 
 from parsetypes import reduce_types, AnyValueType, Nullable
+
+from parsetypes._compat import NoneType
 
 
 @pytest.mark.parametrize(

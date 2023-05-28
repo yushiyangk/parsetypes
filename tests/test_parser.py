@@ -1,15 +1,14 @@
-from __future__ import annotations
-
 import itertools
 import math
 from decimal import Decimal
-from types import NoneType
 from unittest.mock import call, patch
 
 import pytest
 
 import parsetypes
 from parsetypes import AnyScalar, AnyScalarType, AnyValue, AnyValueType, Nullable, TypeParser
+
+from parsetypes._compat import NoneType, Union
 
 
 @pytest.fixture
@@ -159,7 +158,7 @@ class TestBool:
 
 	@staticmethod
 	@pytest.mark.parametrize(('value', 'is_bool_expected', 'expected_bool'), bool_test_cases + not_bool_test_cases)
-	def test_default(default_parser: TypeParser, value: str, is_bool_expected: bool, expected_bool: bool | None):
+	def test_default(default_parser: TypeParser, value: str, is_bool_expected: bool, expected_bool: Union[bool, None]):
 		is_bool_result = default_parser.is_bool(value)
 		assert is_bool_result == is_bool_expected
 
@@ -212,7 +211,7 @@ class TestBool:
 		value: str,
 		bool_values_parser: TypeParser,
 		is_bool_expected: bool,
-		expected_bool: bool | None
+		expected_bool: Union[bool, None]
 	):
 		is_bool_result = bool_values_parser.is_bool(value)
 		assert is_bool_result == is_bool_expected
@@ -258,7 +257,7 @@ class TestBool:
 		value: str,
 		bool_case_sensitive_parser: TypeParser,
 		is_bool_expected: bool,
-		expected_bool: bool | None
+		expected_bool: Union[bool, None],
 	):
 		is_bool_result = bool_case_sensitive_parser.is_bool(value)
 		assert is_bool_result == is_bool_expected
@@ -307,7 +306,7 @@ class TestBool:
 		value: str,
 		bool_trim_parser: TypeParser,
 		is_bool_expected: bool,
-		expected_bool: bool | None,
+		expected_bool: Union[bool, None],
 	):
 		is_bool_result = bool_trim_parser.is_bool(value)
 		assert is_bool_result == is_bool_expected
@@ -358,7 +357,7 @@ class TestInt:
 
 	@staticmethod
 	@pytest.mark.parametrize(('value', 'is_int_expected', 'expected_int'), int_test_cases + not_int_test_cases)
-	def test_default(default_parser: TypeParser, value: str, is_int_expected: bool, expected_int: int | None):
+	def test_default(default_parser: TypeParser, value: str, is_int_expected: bool, expected_int: Union[int, None]):
 		is_int_result = default_parser.is_int(value)
 		assert is_int_result == is_int_expected
 
@@ -372,7 +371,7 @@ class TestInt:
 
 	@staticmethod
 	@pytest.mark.parametrize(('value', 'is_bool_expected', 'expected_bool'), TestBool.bool_test_cases)
-	def test_default_bool_to_float(default_parser: TypeParser, value: str, is_bool_expected: bool, expected_bool: bool | None):
+	def test_default_bool_to_float(default_parser: TypeParser, value: str, is_bool_expected: bool, expected_bool: Union[bool, None]):
 		if expected_bool is None:
 			with pytest.raises(ValueError):
 				default_parser.parse_int(value)
@@ -471,7 +470,7 @@ class TestInt:
 			("e", False, None),
 		]
 	)
-	def test_allow_scientific(default_parser: TypeParser, value: str, is_int_allow_scientific_expected: bool, allow_scientific_expected: int | None):
+	def test_allow_scientific(default_parser: TypeParser, value: str, is_int_allow_scientific_expected: bool, allow_scientific_expected: Union[int, None]):
 		is_int_allow_scientific_result = default_parser.is_int(value, allow_scientific=True)
 		assert is_int_allow_scientific_result == is_int_allow_scientific_expected
 		is_int_disallow_scientific_result = default_parser.is_int(value, allow_scientific=False)
@@ -505,7 +504,7 @@ class TestInt:
 		],
 		indirect=['int_case_sensitive_parser']
 	)
-	def test_case_sensitive(value: str, int_case_sensitive_parser: TypeParser, is_int_expected: bool, expected_int: int | None):
+	def test_case_sensitive(value: str, int_case_sensitive_parser: TypeParser, is_int_expected: bool, expected_int: Union[int, None]):
 		is_int_result = int_case_sensitive_parser.is_int(value)
 		assert is_int_result == is_int_expected
 		if expected_int is None:
@@ -543,7 +542,7 @@ class TestInt:
 		value: str,
 		int_trim_parser: TypeParser,
 		is_int_expected: bool,
-		expected_int: int | None,
+		expected_int: Union[int, None],
 	):
 		is_int_result = int_trim_parser.is_int(value)
 		assert is_int_result == is_int_expected
@@ -574,7 +573,7 @@ class TestFloatDecimal:
 
 	@staticmethod
 	@pytest.mark.parametrize(('value', 'is_bool_expected', 'expected_bool'), TestBool.bool_test_cases)
-	def test_default_bool_to_float(default_parser: TypeParser, value: str, is_bool_expected: bool, expected_bool: bool | None):
+	def test_default_bool_to_float(default_parser: TypeParser, value: str, is_bool_expected: bool, expected_bool: Union[bool, None]):
 		if expected_bool is None:
 			with pytest.raises(ValueError):
 				default_parser.parse_float(value)
@@ -589,7 +588,7 @@ class TestFloatDecimal:
 
 	@staticmethod
 	@pytest.mark.parametrize(('value', 'is_float_expected', 'expected_int'), TestInt.int_test_cases)
-	def test_default_int_as_float(default_parser: TypeParser, value: str, is_float_expected: bool, expected_int: int | None):
+	def test_default_int_as_float(default_parser: TypeParser, value: str, is_float_expected: bool, expected_int: Union[int, None]):
 		is_float_result = default_parser.is_float(value)
 		assert is_float_result == is_float_expected
 		is_decimal_result = default_parser.is_decimal(value)
@@ -662,7 +661,7 @@ class TestFloatDecimal:
 			("", False, None, None),
 		]
 	)
-	def test_default(default_parser: TypeParser, value: str, is_float_expected: bool, expected_float: float | None, expected_decimal: Decimal | None):
+	def test_default(default_parser: TypeParser, value: str, is_float_expected: bool, expected_float: Union[float, None], expected_decimal: Union[Decimal, None]):
 		is_float_result = default_parser.is_float(value)
 		assert is_float_result == is_float_expected
 		is_decimal_result = default_parser.is_decimal(value)
@@ -723,7 +722,7 @@ class TestFloatDecimal:
 			("e0.1", False, None, None),
 		]
 	)
-	def test_allow_scientific(default_parser: TypeParser, value: str, is_float_expected: bool, expected_float: float | None, expected_decimal: Decimal | None):
+	def test_allow_scientific(default_parser: TypeParser, value: str, is_float_expected: bool, expected_float: Union[float, None], expected_decimal: Union[Decimal, None]):
 		is_float_result = default_parser.is_float(value, allow_scientific=True)
 		assert is_float_result == is_float_expected
 		is_decimal_result = default_parser.is_decimal(value, allow_scientific=True)
@@ -789,8 +788,8 @@ class TestFloatDecimal:
 		value: str,
 		float_values_parser: TypeParser,
 		is_float_expected: bool,
-		expected_float: bool | None,
-		expected_decimal: Decimal | None,
+		expected_float: Union[bool, None],
+		expected_decimal: Union[Decimal, None],
 	):
 		is_float_result = float_values_parser.is_float(value)
 		assert is_float_result == is_float_expected
@@ -825,7 +824,7 @@ class TestFloatDecimal:
 		],
 		indirect=['float_values_parser']
 	)
-	def test_allow_inf(float_values_parser: TypeParser, value: str, is_float_expected: bool, expected_float: float | None, expected_decimal: Decimal | None):
+	def test_allow_inf(float_values_parser: TypeParser, value: str, is_float_expected: bool, expected_float: Union[float, None], expected_decimal: Union[Decimal, None]):
 		is_float_result = float_values_parser.is_float(value, allow_inf=True)
 		assert is_float_result == is_float_expected
 		is_decimal_result = float_values_parser.is_decimal(value, allow_inf=True)
@@ -863,7 +862,7 @@ class TestFloatDecimal:
 		],
 		indirect=['float_values_parser']
 	)
-	def test_allow_nan(float_values_parser: TypeParser, value: str, is_float_expected: bool, expected_float: float | None, expected_decimal: Decimal | None):
+	def test_allow_nan(float_values_parser: TypeParser, value: str, is_float_expected: bool, expected_float: Union[float, None], expected_decimal: Union[Decimal, None]):
 		is_float_result = float_values_parser.is_float(value, allow_nan=True)
 		assert is_float_result == is_float_expected
 		is_decimal_result = float_values_parser.is_decimal(value, allow_nan=True)
@@ -937,8 +936,8 @@ class TestFloatDecimal:
 		value: str,
 		float_case_sensitive_parser: TypeParser,
 		is_float_expected: bool,
-		expected_float: float | None,
-		expected_decimal: Decimal | None
+		expected_float: Union[float, None],
+		expected_decimal: Union[Decimal, None]
 	):
 		is_float_result = float_case_sensitive_parser.is_float(value)
 		assert is_float_result == is_float_expected
@@ -1020,8 +1019,8 @@ class TestFloatDecimal:
 		value: str,
 		float_trim_parser: TypeParser,
 		is_float_expected: bool,
-		expected_float: float | None,
-		expected_decimal: Decimal | None,
+		expected_float: Union[float, None],
+		expected_decimal: Union[Decimal, None],
 	):
 		is_float_result = float_trim_parser.is_float(value)
 		assert is_float_result == is_float_expected
@@ -1617,7 +1616,7 @@ class TestConstructor:
 	@pytest.mark.parametrize('bool_case_sensitive', [True, False])
 	@pytest.mark.parametrize('float_case_sensitive', [True, False])
 	@pytest.mark.parametrize('case_sensitive', [True, False, None])
-	def test_case_sensitive(none_case_sensitive: bool, bool_case_sensitive: bool, float_case_sensitive: bool, case_sensitive: bool | None):
+	def test_case_sensitive(none_case_sensitive: bool, bool_case_sensitive: bool, float_case_sensitive: bool, case_sensitive: Union[bool, None]):
 		parser = TypeParser(
 			none_case_sensitive=none_case_sensitive,
 			bool_case_sensitive=bool_case_sensitive,

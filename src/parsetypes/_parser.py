@@ -1,13 +1,12 @@
-from __future__ import annotations
-
 import math
 from decimal import Decimal
 from enum import Enum
-from types import NoneType
-from typing import Callable, Iterable, Iterator, Sequence, Type, TypeVar, Union, cast
+from typing import Callable, Iterable, Iterator, Optional, Sequence, TypeVar, cast
 
 from ._common import AnyContained, AnyContainedType, AnyValue, AnyValueType, GenericValue, Nullable
 from ._reduce_types import reduce_types, _decompose_type
+
+from ._compat import NoneType, Union
 
 
 _FloatLike = TypeVar('_FloatLike', float, Decimal)
@@ -16,7 +15,7 @@ _FloatLike = TypeVar('_FloatLike', float, Decimal)
 class _TypeTable:
 	__slots__ = ('cols')
 
-	def __init__(self, cols: int | list[list[AnyValueType]]):
+	def __init__(self, cols: Union[int, list[list[AnyValueType]]]):
 		self.cols: list[list[AnyValueType]]
 		if isinstance(cols, int):
 			self.cols = [[] for i in range(cols)]
@@ -30,7 +29,7 @@ class _TypeTable:
 			self.cols[i].append(t)
 
 
-def _decompose_string_pair(string: str, delimiter: str, case_sensitive: bool) -> tuple[str, str | None]:
+def _decompose_string_pair(string: str, delimiter: str, case_sensitive: bool) -> tuple[str, Union[str, None]]:
 	if not case_sensitive:
 		delimiter = delimiter.lower()
 		operative_string = string.lower()
@@ -68,7 +67,7 @@ class TypeParser:
 	    *,
 		trim: bool=True,
 		use_decimal: bool=False,
-		list_delimiter: str | None=None,
+		list_delimiter: Optional[str]=None,
 		none_values: Iterable[str]=[""],
 		none_case_sensitive: bool=False,
 		true_values: Iterable[str]=["true"],
@@ -78,7 +77,7 @@ class TypeParser:
 		inf_values: Iterable[str]=[],
 		nan_values: Iterable[str]=[],
 		float_case_sensitive: bool=False,
-		case_sensitive: bool | None=None,
+		case_sensitive: Optional[bool]=None,
 	):
 		"""
 			Initialise a new parser
