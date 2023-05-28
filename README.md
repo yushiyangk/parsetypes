@@ -35,10 +35,10 @@ parser.parse("")      # None
 Parsing a series so that it has a consistent type:
 ```python
 parser = TypeParser()
-parser.infer_series(["1", "2", "3"])        # [1, 2, 3]
-parser.infer_series(["5", "6.7", "8."])     # [5., 6.7, 8.]
-parser.infer_series(["true", "false", ""])  # [True, False, None]
-parser.infer_series(["1", "2.3", "abc"])    # ["1", "2.3", "abc"]
+parser.parse_series(["1", "2", "3"])        # [1, 2, 3]
+parser.parse_series(["5", "6.7", "8."])     # [5., 6.7, 8.]
+parser.parse_series(["true", "false", ""])  # [True, False, None]
+parser.parse_series(["1", "2.3", "abc"])    # ["1", "2.3", "abc"]
 ```
 
 Parsing a table so that each column is of a consistent type:
