@@ -30,6 +30,8 @@ from parsetypes import reduce_types, ValueType, Nullable
 		([Decimal, str], str),
 		([float, str], str),
 		([bool, int, float, Decimal, str], str),
+
+		([], str),
 	]
 )
 def test_reduce_scalar_types(types: list[ValueType], expected: ValueType):

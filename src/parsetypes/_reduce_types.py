@@ -63,7 +63,6 @@ def _broaden_type(t: ValueType, cue: ValueType | None=None) -> ValueType | None:
 		if broadened in _containers:
 			if cue is not None:
 				cue_base, cue_args = _decompose_type(cue)
-				print(cue)
 				if cue_base not in _containers:
 					return broadened[cue_base]
 				else:
@@ -156,6 +155,7 @@ def reduce_types(types: Iterable[ValueType]) -> ValueType:
 			return _TerminalValue
 
 	if reduced_type is None:
+		# types is empty
 		return GenericValue
 	else:
 		return reduced_type

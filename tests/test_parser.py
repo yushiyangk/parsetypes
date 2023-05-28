@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import itertools
 import math
 from decimal import Decimal
 from types import NoneType
@@ -7,13 +8,18 @@ from unittest.mock import call, patch
 
 import pytest
 
-from parsetypes import ValueType, TypeParser, Nullable
+import parsetypes
+from parsetypes import Nullable, TypeParser, Value, ValueType
 
 
 @pytest.fixture
 def default_parser():
 	return TypeParser()
 
+
+@pytest.fixture
+def list_parser(request: pytest.FixtureRequest) -> TypeParser:
+	return TypeParser(list_delimiter=request.param)
 
 class TestNull:
 	@staticmethod
@@ -1081,7 +1087,6 @@ class TestInfer:
 			("1a", str),
 			("1a1", str),
 			("a1a", str),
-			("a,b,c", str),
 			("1.0.0", str),
 			("0+1", str),
 			("1-1", str),
@@ -1103,11 +1108,6 @@ class TestInfer:
 		result = default_parser.infer(value)
 		assert result == expected
 
-
-	@staticmethod
-	@pytest.fixture
-	def list_parser(request: pytest.FixtureRequest) -> TypeParser:
-		return TypeParser(list_delimiter=request.param)
 
 	@staticmethod
 	@pytest.mark.parametrize(
@@ -1188,59 +1188,36 @@ class TestInfer:
 class TestInferSeries:
 	@staticmethod
 	@pytest.mark.parametrize(
-		('values', 'expected_reduce_types', 'expected'),
+		('values', 'individual_types', 'expected'),
 		[
-			(
-				["1", "-2", "+3", "false"],
-				[int, int, int, bool],
-				[int],
-			),
-			(
-				["a", "b", "cc", ""],
-				[str, str, str, NoneType],
-				[Nullable[str]],
-			),
-			(
-				["1.0", "-2.", "+0.3", "4"],
-				[float, float, float, int],
-				[float],
-			),
-			(
-				["false", "true", "", "false"],
-				[bool, bool, NoneType, bool],
-				[Nullable[bool]],
-			),
-			([], [], []),
-			(["1"], [int], [int]),
+			(["1", "-2", "+3", "false"], [int, int, int, bool], int),
+			(["a", "b", "cc", ""], [str, str, str, NoneType], Nullable[str]),
+			(["1.0", "-2.", "+0.3", "4"], [float, float, float, int], float),
+			(["false", "true", "", "false"], [bool, bool, NoneType, bool], Nullable[bool]),
+			([], [], str),
+			(["1"], [int], int),
 		]
 	)
-	def test_default(default_parser: TypeParser, values: list[str], expected_reduce_types: list[ValueType], expected: ValueType):
-		with patch('parsetypes._parser.reduce_types', return_value=expected) as mocked_reduce_types:
+	def test(default_parser: TypeParser, values: list[str], individual_types: list[ValueType], expected: ValueType):
+		with (
+			patch.object(default_parser, 'infer', side_effect=individual_types) as mocked_infer,
+			patch('parsetypes._parser.reduce_types', wraps=parsetypes._parser.reduce_types) as mocked_reduce_types,
+		):
 			result = default_parser.infer_series(values)
+			mocked_infer.assert_has_calls([call(value) for value in values], any_order=True)
+
 			assert len(mocked_reduce_types.call_args_list) == 1
 			args, kwargs = mocked_reduce_types.call_args_list[0]
-			for call_arg, expected_arg in zip(args[0], expected_reduce_types):
+			for call_arg, expected_arg in zip(args[0], individual_types):
 				assert call_arg == expected_arg
+
 			assert result == expected
-
-
-	@staticmethod
-	@pytest.mark.parametrize('values', [
-		["1", "-2", "+3", "false"],
-		["a", "b", "cc", ""],
-		["1.0", "-2.", "+0.3", "4"],
-		["false", "true", "", "false"],
-	])
-	def test_infer_args(default_parser: TypeParser, values: list[str]):
-		with patch.object(default_parser, 'infer') as mocked_infer:
-			default_parser.infer_series(values)
-			mocked_infer.assert_has_calls([call(value) for value in values], any_order=True)
 
 
 class TestInferTable:
 	@staticmethod
 	@pytest.mark.parametrize(
-		('rows', 'expected_reduce_types', 'expected'),
+		('rows', 'type_rows', 'expected'),
 		[
 			(
 				[
@@ -1270,25 +1247,12 @@ class TestInferTable:
 			)
 		]
 	)
-	def test_default(default_parser: TypeParser, rows: list[list[str]], expected_reduce_types: list[list[ValueType]], expected: list[ValueType]):
-		with patch('parsetypes._parser.reduce_types', side_effect=expected) as mocked_reduce_types:
+	def test(default_parser: TypeParser, rows: list[list[str]], type_rows: list[list[ValueType]], expected: list[ValueType]):
+		with (
+			patch.object(default_parser, 'infer', side_effect=itertools.chain(*zip(*type_rows))) as mocked_infer,
+			patch('parsetypes._parser.reduce_types', wraps=parsetypes._parser.reduce_types) as mocked_reduce_types,
+		):
 			result = default_parser.infer_table(rows)
-			mocked_reduce_types.assert_has_calls([call(expected_call) for expected_call in expected_reduce_types])
-			assert result == expected
-
-
-	@staticmethod
-	@pytest.mark.parametrize('rows', [
-		[
-			["1", "a", "1.0", "false"],
-			["-2", "b", "-2.", "true"],
-			["+3", "cc", "+0.3", ""],
-			["false", "", "4", "false"],
-		],
-	])
-	def test_infer_args(default_parser: TypeParser, rows: list[list[str]]):
-		with patch.object(default_parser, 'infer') as mocked_infer:
-			default_parser.infer_table(rows)
 
 			expected_calls = []
 			for row in rows:
@@ -1296,8 +1260,197 @@ class TestInferTable:
 					expected_calls.append(
 						call(value)
 					)
-
 			mocked_infer.assert_has_calls(expected_calls, any_order=True)
+
+			mocked_reduce_types.assert_has_calls([call(expected_call) for expected_call in type_rows])
+			assert result == expected
+
+
+class TestParse():
+	@staticmethod
+	@pytest.mark.parametrize(
+		('value', 'expected_type', 'expected'),
+		[
+			("true", bool, True),
+			("false", bool, False),
+			("TRUE", bool, True),
+			("FALSE", bool, False),
+			("0", int, 0),
+			("+0", int, 0),
+			("-0", int, 0),
+			("1", int, 1),
+			("+1", int, 1),
+			("-1", int, -1),
+			("20", int, 20),
+			("1e6", int, 1000000),
+			("0.0", float, 0.),
+			("+0.0", float, 0.),
+			("-0.0", float, 0.),
+			("0.", float, 0.),
+			("+0.", float, 0.),
+			("-0.", float, 0.),
+			(".0", float, 0.),
+			("+.0", float, 0.),
+			("-.0", float, 0.),
+			("1.0", float, 1.),
+			("+1.0", float, 1.),
+			("-1.0", float, -1.),
+			("1.", float, 1.),
+			(".1", float, .1),
+			("1.1", float, 1.1),
+			("1.23e0", float, 1.23),
+			("1.23e-0", float, 1.23),
+			("1.23e+0", float, 1.23),
+			("1.23e1", float, 12.3),
+			("1.23e-1", float, 0.123),
+			("1.23e+1", float, 12.3),
+			("1.23e6", float, 1230000.),
+			("a", str, "a"),
+			("a1", str, "a1"),
+			("1a", str, "1a"),
+			("1a1", str, "1a1"),
+			("a1a", str, "a1a"),
+			("1.0.0", str, "1.0.0"),
+			("0+1", str, "0+1"),
+			("1-1", str, "1-1"),
+			("1e2.", str, "1e2."),
+			("1e2e3", str, "1e2e3"),
+			("a,", str, "a,"),
+			("a,b,c", str, "a,b,c"),
+			("1,", str, "1,"),
+			("1,2,3", str, "1,2,3"),
+			("a\n", str, "a\n"),
+			("a\nb\nc\n", str, "a\nb\nc\n"),
+			("", NoneType, None),
+
+			("inf", str, "inf"),
+			("nan", str, "nan"),
+		]
+	)
+	def test_scalars_and_nullables(default_parser: TypeParser, value: str, expected_type: ValueType, expected: Value):
+		with patch.object(default_parser, 'infer', return_value=expected_type) as mocked_infer:
+			result = default_parser.parse(value)
+			mocked_infer.assert_called_once_with(value)
+			assert result == expected
+
+		with patch.object(default_parser, 'infer', return_value=Nullable[expected_type]) as mocked_infer:
+			result = default_parser.parse(value)
+			mocked_infer.assert_called_once_with(value)
+			assert result == expected
+
+
+	@staticmethod
+	@pytest.mark.parametrize(
+		('value', 'list_parser', 'expected_type', 'expected'),
+		[
+			("a,a", ",", list[str], ["a", "a"]),
+			("a,b,c", ",", list[str], ["a", "b", "c"]),
+			(",,a", ",", list[Nullable[str]], [None, None, "a"]),
+			("a", ",", str, "a"),
+
+			("true,false,true", ",", list[bool], [True, False, True]),
+			("true:false:true", ":", list[bool], [True, False, True]),
+			("truepfalseptrue", "p", list[bool], [True, False, True]),
+			(",,true", ",", list[Nullable[bool]], [None, None, True]),
+			("true,false,true", "t", list[Nullable[str]], [None, "rue,false,", "rue"]),
+
+			("0,1,2", ",", list[int], [0, 1, 2]),
+			("0,01,-2,+3,4e5,-60,7_0", ",", list[int], [0, 1, -2, 3, 400000, -60, 70]),
+			("0.1,0.2,0.3", ",", list[float], [0.1, 0.2, 0.3]),
+			(",,0.4", ",", list[Nullable[float]], [None, None, 0.4]),
+			(
+				"0.,.0,0.0,01.00,-0.2,+3.0,4.e+5,6e-7,-80.08,9_0e1_0",
+				",",
+				list[float],
+				[0., 0., 0., 1., -0.2, 3., 400000., 0.0000006, -80.08, 9.e11],
+			),
+
+			("false,1", ",", list[int], [0, 1]),
+			("false,1.", ",", list[float], [0., 1.]),
+			("false,,1.", ",", list[Nullable[float]], [0., None, 1.]),
+			("1,2.", ",", list[float], [1., 2.]),
+			("1,2.,a", ",", list[str], ["1", "2.", "a"]),
+			("1,2.,,a", ",", list[Nullable[str]], ["1", "2.", None, "a"]),
+
+			(",,,", ",", list[NoneType], [None, None, None, None]),
+		],
+		indirect=['list_parser']
+	)
+	def test_lists(
+		value: str,
+		list_parser: TypeParser,
+		expected_type: ValueType,
+		expected: Value,
+	):
+		with patch.object(list_parser, 'infer', return_value=expected_type) as mocked_infer:
+			result = list_parser.parse(value)
+			mocked_infer.assert_called_once_with(value)
+			assert result == expected
+
+
+class TestParseSeries:
+	@staticmethod
+	@pytest.mark.parametrize(
+		('values', 'type', 'expected'),
+		[
+			(["1", "-2", "+3", "false"], int, [1, -2, 3, 0]),
+			(["a", "b", "cc", ""], Nullable[str], ["a", "b", "cc", None]),
+			(["1.0", "-2.", "+0.3", "4"], float, [1., -2., 0.3, 4.]),
+			(["false", "true", "", "false"], Nullable[bool], [False, True, None, False]),
+			([], str, []),
+			(["1"], int, [1]),
+		]
+	)
+	def test(default_parser: TypeParser, values: list[str], type: ValueType, expected: Value):
+		with patch.object(default_parser, 'infer_series', return_value=type) as mocked_infer_series:
+			result = default_parser.parse_series(values)
+			mocked_infer_series.assert_called_once_with(values)
+			assert result == expected
+
+
+class TestParseIterateTable:
+	@staticmethod
+	@pytest.mark.parametrize(
+		('rows', 'types', 'expected'),
+		[
+			(
+				[
+					["1", "a", "1.0", "false"],
+					["-2", "b", "-2.", "true"],
+					["+3", "cc", "+0.3", ""],
+					["false", "", "4", "false"],
+				],
+				[int, Nullable[str], float, Nullable[bool]],
+				[
+					[1, "a", 1., False],
+					[-2, "b", -2., True],
+					[3, "cc", 0.3, None],
+					[0, None, 4., False],
+				]
+			),
+			([], [], []),
+			(
+				[["1", "2", "3", "4"]],
+				[int, int, int, int],
+				[[1, 2, 3, 4]],
+			),
+			(
+				[["1"], ["2"], ["3"], ["4"]],
+				[int],
+				[[1], [2], [3], [4]],
+			)
+		]
+	)
+	def test(default_parser: TypeParser, rows: list[list[str]], types: list[ValueType], expected: list[list[Value]]):
+		with patch.object(default_parser, 'infer_table', return_value=types) as mocked_infer_table:
+			result = default_parser.parse_table(rows)
+			mocked_infer_table.assert_called_once_with(rows)
+			assert result == expected
+
+			result = default_parser.iterate_table(rows)
+			mocked_infer_table.assert_called_once_with(rows)
+			for result_row, expected_row in zip(result, expected):
+				assert result_row == expected_row
 
 
 class TestConstructor:

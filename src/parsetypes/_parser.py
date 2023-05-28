@@ -4,10 +4,10 @@ import math
 from decimal import Decimal
 from enum import Enum
 from types import NoneType
-from typing import Callable, Iterable, Sequence, TypeVar, Union
+from typing import Callable, Iterable, Iterator, Sequence, TypeVar, Union
 
-from ._common import GenericValue, ValueType
-from ._reduce_types import reduce_types
+from ._common import GenericValue, Nullable, Value, ValueType
+from ._reduce_types import reduce_types, _decompose_type
 
 
 _FloatLike = TypeVar('_FloatLike', float, Decimal)
@@ -748,7 +748,6 @@ class TypeParser:
 
 		if self.list_delimiter is not None and self.list_delimiter in value:
 			subvalues = value.split(self.list_delimiter)
-			print(subvalues)
 			if self.trim:
 				subvalues = [subvalue.strip() for subvalue in subvalues]
 			return list[reduce_types(self.infer(subvalue) for subvalue in subvalues)]
@@ -775,7 +774,7 @@ class TypeParser:
 			--------
 			```python
 			parser = TypeParser()
-			parser.infer_series(["1", "2", "3.4"])     # float
+			parser.infer_series(["1", "2", "3.4"])       # float
 			parser.infer_series(["true", "false", "2"])  # int
 			parser.infer_series(["1", "2.3", "abc"])     # str
 			```
@@ -787,9 +786,9 @@ class TypeParser:
 		"""
 			Infer the underlying common type for each column of a table of strings
 
-			The table should be given as an iterable of rows, where each row is a sequence of strings.
+			For each column, if the values do not have the same apparent type, the resulting type will be narrowest possible type that will encompass all values in the column. See `parsetypes.reduce_types()` for more information.
 
-			For each column, if the values in the column do not have the same apparent type, the resulting type will be narrowest possible type that will encompass all values in the column. See `parsetypes.reduce_types()` for more information.
+			Note that the inferred types of every individual value must all be able to fit into memory at once.
 
 			Parameters
 			----------
@@ -809,7 +808,7 @@ class TypeParser:
 				["2",   "false", "2.3"],
 				["3.4", "2",     "abc"],
 			])
-			# [float, int str]
+			# [float, int, str]
 			```
 		"""
 		rows_iter = iter(rows)
@@ -826,3 +825,170 @@ class TypeParser:
 			table.add_row([self.infer(value) for value in row])
 
 		return [reduce_types(col) for col in table.cols]
+
+
+	def _convert(self, value: str, t: ValueType) -> Value:
+		base, type_args = _decompose_type(t)
+		if base == NoneType:
+			return None
+		elif base == bool:
+			return self.parse_bool(value)
+		elif base == int:
+			return self.parse_int(value)
+		elif base == Decimal:
+			return self.parse_decimal(value)
+		elif base == float:
+			return self.parse_float(value)
+		elif base == str:
+			return value
+		elif base == Nullable:
+			if self.is_none(value):
+				return None
+			else:
+				if type_args is not  None and len(type_args) == 1 and type_args[0] != str:
+					inner_type = type_args[0]
+					return self._convert(value, inner_type)
+				else:
+					return value
+		elif base == list:
+			subvalues = value.split(self.list_delimiter)
+			if self.trim:
+				subvalues = [subvalue.strip() for subvalue in subvalues]
+			if type_args is not None and len(type_args) == 1 and type_args[0] != str:
+				subtype = type_args[0]
+				return [self._convert(subvalue, subtype) for subvalue in subvalues]
+			else:
+				return subvalues
+		else:
+			return value
+
+
+	def parse(self, value: str) -> Value:
+		"""Value
+			Parse a string and convert it to its underlying type
+
+			Parameters
+			----------
+			`value`
+			: the string to be parsed
+
+			Returns
+			-------
+			converted value
+
+			Examples
+			--------
+			```python
+			parser = TypeParser()
+			parser.infer("true")  # True
+			parser.infer("2.0")   # 2.
+			parser.infer("abc")   # "abc"
+			```
+		"""
+		return self._convert(value, self.infer(value))
+
+
+	def parse_series(self, values: Iterable[str]) -> list[Value]:
+		"""
+			Parse a series of strings and convert them to their underlying common type
+
+			If the values in the series do not have the same apparent type, the common type is taken as the narrowest possible type that will encompass all values in the series. See `parsetypes.reduce_types()` for more information.
+
+			Parameters
+			----------
+			`values`
+			: series of strings to be parsed
+
+			Returns
+			-------
+			converted values
+
+			Examples
+			--------
+			```python
+			parser = TypeParser()
+			parser.infer_series(["1", "2", "3.4"])       # [1., 2., 3.4]
+			parser.infer_series(["true", "false", "2"])  # [1, 0, 2]
+			parser.infer_series(["1", "2.3", "abc"])     # ["1", "2.3", "abc"]
+			```
+		"""
+		inferred = self.infer_series(values)
+		return [self._convert(value, inferred) for value in values]
+
+
+	def parse_table(self, rows: Iterable[Sequence[str]]) -> list[list[Value]]:
+		"""
+			Parse a table of strings and convert them to the underlying common type of each column
+
+			For each column, if the values do not have the same apparent type, the common type is taken as the narrowest possible type that will encompass all values in the column. See `parsetypes.reduce_types()` for more information.
+
+			Note that the type inference requires that the inferred types of every individual value must all be able to fit into memory at once.
+
+			This is a function that computes the entire table and returns it all at once. The generator `iterate_table()` behaves analogously, except that it computes and yields each row one at a time.
+
+			Parameters
+			----------
+			`rows`
+			: table of strings to be parsed, in row-major order
+
+			`iterator`
+			: whether the parsed values should be yielded as an iterator. If False, which is the default, the entire table is computed and returned as a list of lists. If True, this function behaves as a generator, and the rows of the table are computed and yielded one at a time. However, note that even when set to True, the type inference requires that inferred type of each individual value must all be able to fit into memory at once.
+
+			Returns
+			-------
+			converted table of values, in row-major order
+
+			Examples
+			--------
+			```python
+			parser = TypeParser()
+			table = parser.parse_table([
+				["1",   "true",  "1"],
+				["2",   "false", "2.3"],
+				["3.4", "2",     "abc"],
+			]):
+			assert table == [
+				[1.,  1, "1"],
+				[2.,  0, "2.3"],
+				[3.4, 2, "abc"],
+			]
+			```
+		"""
+		return [converted_row for converted_row in self.iterate_table(rows)]
+
+
+	def iterate_table(self, rows: Iterable[Sequence[str]]) -> Iterator[list[Value]]:
+		"""
+			Parse a table of strings for the underlying common type of each column, then convert and yield each row
+
+			For each column, if the values do not have the same apparent type, the common type is taken as the narrowest possible type that will encompass all values in the column. See `parsetypes.reduce_types()` for more information.
+
+			This is a generator that computes and yields each row one at a time. The function `parse_table()` behaves analogously, except that it computes the entire table and returns it as a list of lists. However, note that although this is a generator, the type inference still requires that the inferred types of every individual value must all be able to fit into memory at once.
+
+			Parameters
+			----------
+			`rows`
+			: table of strings to be parsed, in row-major order
+
+			Yields
+			-------
+			each row of converted table values
+
+			Examples
+			--------
+			```python
+			parser = TypeParser()
+			table = parser.iterate_table([
+				["1",   "true",  "1"],
+				["2",   "false", "2.3"],
+				["3.4", "2",     "abc"],
+			]):
+			assert next(table) == [1.,  1, "1"]
+			assert next(table) == [2.,  0, "2.3"]
+			assert next(table) == [3.4, 2, "abc"]
+			```
+		"""
+		inferred_types = self.infer_table(rows)
+
+		for row in rows:
+			yield [self._convert(value, inferred) for value, inferred in zip(row, inferred_types)]
