@@ -106,7 +106,7 @@ The documentation is generated in `docs/html/`, using template files in `docs/te
 
 Before packaging, check the package metadata by running `pyroma .` or `tox r -m metadata`.
 
-To generate sdist and wheel packages, delete `dist/` and `generic_path.egg-info/` if they exist, then run `python -m build`. Run `twine check dist/*` to check that the packages were generated properly. Alternatively, run `tox r -m package` to do these steps automatically.
+To generate sdist and wheel packages, delete `dist/` and `parsetypes.egg-info/` if they exist, then run `python -m build`. Run `twine check dist/*` to check that the packages were generated properly. Alternatively, run `tox r -m package` to do these steps automatically.
 
 ### Config files
 
