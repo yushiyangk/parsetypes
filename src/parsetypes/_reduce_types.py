@@ -2,7 +2,7 @@ import typing
 from decimal import Decimal
 from typing import Iterable, Optional, cast
 
-from ._common import AnyBaseType, AnyContainedType, AnyContainerBaseType, AnyNullableType, AnyScalarType, AnyValueType, GenericValue, Nullable
+from ._common import AnyBaseType, AnyContainerBaseType, AnyScalarType, AnyValueType, GenericValue, Nullable
 
 from ._compat import Final, NoneType, Union
 
@@ -43,7 +43,7 @@ def _is_valid_type(t: AnyValueType) -> bool:
 		return True
 
 
-def _decompose_type(t: AnyValueType) -> tuple[AnyBaseType, Union[tuple[AnyContainedType, ...], None]]:
+def _decompose_type(t: AnyValueType) -> tuple[AnyBaseType, Union[tuple[AnyValueType, ...], None]]:
 	base = typing.get_origin(t)
 	if base is None:
 		return t, None
@@ -65,7 +65,7 @@ def _broaden_type(t: AnyValueType, cue: Optional[AnyValueType]=None) -> Union[An
 				if cue_args is not None and len(cue_args) == 1:
 					cue_arg = cast(AnyScalarType, cue_args[0])
 					r = Nullable[cue_arg]
-					return r  # type: ignore
+					return r
 				else:
 					return Nullable
 			elif cue_base == list:
@@ -73,21 +73,20 @@ def _broaden_type(t: AnyValueType, cue: Optional[AnyValueType]=None) -> Union[An
 			else:
 				cue_base = cast(AnyScalarType, cue_base)
 				r = Nullable[cue_base]
-				return r  # type: ignore
+				return r
 	elif base == Nullable:
 		if type_args is not None and len(type_args) == 1:
 			type_arg = cast(AnyScalarType, type_args[0])
 			r = list[type_arg]
-			return r  # type: ignore
+			return r
 		else:
 			if cue is None:
 				return list
 			else:
 				cue_base, cue_args = _decompose_type(cue)
 				if cue_base == Nullable:
-					cue = cast(AnyNullableType, cue)
 					r = list[cue]
-					return r  # type: ignore
+					return r
 				elif cue_base == list:
 					return None
 				else:

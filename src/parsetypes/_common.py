@@ -1,7 +1,7 @@
-from decimal import Decimal
-from typing import Generic, Type, TypeVar, Union
+from __future__ import annotations
 
-from ._compat import TypeAlias
+from decimal import Decimal
+from typing import Generic, Type, TypeAlias, TypeVar, Union
 
 
 AnyScalar = Union[str, int, float, Decimal, bool, None]
@@ -31,21 +31,9 @@ AnyContainerBaseType: TypeAlias = Type[AnyContainerBase]
 AnyBase: TypeAlias = Union[AnyScalar, AnyContainerBase]
 AnyBaseType: TypeAlias = Type[AnyBase]
 
-AnyNullable: TypeAlias = Union[Nullable[str], Nullable[int], Nullable[float], Nullable[Decimal], Nullable[bool], Nullable[None]]
-AnyNullableType: TypeAlias = Type[AnyNullable]
 
-AnyContained: TypeAlias = Union[AnyScalar, AnyNullable]
-AnyContainedType: TypeAlias = Type[AnyContained]
-
-
-
-AnyValue = Union[
-	str, int, float, Decimal, bool, None,
-	Nullable[str], Nullable[int], Nullable[float], Nullable[Decimal], Nullable[bool], Nullable[None],
-	#list[str], list[int], list[float], list[Decimal], list[bool], list[None],
-	#list[Nullable[str]], list[Nullable[int]], list[Nullable[float]], list[Nullable[Decimal]], list[Nullable[bool]], list[Nullable[None]],
-]
+AnyValue: TypeAlias = Union[str, int, float, Decimal, bool, None, list]
 """Union of all types recognised by `parsetypes`"""
 
-AnyValueType: TypeAlias = Type[AnyValue]
+AnyValueType: TypeAlias = Type[Union[str, int, float, Decimal, bool, None, Nullable, list]]
 """Type alias for all types recognised by `parsetypes`"""
