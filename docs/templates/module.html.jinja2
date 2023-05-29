@@ -101,7 +101,7 @@
 #}
 {% macro shorttypes(s) %}
 	{%- autoescape false -%}
-		{{- s | replace("parsetypes._common.", "") | replace('<span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span>', "") | replace("collections.abc.", "") | replace('<span class="n">collections</span><span class="o">.</span><span class="n">abc</span><span class="o">.</span>', "") -}}
+		{{- s | replace("parsetypes._common.", "") | replace("parsetypes.", "") | replace('<span class="n">parsetypes</span><span class="o">.</span>', "") | replace('<span class="n">parsetypes</span><span class="o">.</span><span class="n">_common</span><span class="o">.</span>', "") | replace("collections.abc.", "") | replace('<span class="n">collections</span><span class="o">.</span><span class="n">abc</span><span class="o">.</span>', "") -}}
 	{%- endautoescape -%}
 {% endmacro %}
 
