@@ -88,7 +88,7 @@ class TypeParser:
 			: whether leading and trailing whitespace should be stripped from strings
 
 			`use_decimal`
-			: whether non-integer numeric values should be inferred as Decimal (exact values) instead of float (non-exact values). Note that this only applies to methods that attempt to infer type (`infer()` and `infer_*()`), and does not affect methods where the type is explicitly specified (`is_float()`, `is_decimal()`, `parse_float()`, `parse_decimal()`).
+			: whether non-integer numeric values should be inferred to be Decimal (exact values) instead of float (non-exact values). Note that this only applies to methods that attempt to infer type (`infer()` and `infer_*()`), and does not affect methods where the type is explicitly specified (`is_float()`, `is_decimal()`, `parse_float()`, `parse_decimal()`).
 
 			`list_delimiter`
 			: the delimiter used for identifying lists and for separating list items. If set to None, the parser will not attempt to identify lists when inferring types, which usually causes the value to be treated as a str instead.
@@ -880,7 +880,7 @@ class TypeParser:
 			if self.is_none(value):
 				return None
 			else:
-				if type_args is not  None and len(type_args) == 1 and type_args[0] != str:
+				if type_args is not None and len(type_args) == 1 and type_args[0] != str:
 					inner_type = type_args[0]
 					return self.convert(value, inner_type)
 				else:

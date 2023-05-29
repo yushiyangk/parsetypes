@@ -23,6 +23,8 @@ class Nullable(Generic[S]):
 		Dummy container type that represents a scalar (`S`) that could also be None
 
 		The type annotation `Nullable[S]` is treated as equivalent to `Union[S, types.NoneType]`, which will accept either a value of type `S` or the value `None`.
+
+		This class should not be instantiated.
 	"""
 	pass
 

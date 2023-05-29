@@ -165,6 +165,15 @@
 			<li>
 						<a class="function" href="#reduce_types">reduce_types<span class="decorator">()</span></a>
 			</li>
+			<li>
+					<a class="class" href="#Nullable">Nullable</a>
+							<ul class="memberlist">
+            			<li>
+            						<a class="function" href="#Nullable.__init__">Nullable</a>
+            			</li>
+            	</ul>
+
+			</li>
 	</ul>
 
 
@@ -208,13 +217,13 @@ parsetypes    </h1>
 </span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a><span class="sd">&quot;&quot;&quot;</span>
 </span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a>
 </span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a>
-</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;0.2.5&quot;</span>
+</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a><span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;0.2.6&quot;</span>
 </span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a>
 </span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a><span class="kn">from</span> <span class="nn">._common</span> <span class="kn">import</span> <span class="n">AnyScalar</span><span class="p">,</span> <span class="n">AnyScalarType</span><span class="p">,</span> <span class="n">AnyValue</span><span class="p">,</span> <span class="n">AnyValueType</span><span class="p">,</span> <span class="n">GenericValue</span><span class="p">,</span> <span class="n">Nullable</span>
 </span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a><span class="kn">from</span> <span class="nn">._parser</span> <span class="kn">import</span> <span class="n">TypeParser</span>
 </span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a><span class="kn">from</span> <span class="nn">._reduce_types</span> <span class="kn">import</span> <span class="n">reduce_types</span>
 </span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a>
-</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;TypeParser&#39;</span><span class="p">,</span> <span class="s1">&#39;reduce_types&#39;</span><span class="p">)</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a><span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;TypeParser&#39;</span><span class="p">,</span> <span class="s1">&#39;reduce_types&#39;</span><span class="p">,</span> <span class="s1">&#39;Nullable&#39;</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -263,7 +272,7 @@ parsetypes    </h1>
 </span><span id="TypeParser-89"><a href="#TypeParser-89"><span class="linenos">  89</span></a><span class="sd">			: whether leading and trailing whitespace should be stripped from strings</span>
 </span><span id="TypeParser-90"><a href="#TypeParser-90"><span class="linenos">  90</span></a>
 </span><span id="TypeParser-91"><a href="#TypeParser-91"><span class="linenos">  91</span></a><span class="sd">			`use_decimal`</span>
-</span><span id="TypeParser-92"><a href="#TypeParser-92"><span class="linenos">  92</span></a><span class="sd">			: whether non-integer numeric values should be inferred as Decimal (exact values) instead of float (non-exact values). Note that this only applies to methods that attempt to infer type (`infer()` and `infer_*()`), and does not affect methods where the type is explicitly specified (`is_float()`, `is_decimal()`, `parse_float()`, `parse_decimal()`).</span>
+</span><span id="TypeParser-92"><a href="#TypeParser-92"><span class="linenos">  92</span></a><span class="sd">			: whether non-integer numeric values should be inferred to be Decimal (exact values) instead of float (non-exact values). Note that this only applies to methods that attempt to infer type (`infer()` and `infer_*()`), and does not affect methods where the type is explicitly specified (`is_float()`, `is_decimal()`, `parse_float()`, `parse_decimal()`).</span>
 </span><span id="TypeParser-93"><a href="#TypeParser-93"><span class="linenos">  93</span></a>
 </span><span id="TypeParser-94"><a href="#TypeParser-94"><span class="linenos">  94</span></a><span class="sd">			`list_delimiter`</span>
 </span><span id="TypeParser-95"><a href="#TypeParser-95"><span class="linenos">  95</span></a><span class="sd">			: the delimiter used for identifying lists and for separating list items. If set to None, the parser will not attempt to identify lists when inferring types, which usually causes the value to be treated as a str instead.</span>
@@ -1055,7 +1064,7 @@ parsetypes    </h1>
 </span><span id="TypeParser-881"><a href="#TypeParser-881"><span class="linenos"> 881</span></a>			<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_none</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
 </span><span id="TypeParser-882"><a href="#TypeParser-882"><span class="linenos"> 882</span></a>				<span class="k">return</span> <span class="kc">None</span>
 </span><span id="TypeParser-883"><a href="#TypeParser-883"><span class="linenos"> 883</span></a>			<span class="k">else</span><span class="p">:</span>
-</span><span id="TypeParser-884"><a href="#TypeParser-884"><span class="linenos"> 884</span></a>				<span class="k">if</span> <span class="n">type_args</span> <span class="ow">is</span> <span class="ow">not</span>  <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">type_args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">type_args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="TypeParser-884"><a href="#TypeParser-884"><span class="linenos"> 884</span></a>				<span class="k">if</span> <span class="n">type_args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">type_args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">type_args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">:</span>
 </span><span id="TypeParser-885"><a href="#TypeParser-885"><span class="linenos"> 885</span></a>					<span class="n">inner_type</span> <span class="o">=</span> <span class="n">type_args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 </span><span id="TypeParser-886"><a href="#TypeParser-886"><span class="linenos"> 886</span></a>					<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">inner_type</span><span class="p">)</span>
 </span><span id="TypeParser-887"><a href="#TypeParser-887"><span class="linenos"> 887</span></a>				<span class="k">else</span><span class="p">:</span>
@@ -1249,7 +1258,7 @@ parsetypes    </h1>
 </span><span id="TypeParser.__init__-89"><a href="#TypeParser.__init__-89"><span class="linenos"> 89</span></a><span class="sd">			: whether leading and trailing whitespace should be stripped from strings</span>
 </span><span id="TypeParser.__init__-90"><a href="#TypeParser.__init__-90"><span class="linenos"> 90</span></a>
 </span><span id="TypeParser.__init__-91"><a href="#TypeParser.__init__-91"><span class="linenos"> 91</span></a><span class="sd">			`use_decimal`</span>
-</span><span id="TypeParser.__init__-92"><a href="#TypeParser.__init__-92"><span class="linenos"> 92</span></a><span class="sd">			: whether non-integer numeric values should be inferred as Decimal (exact values) instead of float (non-exact values). Note that this only applies to methods that attempt to infer type (`infer()` and `infer_*()`), and does not affect methods where the type is explicitly specified (`is_float()`, `is_decimal()`, `parse_float()`, `parse_decimal()`).</span>
+</span><span id="TypeParser.__init__-92"><a href="#TypeParser.__init__-92"><span class="linenos"> 92</span></a><span class="sd">			: whether non-integer numeric values should be inferred to be Decimal (exact values) instead of float (non-exact values). Note that this only applies to methods that attempt to infer type (`infer()` and `infer_*()`), and does not affect methods where the type is explicitly specified (`is_float()`, `is_decimal()`, `parse_float()`, `parse_decimal()`).</span>
 </span><span id="TypeParser.__init__-93"><a href="#TypeParser.__init__-93"><span class="linenos"> 93</span></a>
 </span><span id="TypeParser.__init__-94"><a href="#TypeParser.__init__-94"><span class="linenos"> 94</span></a><span class="sd">			`list_delimiter`</span>
 </span><span id="TypeParser.__init__-95"><a href="#TypeParser.__init__-95"><span class="linenos"> 95</span></a><span class="sd">			: the delimiter used for identifying lists and for separating list items. If set to None, the parser will not attempt to identify lists when inferring types, which usually causes the value to be treated as a str instead.</span>
@@ -1390,7 +1399,7 @@ parsetypes    </h1>
 : whether leading and trailing whitespace should be stripped from strings</p>
 
 <p><code>use_decimal</code>
-: whether non-integer numeric values should be inferred as Decimal (exact values) instead of float (non-exact values). Note that this only applies to methods that attempt to infer type (<code><a href="#TypeParser.infer">infer()</a></code> and <code>infer_*()</code>), and does not affect methods where the type is explicitly specified (<code><a href="#TypeParser.is_float">is_float()</a></code>, <code><a href="#TypeParser.is_decimal">is_decimal()</a></code>, <code><a href="#TypeParser.parse_float">parse_float()</a></code>, <code><a href="#TypeParser.parse_decimal">parse_decimal()</a></code>).</p>
+: whether non-integer numeric values should be inferred to be Decimal (exact values) instead of float (non-exact values). Note that this only applies to methods that attempt to infer type (<code><a href="#TypeParser.infer">infer()</a></code> and <code>infer_*()</code>), and does not affect methods where the type is explicitly specified (<code><a href="#TypeParser.is_float">is_float()</a></code>, <code><a href="#TypeParser.is_decimal">is_decimal()</a></code>, <code><a href="#TypeParser.parse_float">parse_float()</a></code>, <code><a href="#TypeParser.parse_decimal">parse_decimal()</a></code>).</p>
 
 <p><code>list_delimiter</code>
 : the delimiter used for identifying lists and for separating list items. If set to None, the parser will not attempt to identify lists when inferring types, which usually causes the value to be treated as a str instead.</p>
@@ -2322,7 +2331,7 @@ parsetypes    </h1>
 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">infer</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">value</span><span class="p">:</span> <span class="nb">str</span></span><span class="return-annotation">) -> <span class="n">Type</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">,</span> <span class="n">Nullable</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]</span>:</span></span>
+        <span class="name">infer</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">value</span><span class="p">:</span> <span class="nb">str</span></span><span class="return-annotation">) -> <span class="n">Type</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">,</span> <span class="n"><a href="#Nullable">Nullable</a></span><span class="p">,</span> <span class="nb">list</span><span class="p">]]</span>:</span></span>
 
 
                 <label class="view-source-button" for="TypeParser.infer-view-source"><span>View Source</span></label>
@@ -2412,7 +2421,7 @@ parsetypes    </h1>
 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">infer_series</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></span><span class="return-annotation">) -> <span class="n">Type</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">,</span> <span class="n">Nullable</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]</span>:</span></span>
+        <span class="name">infer_series</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">values</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></span><span class="return-annotation">) -> <span class="n">Type</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">,</span> <span class="n"><a href="#Nullable">Nullable</a></span><span class="p">,</span> <span class="nb">list</span><span class="p">]]</span>:</span></span>
 
 
                 <label class="view-source-button" for="TypeParser.infer_series-view-source"><span>View Source</span></label>
@@ -2479,7 +2488,7 @@ parsetypes    </h1>
 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">infer_table</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">rows</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span></span><span class="return-annotation">) -> <span class="nb">list</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Type</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">,</span> <span class="n">Nullable</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]]</span>:</span></span>
+        <span class="name">infer_table</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">rows</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span></span><span class="return-annotation">) -> <span class="nb">list</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Type</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">,</span> <span class="n"><a href="#Nullable">Nullable</a></span><span class="p">,</span> <span class="nb">list</span><span class="p">]]]</span>:</span></span>
 
 
                 <label class="view-source-button" for="TypeParser.infer_table-view-source"><span>View Source</span></label>
@@ -2569,7 +2578,7 @@ parsetypes    </h1>
 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">convert</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">value</span><span class="p">:</span> <span class="nb">str</span>,</span><span class="param">	<span class="n">target_type</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">,</span> <span class="n">Nullable</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]</span></span><span class="return-annotation">) -> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span>:</span></span>
+        <span class="name">convert</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="bp">self</span>,</span><span class="param">	<span class="n">value</span><span class="p">:</span> <span class="nb">str</span>,</span><span class="param">	<span class="n">target_type</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">,</span> <span class="n"><a href="#Nullable">Nullable</a></span><span class="p">,</span> <span class="nb">list</span><span class="p">]]</span></span><span class="return-annotation">) -> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span>:</span></span>
 
 
                 <label class="view-source-button" for="TypeParser.convert-view-source"><span>View Source</span></label>
@@ -2628,7 +2637,7 @@ parsetypes    </h1>
 </span><span id="TypeParser.convert-881"><a href="#TypeParser.convert-881"><span class="linenos">881</span></a>			<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_none</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
 </span><span id="TypeParser.convert-882"><a href="#TypeParser.convert-882"><span class="linenos">882</span></a>				<span class="k">return</span> <span class="kc">None</span>
 </span><span id="TypeParser.convert-883"><a href="#TypeParser.convert-883"><span class="linenos">883</span></a>			<span class="k">else</span><span class="p">:</span>
-</span><span id="TypeParser.convert-884"><a href="#TypeParser.convert-884"><span class="linenos">884</span></a>				<span class="k">if</span> <span class="n">type_args</span> <span class="ow">is</span> <span class="ow">not</span>  <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">type_args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">type_args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">:</span>
+</span><span id="TypeParser.convert-884"><a href="#TypeParser.convert-884"><span class="linenos">884</span></a>				<span class="k">if</span> <span class="n">type_args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">type_args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">type_args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">:</span>
 </span><span id="TypeParser.convert-885"><a href="#TypeParser.convert-885"><span class="linenos">885</span></a>					<span class="n">inner_type</span> <span class="o">=</span> <span class="n">type_args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 </span><span id="TypeParser.convert-886"><a href="#TypeParser.convert-886"><span class="linenos">886</span></a>					<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">inner_type</span><span class="p">)</span>
 </span><span id="TypeParser.convert-887"><a href="#TypeParser.convert-887"><span class="linenos">887</span></a>				<span class="k">else</span><span class="p">:</span>
@@ -3032,7 +3041,7 @@ parsetypes    </h1>
 <div class="attr function">
             
         <span class="def">def</span>
-        <span class="name">reduce_types</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">types</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">,</span> <span class="n">Nullable</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]]</span></span><span class="return-annotation">) -> <span class="n">Type</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">,</span> <span class="n">Nullable</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]</span>:</span></span>
+        <span class="name">reduce_types</span><span class="signature pdoc-code multiline">(<span class="param">	<span class="n">types</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">,</span> <span class="n"><a href="#Nullable">Nullable</a></span><span class="p">,</span> <span class="nb">list</span><span class="p">]]]</span></span><span class="return-annotation">) -> <span class="n">Type</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">,</span> <span class="n"><a href="#Nullable">Nullable</a></span><span class="p">,</span> <span class="nb">list</span><span class="p">]]</span>:</span></span>
 
 
                 <label class="view-source-button" for="reduce_types-view-source"><span>View Source</span></label>
@@ -3108,6 +3117,86 @@ parsetypes    </h1>
 
 
 
+                </section>
+                <section id="Nullable">
+                            <input id="Nullable-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr class">
+            
+    <span class="def">class</span>
+    <span class="name">Nullable</span><wbr>(<span class="base">typing.Generic[~S]</span>):
+
+
+                <label class="view-source-button" for="Nullable-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#Nullable"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Nullable-22"><a href="#Nullable-22"><span class="linenos">22</span></a><span class="k">class</span> <span class="nc">Nullable</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">S</span><span class="p">]):</span>
+</span><span id="Nullable-23"><a href="#Nullable-23"><span class="linenos">23</span></a><span class="w">	</span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="Nullable-24"><a href="#Nullable-24"><span class="linenos">24</span></a><span class="sd">		Dummy container type that represents a scalar (`S`) that could also be None</span>
+</span><span id="Nullable-25"><a href="#Nullable-25"><span class="linenos">25</span></a>
+</span><span id="Nullable-26"><a href="#Nullable-26"><span class="linenos">26</span></a><span class="sd">		The type annotation `Nullable[S]` is treated as equivalent to `Union[S, types.NoneType]`, which will accept either a value of type `S` or the value `None`.</span>
+</span><span id="Nullable-27"><a href="#Nullable-27"><span class="linenos">27</span></a>
+</span><span id="Nullable-28"><a href="#Nullable-28"><span class="linenos">28</span></a><span class="sd">		This class should not be instantiated.</span>
+</span><span id="Nullable-29"><a href="#Nullable-29"><span class="linenos">29</span></a><span class="sd">	&quot;&quot;&quot;</span>
+</span><span id="Nullable-30"><a href="#Nullable-30"><span class="linenos">30</span></a>	<span class="k">pass</span>
+</span></pre></div>
+
+
+    <div class="docstring">
+<p>Dummy container type that represents a scalar (<code>S</code>) that could also be None</p>
+
+<p>The type annotation <code>Nullable[S]</code> is treated as equivalent to <code>Union[S, types.NoneType]</code>, which will accept either a value of type <code>S</code> or the value <code>None</code>.</p>
+
+<p>This class should not be instantiated.</p></div>
+
+
+
+                            <div id="Nullable.__init__" class="classattr">
+                                <div class="attr function">
+            
+        <span class="name">Nullable</span><span class="signature pdoc-code condensed">()</span>
+
+
+        
+    </div>
+    <a class="headerlink" href="#Nullable.__init__"></a>
+    
+    
+
+                            </div>
+                            <div class="inherited">
+                                <h5>Inherited Members</h5>
+                                <dl>
+                                    <div><dt>typing.Generic</dt>
+                                <dd id="Nullable.__class_getitem__" class="function">__class_getitem__</dd>
+                <dd id="Nullable.__init_subclass__" class="function">__init_subclass__</dd>
+
+            </div>
+            <div><dt>builtins.object</dt>
+                                <dd id="Nullable.__new__" class="function">__new__</dd>
+                <dd id="Nullable.__repr__" class="function">__repr__</dd>
+                <dd id="Nullable.__hash__" class="function">__hash__</dd>
+                <dd id="Nullable.__str__" class="function">__str__</dd>
+                <dd id="Nullable.__getattribute__" class="function">__getattribute__</dd>
+                <dd id="Nullable.__setattr__" class="function">__setattr__</dd>
+                <dd id="Nullable.__delattr__" class="function">__delattr__</dd>
+                <dd id="Nullable.__lt__" class="function">__lt__</dd>
+                <dd id="Nullable.__le__" class="function">__le__</dd>
+                <dd id="Nullable.__eq__" class="function">__eq__</dd>
+                <dd id="Nullable.__ne__" class="function">__ne__</dd>
+                <dd id="Nullable.__gt__" class="function">__gt__</dd>
+                <dd id="Nullable.__ge__" class="function">__ge__</dd>
+                <dd id="Nullable.__reduce_ex__" class="function">__reduce_ex__</dd>
+                <dd id="Nullable.__reduce__" class="function">__reduce__</dd>
+                <dd id="Nullable.__getstate__" class="function">__getstate__</dd>
+                <dd id="Nullable.__subclasshook__" class="function">__subclasshook__</dd>
+                <dd id="Nullable.__format__" class="function">__format__</dd>
+                <dd id="Nullable.__sizeof__" class="function">__sizeof__</dd>
+                <dd id="Nullable.__dir__" class="function">__dir__</dd>
+
+            </div>
+                                </dl>
+                            </div>
                 </section>
     </main>
 </body>

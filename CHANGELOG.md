@@ -4,6 +4,10 @@ This project follows [PEP 440](https://peps.python.org/pep-0440/) and [Semantic 
 
 The recommended version specifier is <code>parsetypes ~= <var>x</var>.<var>y</var></code> for version 1.0 and later, and <code>parsetypes ~= <var>0</var>.<var>y</var>.<var>z</var></code> for versions prior to 1.0.
 
+### 0.2.6
+
+- Added `Nullable` to automatic imports via `from parsetypes import *` (previously only `TypeParser` and `reduce_types` were imported)
+
 ### 0.2.5
 
 - Fixed documentation
