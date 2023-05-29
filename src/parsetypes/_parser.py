@@ -290,7 +290,7 @@ class TypeParser:
 		return False
 
 
-	def is_int(self, value: str, *, allow_sign: bool=True, allow_negative: bool=True, allow_scientific: bool=True) -> bool:
+	def is_int(self, value: str, *, allow_negative: bool=True, allow_sign: bool=True, allow_scientific: bool=True) -> bool:
 		"""
 			Check if a string represents an int
 
@@ -303,10 +303,10 @@ class TypeParser:
 			: whether to accept negative values
 
 			`allow_sign`
-			: whether to accept signed values. If False, it implies that `allow_negative` is False also.
+			: whether to accept values prepended with a sign character. If False, it implies that `allow_negative` is False also.
 
 			`allow_scientific`
-			: whether to accept scientific notation. If True, strings of the form <code>"<var>M</var>e<var>X</var>"</code> will be interpreted as the expression <code><var>M</var> * (10 ** <var>X</var>)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note <var>M</var> *must* be an integer and <var>X</var> *must* be a non-negative integer, even in cases where the above expression evaluates mathematically to an integer.
+			: whether to accept scientific notation. If True, strings of the form <code>"<var>M</var>e<var>X</var>"</code> will be interpreted as the expression <code><var>M</var> * (10 ** <var>X</var>)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note that <var>M</var> must be an integer and <var>X</var> must be a non-negative integer, even in cases where the expression would evaluate mathematically to an integer.
 
 			Returns
 			-------
@@ -527,7 +527,7 @@ class TypeParser:
 			: string to be parsed
 
 			`allow_scientific`
-			: whether to accept scientific notation. If True, strings of the form <code>"<var>M</var>e<var>X</var>"</code> will be interpreted as the expression <code><var>M</var> * (10 ** <var>X</var>)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note <var>M</var> *must* be an integer and <var>X</var> *must* be a non-negative integer, even in cases where the above expression evaluates mathematically to an integer.
+			: whether to accept scientific notation. If True, strings of the form <code>"<var>M</var>e<var>X</var>"</code> will be interpreted as the expression <code><var>M</var> * (10 ** <var>X</var>)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note that <var>M</var> must be an integer and <var>X</var> must be a non-negative integer, even in cases where the expression would evaluate mathematically to an integer.
 
 			Returns
 			-------
