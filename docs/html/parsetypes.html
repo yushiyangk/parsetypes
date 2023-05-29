@@ -1144,7 +1144,7 @@ parsetypes    </h1>
 </span><span id="TypeParser-961"><a href="#TypeParser-961"><span class="linenos"> 961</span></a>
 </span><span id="TypeParser-962"><a href="#TypeParser-962"><span class="linenos"> 962</span></a><span class="sd">			Note that the type to which the values should be converted is determined by `infer_table()`, and so the individual inferred types of every value in the table must be able to fit into memory.</span>
 </span><span id="TypeParser-963"><a href="#TypeParser-963"><span class="linenos"> 963</span></a>
-</span><span id="TypeParser-964"><a href="#TypeParser-964"><span class="linenos"> 964</span></a><span class="sd">			This is a function that computes the entire table and returns it all at once. The generator `iterate_table()` behaves analogously, except that it computes and yields each row one at a time.</span>
+</span><span id="TypeParser-964"><a href="#TypeParser-964"><span class="linenos"> 964</span></a><span class="sd">			This is a function that computes the entire table and returns it all at once. The generator function `iterate_table()` behaves analogously, except that it computes and yields each row one at a time instead.</span>
 </span><span id="TypeParser-965"><a href="#TypeParser-965"><span class="linenos"> 965</span></a>
 </span><span id="TypeParser-966"><a href="#TypeParser-966"><span class="linenos"> 966</span></a><span class="sd">			Parameters</span>
 </span><span id="TypeParser-967"><a href="#TypeParser-967"><span class="linenos"> 967</span></a><span class="sd">			----------</span>
@@ -1183,35 +1183,37 @@ parsetypes    </h1>
 </span><span id="TypeParser-1000"><a href="#TypeParser-1000"><span class="linenos">1000</span></a>
 </span><span id="TypeParser-1001"><a href="#TypeParser-1001"><span class="linenos">1001</span></a><span class="sd">			For each column, if the values do not have the same apparent type, the common type is taken as the narrowest possible type that will encompass all values in the column. See `parsetypes.reduce_types()` for more information.</span>
 </span><span id="TypeParser-1002"><a href="#TypeParser-1002"><span class="linenos">1002</span></a>
-</span><span id="TypeParser-1003"><a href="#TypeParser-1003"><span class="linenos">1003</span></a><span class="sd">			This is a generator that computes and yields each row one at a time. The function `parse_table()` behaves analogously, except that it computes the entire table and returns it as a list of lists. However, note that although this is a generator, the type to which the value sshould be converted is still determined by `infer_table()`, and so the individual inferred types of every value in the table must be able to fit into memory.</span>
+</span><span id="TypeParser-1003"><a href="#TypeParser-1003"><span class="linenos">1003</span></a><span class="sd">			This is a generator function that computes and yields each row one at a time. However, note that in order to determine the types to which each column should be converted, the individual inferred types of every value in the table must still be able to fit into memory.</span>
 </span><span id="TypeParser-1004"><a href="#TypeParser-1004"><span class="linenos">1004</span></a>
-</span><span id="TypeParser-1005"><a href="#TypeParser-1005"><span class="linenos">1005</span></a><span class="sd">			Parameters</span>
-</span><span id="TypeParser-1006"><a href="#TypeParser-1006"><span class="linenos">1006</span></a><span class="sd">			----------</span>
-</span><span id="TypeParser-1007"><a href="#TypeParser-1007"><span class="linenos">1007</span></a><span class="sd">			`rows`</span>
-</span><span id="TypeParser-1008"><a href="#TypeParser-1008"><span class="linenos">1008</span></a><span class="sd">			: table of strings to be parsed, in row-major order</span>
-</span><span id="TypeParser-1009"><a href="#TypeParser-1009"><span class="linenos">1009</span></a>
-</span><span id="TypeParser-1010"><a href="#TypeParser-1010"><span class="linenos">1010</span></a><span class="sd">			Yields</span>
-</span><span id="TypeParser-1011"><a href="#TypeParser-1011"><span class="linenos">1011</span></a><span class="sd">			-------</span>
-</span><span id="TypeParser-1012"><a href="#TypeParser-1012"><span class="linenos">1012</span></a><span class="sd">			each row of converted table values</span>
-</span><span id="TypeParser-1013"><a href="#TypeParser-1013"><span class="linenos">1013</span></a>
-</span><span id="TypeParser-1014"><a href="#TypeParser-1014"><span class="linenos">1014</span></a><span class="sd">			Examples</span>
-</span><span id="TypeParser-1015"><a href="#TypeParser-1015"><span class="linenos">1015</span></a><span class="sd">			--------</span>
-</span><span id="TypeParser-1016"><a href="#TypeParser-1016"><span class="linenos">1016</span></a><span class="sd">			```python</span>
-</span><span id="TypeParser-1017"><a href="#TypeParser-1017"><span class="linenos">1017</span></a><span class="sd">			parser = TypeParser()</span>
-</span><span id="TypeParser-1018"><a href="#TypeParser-1018"><span class="linenos">1018</span></a><span class="sd">			table = parser.iterate_table([</span>
-</span><span id="TypeParser-1019"><a href="#TypeParser-1019"><span class="linenos">1019</span></a><span class="sd">				[&quot;1&quot;,   &quot;true&quot;,  &quot;1&quot;],</span>
-</span><span id="TypeParser-1020"><a href="#TypeParser-1020"><span class="linenos">1020</span></a><span class="sd">				[&quot;2&quot;,   &quot;false&quot;, &quot;2.3&quot;],</span>
-</span><span id="TypeParser-1021"><a href="#TypeParser-1021"><span class="linenos">1021</span></a><span class="sd">				[&quot;3.4&quot;, &quot;2&quot;,     &quot;abc&quot;],</span>
-</span><span id="TypeParser-1022"><a href="#TypeParser-1022"><span class="linenos">1022</span></a><span class="sd">			]):</span>
-</span><span id="TypeParser-1023"><a href="#TypeParser-1023"><span class="linenos">1023</span></a><span class="sd">			assert next(table) == [1.,  1, &quot;1&quot;]</span>
-</span><span id="TypeParser-1024"><a href="#TypeParser-1024"><span class="linenos">1024</span></a><span class="sd">			assert next(table) == [2.,  0, &quot;2.3&quot;]</span>
-</span><span id="TypeParser-1025"><a href="#TypeParser-1025"><span class="linenos">1025</span></a><span class="sd">			assert next(table) == [3.4, 2, &quot;abc&quot;]</span>
-</span><span id="TypeParser-1026"><a href="#TypeParser-1026"><span class="linenos">1026</span></a><span class="sd">			```</span>
-</span><span id="TypeParser-1027"><a href="#TypeParser-1027"><span class="linenos">1027</span></a><span class="sd">		&quot;&quot;&quot;</span>
-</span><span id="TypeParser-1028"><a href="#TypeParser-1028"><span class="linenos">1028</span></a>		<span class="n">inferred_types</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">infer_table</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
-</span><span id="TypeParser-1029"><a href="#TypeParser-1029"><span class="linenos">1029</span></a>
-</span><span id="TypeParser-1030"><a href="#TypeParser-1030"><span class="linenos">1030</span></a>		<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
-</span><span id="TypeParser-1031"><a href="#TypeParser-1031"><span class="linenos">1031</span></a>			<span class="k">yield</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">inferred</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span><span class="p">,</span> <span class="n">inferred</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">inferred_types</span><span class="p">)]</span>
+</span><span id="TypeParser-1005"><a href="#TypeParser-1005"><span class="linenos">1005</span></a><span class="sd">			The function `parse_table()` behaves analogously, except that it computes the entire table and returns it as a list of lists instead.</span>
+</span><span id="TypeParser-1006"><a href="#TypeParser-1006"><span class="linenos">1006</span></a>
+</span><span id="TypeParser-1007"><a href="#TypeParser-1007"><span class="linenos">1007</span></a><span class="sd">			Parameters</span>
+</span><span id="TypeParser-1008"><a href="#TypeParser-1008"><span class="linenos">1008</span></a><span class="sd">			----------</span>
+</span><span id="TypeParser-1009"><a href="#TypeParser-1009"><span class="linenos">1009</span></a><span class="sd">			`rows`</span>
+</span><span id="TypeParser-1010"><a href="#TypeParser-1010"><span class="linenos">1010</span></a><span class="sd">			: table of strings to be parsed, in row-major order</span>
+</span><span id="TypeParser-1011"><a href="#TypeParser-1011"><span class="linenos">1011</span></a>
+</span><span id="TypeParser-1012"><a href="#TypeParser-1012"><span class="linenos">1012</span></a><span class="sd">			Yields</span>
+</span><span id="TypeParser-1013"><a href="#TypeParser-1013"><span class="linenos">1013</span></a><span class="sd">			-------</span>
+</span><span id="TypeParser-1014"><a href="#TypeParser-1014"><span class="linenos">1014</span></a><span class="sd">			each row of converted table values</span>
+</span><span id="TypeParser-1015"><a href="#TypeParser-1015"><span class="linenos">1015</span></a>
+</span><span id="TypeParser-1016"><a href="#TypeParser-1016"><span class="linenos">1016</span></a><span class="sd">			Examples</span>
+</span><span id="TypeParser-1017"><a href="#TypeParser-1017"><span class="linenos">1017</span></a><span class="sd">			--------</span>
+</span><span id="TypeParser-1018"><a href="#TypeParser-1018"><span class="linenos">1018</span></a><span class="sd">			```python</span>
+</span><span id="TypeParser-1019"><a href="#TypeParser-1019"><span class="linenos">1019</span></a><span class="sd">			parser = TypeParser()</span>
+</span><span id="TypeParser-1020"><a href="#TypeParser-1020"><span class="linenos">1020</span></a><span class="sd">			table = parser.iterate_table([</span>
+</span><span id="TypeParser-1021"><a href="#TypeParser-1021"><span class="linenos">1021</span></a><span class="sd">				[&quot;1&quot;,   &quot;true&quot;,  &quot;1&quot;],</span>
+</span><span id="TypeParser-1022"><a href="#TypeParser-1022"><span class="linenos">1022</span></a><span class="sd">				[&quot;2&quot;,   &quot;false&quot;, &quot;2.3&quot;],</span>
+</span><span id="TypeParser-1023"><a href="#TypeParser-1023"><span class="linenos">1023</span></a><span class="sd">				[&quot;3.4&quot;, &quot;2&quot;,     &quot;abc&quot;],</span>
+</span><span id="TypeParser-1024"><a href="#TypeParser-1024"><span class="linenos">1024</span></a><span class="sd">			]):</span>
+</span><span id="TypeParser-1025"><a href="#TypeParser-1025"><span class="linenos">1025</span></a><span class="sd">			assert next(table) == [1.,  1, &quot;1&quot;]</span>
+</span><span id="TypeParser-1026"><a href="#TypeParser-1026"><span class="linenos">1026</span></a><span class="sd">			assert next(table) == [2.,  0, &quot;2.3&quot;]</span>
+</span><span id="TypeParser-1027"><a href="#TypeParser-1027"><span class="linenos">1027</span></a><span class="sd">			assert next(table) == [3.4, 2, &quot;abc&quot;]</span>
+</span><span id="TypeParser-1028"><a href="#TypeParser-1028"><span class="linenos">1028</span></a><span class="sd">			```</span>
+</span><span id="TypeParser-1029"><a href="#TypeParser-1029"><span class="linenos">1029</span></a><span class="sd">		&quot;&quot;&quot;</span>
+</span><span id="TypeParser-1030"><a href="#TypeParser-1030"><span class="linenos">1030</span></a>		<span class="n">inferred_types</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">infer_table</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+</span><span id="TypeParser-1031"><a href="#TypeParser-1031"><span class="linenos">1031</span></a>
+</span><span id="TypeParser-1032"><a href="#TypeParser-1032"><span class="linenos">1032</span></a>		<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+</span><span id="TypeParser-1033"><a href="#TypeParser-1033"><span class="linenos">1033</span></a>			<span class="k">yield</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">inferred</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span><span class="p">,</span> <span class="n">inferred</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">inferred_types</span><span class="p">)]</span>
 </span></pre></div>
 
 
@@ -2847,7 +2849,7 @@ parsetypes    </h1>
 </span><span id="TypeParser.parse_table-961"><a href="#TypeParser.parse_table-961"><span class="linenos">961</span></a>
 </span><span id="TypeParser.parse_table-962"><a href="#TypeParser.parse_table-962"><span class="linenos">962</span></a><span class="sd">			Note that the type to which the values should be converted is determined by `infer_table()`, and so the individual inferred types of every value in the table must be able to fit into memory.</span>
 </span><span id="TypeParser.parse_table-963"><a href="#TypeParser.parse_table-963"><span class="linenos">963</span></a>
-</span><span id="TypeParser.parse_table-964"><a href="#TypeParser.parse_table-964"><span class="linenos">964</span></a><span class="sd">			This is a function that computes the entire table and returns it all at once. The generator `iterate_table()` behaves analogously, except that it computes and yields each row one at a time.</span>
+</span><span id="TypeParser.parse_table-964"><a href="#TypeParser.parse_table-964"><span class="linenos">964</span></a><span class="sd">			This is a function that computes the entire table and returns it all at once. The generator function `iterate_table()` behaves analogously, except that it computes and yields each row one at a time instead.</span>
 </span><span id="TypeParser.parse_table-965"><a href="#TypeParser.parse_table-965"><span class="linenos">965</span></a>
 </span><span id="TypeParser.parse_table-966"><a href="#TypeParser.parse_table-966"><span class="linenos">966</span></a><span class="sd">			Parameters</span>
 </span><span id="TypeParser.parse_table-967"><a href="#TypeParser.parse_table-967"><span class="linenos">967</span></a><span class="sd">			----------</span>
@@ -2888,7 +2890,7 @@ parsetypes    </h1>
 
 <p>Note that the type to which the values should be converted is determined by <code><a href="#TypeParser.infer_table">infer_table()</a></code>, and so the individual inferred types of every value in the table must be able to fit into memory.</p>
 
-<p>This is a function that computes the entire table and returns it all at once. The generator <code><a href="#TypeParser.iterate_table">iterate_table()</a></code> behaves analogously, except that it computes and yields each row one at a time.</p>
+<p>This is a function that computes the entire table and returns it all at once. The generator function <code><a href="#TypeParser.iterate_table">iterate_table()</a></code> behaves analogously, except that it computes and yields each row one at a time instead.</p>
 
 <h2 id="parameters">Parameters</h2>
 
@@ -2940,35 +2942,37 @@ parsetypes    </h1>
 </span><span id="TypeParser.iterate_table-1000"><a href="#TypeParser.iterate_table-1000"><span class="linenos">1000</span></a>
 </span><span id="TypeParser.iterate_table-1001"><a href="#TypeParser.iterate_table-1001"><span class="linenos">1001</span></a><span class="sd">			For each column, if the values do not have the same apparent type, the common type is taken as the narrowest possible type that will encompass all values in the column. See `parsetypes.reduce_types()` for more information.</span>
 </span><span id="TypeParser.iterate_table-1002"><a href="#TypeParser.iterate_table-1002"><span class="linenos">1002</span></a>
-</span><span id="TypeParser.iterate_table-1003"><a href="#TypeParser.iterate_table-1003"><span class="linenos">1003</span></a><span class="sd">			This is a generator that computes and yields each row one at a time. The function `parse_table()` behaves analogously, except that it computes the entire table and returns it as a list of lists. However, note that although this is a generator, the type to which the value sshould be converted is still determined by `infer_table()`, and so the individual inferred types of every value in the table must be able to fit into memory.</span>
+</span><span id="TypeParser.iterate_table-1003"><a href="#TypeParser.iterate_table-1003"><span class="linenos">1003</span></a><span class="sd">			This is a generator function that computes and yields each row one at a time. However, note that in order to determine the types to which each column should be converted, the individual inferred types of every value in the table must still be able to fit into memory.</span>
 </span><span id="TypeParser.iterate_table-1004"><a href="#TypeParser.iterate_table-1004"><span class="linenos">1004</span></a>
-</span><span id="TypeParser.iterate_table-1005"><a href="#TypeParser.iterate_table-1005"><span class="linenos">1005</span></a><span class="sd">			Parameters</span>
-</span><span id="TypeParser.iterate_table-1006"><a href="#TypeParser.iterate_table-1006"><span class="linenos">1006</span></a><span class="sd">			----------</span>
-</span><span id="TypeParser.iterate_table-1007"><a href="#TypeParser.iterate_table-1007"><span class="linenos">1007</span></a><span class="sd">			`rows`</span>
-</span><span id="TypeParser.iterate_table-1008"><a href="#TypeParser.iterate_table-1008"><span class="linenos">1008</span></a><span class="sd">			: table of strings to be parsed, in row-major order</span>
-</span><span id="TypeParser.iterate_table-1009"><a href="#TypeParser.iterate_table-1009"><span class="linenos">1009</span></a>
-</span><span id="TypeParser.iterate_table-1010"><a href="#TypeParser.iterate_table-1010"><span class="linenos">1010</span></a><span class="sd">			Yields</span>
-</span><span id="TypeParser.iterate_table-1011"><a href="#TypeParser.iterate_table-1011"><span class="linenos">1011</span></a><span class="sd">			-------</span>
-</span><span id="TypeParser.iterate_table-1012"><a href="#TypeParser.iterate_table-1012"><span class="linenos">1012</span></a><span class="sd">			each row of converted table values</span>
-</span><span id="TypeParser.iterate_table-1013"><a href="#TypeParser.iterate_table-1013"><span class="linenos">1013</span></a>
-</span><span id="TypeParser.iterate_table-1014"><a href="#TypeParser.iterate_table-1014"><span class="linenos">1014</span></a><span class="sd">			Examples</span>
-</span><span id="TypeParser.iterate_table-1015"><a href="#TypeParser.iterate_table-1015"><span class="linenos">1015</span></a><span class="sd">			--------</span>
-</span><span id="TypeParser.iterate_table-1016"><a href="#TypeParser.iterate_table-1016"><span class="linenos">1016</span></a><span class="sd">			```python</span>
-</span><span id="TypeParser.iterate_table-1017"><a href="#TypeParser.iterate_table-1017"><span class="linenos">1017</span></a><span class="sd">			parser = TypeParser()</span>
-</span><span id="TypeParser.iterate_table-1018"><a href="#TypeParser.iterate_table-1018"><span class="linenos">1018</span></a><span class="sd">			table = parser.iterate_table([</span>
-</span><span id="TypeParser.iterate_table-1019"><a href="#TypeParser.iterate_table-1019"><span class="linenos">1019</span></a><span class="sd">				[&quot;1&quot;,   &quot;true&quot;,  &quot;1&quot;],</span>
-</span><span id="TypeParser.iterate_table-1020"><a href="#TypeParser.iterate_table-1020"><span class="linenos">1020</span></a><span class="sd">				[&quot;2&quot;,   &quot;false&quot;, &quot;2.3&quot;],</span>
-</span><span id="TypeParser.iterate_table-1021"><a href="#TypeParser.iterate_table-1021"><span class="linenos">1021</span></a><span class="sd">				[&quot;3.4&quot;, &quot;2&quot;,     &quot;abc&quot;],</span>
-</span><span id="TypeParser.iterate_table-1022"><a href="#TypeParser.iterate_table-1022"><span class="linenos">1022</span></a><span class="sd">			]):</span>
-</span><span id="TypeParser.iterate_table-1023"><a href="#TypeParser.iterate_table-1023"><span class="linenos">1023</span></a><span class="sd">			assert next(table) == [1.,  1, &quot;1&quot;]</span>
-</span><span id="TypeParser.iterate_table-1024"><a href="#TypeParser.iterate_table-1024"><span class="linenos">1024</span></a><span class="sd">			assert next(table) == [2.,  0, &quot;2.3&quot;]</span>
-</span><span id="TypeParser.iterate_table-1025"><a href="#TypeParser.iterate_table-1025"><span class="linenos">1025</span></a><span class="sd">			assert next(table) == [3.4, 2, &quot;abc&quot;]</span>
-</span><span id="TypeParser.iterate_table-1026"><a href="#TypeParser.iterate_table-1026"><span class="linenos">1026</span></a><span class="sd">			```</span>
-</span><span id="TypeParser.iterate_table-1027"><a href="#TypeParser.iterate_table-1027"><span class="linenos">1027</span></a><span class="sd">		&quot;&quot;&quot;</span>
-</span><span id="TypeParser.iterate_table-1028"><a href="#TypeParser.iterate_table-1028"><span class="linenos">1028</span></a>		<span class="n">inferred_types</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">infer_table</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
-</span><span id="TypeParser.iterate_table-1029"><a href="#TypeParser.iterate_table-1029"><span class="linenos">1029</span></a>
-</span><span id="TypeParser.iterate_table-1030"><a href="#TypeParser.iterate_table-1030"><span class="linenos">1030</span></a>		<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
-</span><span id="TypeParser.iterate_table-1031"><a href="#TypeParser.iterate_table-1031"><span class="linenos">1031</span></a>			<span class="k">yield</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">inferred</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span><span class="p">,</span> <span class="n">inferred</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">inferred_types</span><span class="p">)]</span>
+</span><span id="TypeParser.iterate_table-1005"><a href="#TypeParser.iterate_table-1005"><span class="linenos">1005</span></a><span class="sd">			The function `parse_table()` behaves analogously, except that it computes the entire table and returns it as a list of lists instead.</span>
+</span><span id="TypeParser.iterate_table-1006"><a href="#TypeParser.iterate_table-1006"><span class="linenos">1006</span></a>
+</span><span id="TypeParser.iterate_table-1007"><a href="#TypeParser.iterate_table-1007"><span class="linenos">1007</span></a><span class="sd">			Parameters</span>
+</span><span id="TypeParser.iterate_table-1008"><a href="#TypeParser.iterate_table-1008"><span class="linenos">1008</span></a><span class="sd">			----------</span>
+</span><span id="TypeParser.iterate_table-1009"><a href="#TypeParser.iterate_table-1009"><span class="linenos">1009</span></a><span class="sd">			`rows`</span>
+</span><span id="TypeParser.iterate_table-1010"><a href="#TypeParser.iterate_table-1010"><span class="linenos">1010</span></a><span class="sd">			: table of strings to be parsed, in row-major order</span>
+</span><span id="TypeParser.iterate_table-1011"><a href="#TypeParser.iterate_table-1011"><span class="linenos">1011</span></a>
+</span><span id="TypeParser.iterate_table-1012"><a href="#TypeParser.iterate_table-1012"><span class="linenos">1012</span></a><span class="sd">			Yields</span>
+</span><span id="TypeParser.iterate_table-1013"><a href="#TypeParser.iterate_table-1013"><span class="linenos">1013</span></a><span class="sd">			-------</span>
+</span><span id="TypeParser.iterate_table-1014"><a href="#TypeParser.iterate_table-1014"><span class="linenos">1014</span></a><span class="sd">			each row of converted table values</span>
+</span><span id="TypeParser.iterate_table-1015"><a href="#TypeParser.iterate_table-1015"><span class="linenos">1015</span></a>
+</span><span id="TypeParser.iterate_table-1016"><a href="#TypeParser.iterate_table-1016"><span class="linenos">1016</span></a><span class="sd">			Examples</span>
+</span><span id="TypeParser.iterate_table-1017"><a href="#TypeParser.iterate_table-1017"><span class="linenos">1017</span></a><span class="sd">			--------</span>
+</span><span id="TypeParser.iterate_table-1018"><a href="#TypeParser.iterate_table-1018"><span class="linenos">1018</span></a><span class="sd">			```python</span>
+</span><span id="TypeParser.iterate_table-1019"><a href="#TypeParser.iterate_table-1019"><span class="linenos">1019</span></a><span class="sd">			parser = TypeParser()</span>
+</span><span id="TypeParser.iterate_table-1020"><a href="#TypeParser.iterate_table-1020"><span class="linenos">1020</span></a><span class="sd">			table = parser.iterate_table([</span>
+</span><span id="TypeParser.iterate_table-1021"><a href="#TypeParser.iterate_table-1021"><span class="linenos">1021</span></a><span class="sd">				[&quot;1&quot;,   &quot;true&quot;,  &quot;1&quot;],</span>
+</span><span id="TypeParser.iterate_table-1022"><a href="#TypeParser.iterate_table-1022"><span class="linenos">1022</span></a><span class="sd">				[&quot;2&quot;,   &quot;false&quot;, &quot;2.3&quot;],</span>
+</span><span id="TypeParser.iterate_table-1023"><a href="#TypeParser.iterate_table-1023"><span class="linenos">1023</span></a><span class="sd">				[&quot;3.4&quot;, &quot;2&quot;,     &quot;abc&quot;],</span>
+</span><span id="TypeParser.iterate_table-1024"><a href="#TypeParser.iterate_table-1024"><span class="linenos">1024</span></a><span class="sd">			]):</span>
+</span><span id="TypeParser.iterate_table-1025"><a href="#TypeParser.iterate_table-1025"><span class="linenos">1025</span></a><span class="sd">			assert next(table) == [1.,  1, &quot;1&quot;]</span>
+</span><span id="TypeParser.iterate_table-1026"><a href="#TypeParser.iterate_table-1026"><span class="linenos">1026</span></a><span class="sd">			assert next(table) == [2.,  0, &quot;2.3&quot;]</span>
+</span><span id="TypeParser.iterate_table-1027"><a href="#TypeParser.iterate_table-1027"><span class="linenos">1027</span></a><span class="sd">			assert next(table) == [3.4, 2, &quot;abc&quot;]</span>
+</span><span id="TypeParser.iterate_table-1028"><a href="#TypeParser.iterate_table-1028"><span class="linenos">1028</span></a><span class="sd">			```</span>
+</span><span id="TypeParser.iterate_table-1029"><a href="#TypeParser.iterate_table-1029"><span class="linenos">1029</span></a><span class="sd">		&quot;&quot;&quot;</span>
+</span><span id="TypeParser.iterate_table-1030"><a href="#TypeParser.iterate_table-1030"><span class="linenos">1030</span></a>		<span class="n">inferred_types</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">infer_table</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+</span><span id="TypeParser.iterate_table-1031"><a href="#TypeParser.iterate_table-1031"><span class="linenos">1031</span></a>
+</span><span id="TypeParser.iterate_table-1032"><a href="#TypeParser.iterate_table-1032"><span class="linenos">1032</span></a>		<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+</span><span id="TypeParser.iterate_table-1033"><a href="#TypeParser.iterate_table-1033"><span class="linenos">1033</span></a>			<span class="k">yield</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">inferred</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span><span class="p">,</span> <span class="n">inferred</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">inferred_types</span><span class="p">)]</span>
 </span></pre></div>
 
 
@@ -2977,7 +2981,9 @@ parsetypes    </h1>
 
 <p>For each column, if the values do not have the same apparent type, the common type is taken as the narrowest possible type that will encompass all values in the column. See <code><a href="#reduce_types">parsetypes.reduce_types()</a></code> for more information.</p>
 
-<p>This is a generator that computes and yields each row one at a time. The function <code><a href="#TypeParser.parse_table">parse_table()</a></code> behaves analogously, except that it computes the entire table and returns it as a list of lists. However, note that although this is a generator, the type to which the value sshould be converted is still determined by <code><a href="#TypeParser.infer_table">infer_table()</a></code>, and so the individual inferred types of every value in the table must be able to fit into memory.</p>
+<p>This is a generator function that computes and yields each row one at a time. However, note that in order to determine the types to which each column should be converted, the individual inferred types of every value in the table must still be able to fit into memory.</p>
+
+<p>The function <code><a href="#TypeParser.parse_table">parse_table()</a></code> behaves analogously, except that it computes the entire table and returns it as a list of lists instead.</p>
 
 <h2 id="parameters">Parameters</h2>
 

@@ -960,7 +960,7 @@ class TypeParser:
 
 			Note that the type to which the values should be converted is determined by `infer_table()`, and so the individual inferred types of every value in the table must be able to fit into memory.
 
-			This is a function that computes the entire table and returns it all at once. The generator `iterate_table()` behaves analogously, except that it computes and yields each row one at a time.
+			This is a function that computes the entire table and returns it all at once. The generator function `iterate_table()` behaves analogously, except that it computes and yields each row one at a time instead.
 
 			Parameters
 			----------
@@ -999,7 +999,9 @@ class TypeParser:
 
 			For each column, if the values do not have the same apparent type, the common type is taken as the narrowest possible type that will encompass all values in the column. See `parsetypes.reduce_types()` for more information.
 
-			This is a generator that computes and yields each row one at a time. The function `parse_table()` behaves analogously, except that it computes the entire table and returns it as a list of lists. However, note that although this is a generator, the type to which the value sshould be converted is still determined by `infer_table()`, and so the individual inferred types of every value in the table must be able to fit into memory.
+			This is a generator function that computes and yields each row one at a time. However, note that in order to determine the types to which each column should be converted, the individual inferred types of every value in the table must still be able to fit into memory.
+
+			The function `parse_table()` behaves analogously, except that it computes the entire table and returns it as a list of lists instead.
 
 			Parameters
 			----------
