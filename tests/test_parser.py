@@ -7,7 +7,6 @@ import pytest
 
 import parsetypes
 from parsetypes import AnyScalar, AnyScalarType, AnyValue, AnyValueType, Nullable, TypeParser
-from parsetypes._reduce_types import _decompose_type
 
 from parsetypes._compat import NoneType, Union
 
@@ -1707,7 +1706,7 @@ class TestParseIterateTable:
 				assert result_row == expected_row
 
 
-class TestConstructor:
+class TestConstructorAndProperties:
 	@staticmethod
 	@pytest.mark.parametrize('list_delimiter', [',', '\n'])
 	@pytest.mark.parametrize('none_values', [[], [""], ["none", "n"]])
@@ -1750,32 +1749,42 @@ class TestConstructor:
 
 	@staticmethod
 	@pytest.mark.parametrize('trim', [True, False])
-	@pytest.mark.parametrize('none_values', [[], [""], ["  ", " \n"], [" none ", "n\n"]])
+	@pytest.mark.parametrize('none_values', [[], [""], ["  ", " \n"], [" NoNe ", "n\n"]])
 	@pytest.mark.parametrize('none_case_sensitive', [True, False])
 	def test_none_values(
+		default_parser: TypeParser,
 		trim: bool,
 		none_values: list[str],
 		none_case_sensitive: bool,
 	):
-		parser = TypeParser(
+		configured_parser = TypeParser(
 			trim=trim,
 			none_values=none_values,
 			none_case_sensitive=none_case_sensitive,
 		)
+		default_parser.trim = trim
+		default_parser.none_values = none_values
+		default_parser.none_case_sensitive = none_case_sensitive
 
-		assert parser.trim == trim
-		assert parser.none_case_sensitive == none_case_sensitive
+		for parser in [configured_parser, default_parser]:
+			assert parser.trim == trim
+			assert parser._trim == trim
+			assert parser.none_case_sensitive == none_case_sensitive
+			assert parser._none_case_sensitive == none_case_sensitive
+			assert parser._original_none_values == set(none_values)
 
-		if trim and none_case_sensitive:
-			assert {value.strip() for value in parser.none_values} == {expected.strip() for expected in none_values}
-		if trim and not none_case_sensitive:
-			assert {value.lower().strip() for value in parser.none_values} == {expected.lower().strip() for expected in none_values}
-			assert {value.upper().strip() for value in parser.none_values} == {expected.upper().strip() for expected in none_values}
-		if not trim and none_case_sensitive:
-			assert set(parser.none_values) == set(none_values)
-		if not trim and not none_case_sensitive:
-			assert {value.lower() for value in parser.none_values} == {expected.lower() for expected in none_values}
-			assert {value.upper() for value in parser.none_values} == {expected.upper() for expected in none_values}
+			if trim and none_case_sensitive:
+				assert parser.none_values == {expected.strip() for expected in none_values}
+				assert parser._match_none_values == {expected.strip() for expected in none_values}
+			if trim and not none_case_sensitive:
+				assert parser.none_values == {expected.strip() for expected in none_values}
+				assert parser._match_none_values == {expected.lower().strip() for expected in none_values}
+			if not trim and none_case_sensitive:
+				assert parser.none_values == set(none_values)
+				assert parser._match_none_values == set(none_values)
+			if not trim and not none_case_sensitive:
+				assert parser.none_values == set(none_values)
+				assert parser._match_none_values == {expected.lower() for expected in none_values}
 
 
 	@staticmethod
@@ -1784,42 +1793,56 @@ class TestConstructor:
 	@pytest.mark.parametrize('false_values', [[], ["f", "fa"], [" f ", "fa\n"], ["F", "fa"]])
 	@pytest.mark.parametrize('bool_case_sensitive', [True, False])
 	def test_bool_values(
+		default_parser: TypeParser,
 		trim: bool,
 		true_values: list[str],
 		false_values: list[str],
 		bool_case_sensitive: bool,
 	):
-		parser = TypeParser(
+		configured_parser = TypeParser(
 			trim=trim,
 			true_values=true_values,
 			false_values=false_values,
 			bool_case_sensitive=bool_case_sensitive,
 		)
+		default_parser.trim = trim
+		default_parser.true_values = true_values
+		default_parser.false_values = false_values
+		default_parser.bool_case_sensitive = bool_case_sensitive
 
-		assert parser.trim == trim
-		assert parser.bool_case_sensitive == bool_case_sensitive
+		for parser in [configured_parser, default_parser]:
+			assert parser.trim == trim
+			assert parser._trim == trim
+			assert parser.bool_case_sensitive == bool_case_sensitive
+			assert parser._bool_case_sensitive == bool_case_sensitive
+			assert parser._original_true_values == set(true_values)
+			assert parser._original_false_values == set(false_values)
 
-		if trim and bool_case_sensitive:
-			assert {value.strip() for value in parser.true_values} == {expected.strip() for expected in true_values}
-		if trim and not bool_case_sensitive:
-			assert {value.lower().strip() for value in parser.true_values} == {expected.lower().strip() for expected in true_values}
-			assert {value.upper().strip() for value in parser.true_values} == {expected.upper().strip() for expected in true_values}
-		if not trim and bool_case_sensitive:
-			assert set(parser.true_values) == set(true_values)
-		if not trim and not bool_case_sensitive:
-			assert {value.lower() for value in parser.true_values} == {expected.lower() for expected in true_values}
-			assert {value.upper() for value in parser.true_values} == {expected.upper() for expected in true_values}
+			if trim and bool_case_sensitive:
+				assert parser.true_values == {expected.strip() for expected in true_values}
+				assert parser._match_true_values == {expected.strip() for expected in true_values}
+			if trim and not bool_case_sensitive:
+				assert parser.true_values == {expected.strip() for expected in true_values}
+				assert parser._match_true_values == {expected.lower().strip() for expected in true_values}
+			if not trim and bool_case_sensitive:
+				assert parser.true_values == set(true_values)
+				assert parser._match_true_values == set(true_values)
+			if not trim and not bool_case_sensitive:
+				assert parser.true_values == set(true_values)
+				assert parser._match_true_values == {expected.lower() for expected in true_values}
 
-		if trim and bool_case_sensitive:
-			assert {value.strip() for value in parser.false_values} == {expected.strip() for expected in false_values}
-		if trim and not bool_case_sensitive:
-			assert {value.lower().strip() for value in parser.false_values} == {expected.lower().strip() for expected in false_values}
-			assert {value.upper().strip() for value in parser.false_values} == {expected.upper().strip() for expected in false_values}
-		if not trim and bool_case_sensitive:
-			assert set(parser.false_values) == set(false_values)
-		if not trim and not bool_case_sensitive:
-			assert {value.lower() for value in parser.false_values} == {expected.lower() for expected in false_values}
-			assert {value.upper() for value in parser.false_values} == {expected.upper() for expected in false_values}
+			if trim and bool_case_sensitive:
+				assert parser.false_values == {expected.strip() for expected in false_values}
+				assert parser._match_false_values == {expected.strip() for expected in false_values}
+			if trim and not bool_case_sensitive:
+				assert parser.false_values == {expected.strip() for expected in false_values}
+				assert parser._match_false_values == {expected.lower().strip() for expected in false_values}
+			if not trim and bool_case_sensitive:
+				assert parser.false_values == set(false_values)
+				assert parser._match_false_values == set(false_values)
+			if not trim and not bool_case_sensitive:
+				assert parser.false_values == set(false_values)
+				assert parser._match_false_values == {expected.lower() for expected in false_values}
 
 
 	@staticmethod
@@ -1828,65 +1851,105 @@ class TestConstructor:
 	@pytest.mark.parametrize('nan_values', [[], ["nan", "n"], [" nan ", "n\n"], ["NaN", "n"]])
 	@pytest.mark.parametrize('float_case_sensitive', [True, False])
 	def test_float_values(
+		default_parser: TypeParser,
 		trim: bool,
 		inf_values: list[str],
 		nan_values: list[str],
 		float_case_sensitive: bool,
 	):
-		parser = TypeParser(
+		configured_parser = TypeParser(
 			trim=trim,
 			inf_values=inf_values,
 			nan_values=nan_values,
 			float_case_sensitive=float_case_sensitive,
 		)
+		default_parser.trim = trim
+		default_parser.inf_values = inf_values
+		default_parser.nan_values = nan_values
+		default_parser.float_case_sensitive = float_case_sensitive
 
-		assert parser.trim == trim
-		assert parser.float_case_sensitive == float_case_sensitive
+		for parser in [configured_parser, default_parser]:
+			assert parser.trim == trim
+			assert parser._trim == trim
+			assert parser.float_case_sensitive == float_case_sensitive
+			assert parser._float_case_sensitive == float_case_sensitive
+			assert parser._original_inf_values == set(inf_values)
+			assert parser._original_nan_values == set(nan_values)
 
-		if trim and float_case_sensitive:
-			assert {value.strip() for value in parser.inf_values} == {expected.strip() for expected in inf_values}
-		if trim and not float_case_sensitive:
-			assert {value.lower().strip() for value in parser.inf_values} == {expected.lower().strip() for expected in inf_values}
-			assert {value.upper().strip() for value in parser.inf_values} == {expected.upper().strip() for expected in inf_values}
-		if not trim and float_case_sensitive:
-			assert set(parser.inf_values) == set(inf_values)
-		if not trim and not float_case_sensitive:
-			assert {value.lower() for value in parser.inf_values} == {expected.lower() for expected in inf_values}
-			assert {value.upper() for value in parser.inf_values} == {expected.upper() for expected in inf_values}
+			if trim and float_case_sensitive:
+				assert parser.inf_values == {expected.strip() for expected in inf_values}
+				assert parser._match_inf_values == {expected.strip() for expected in inf_values}
+			if trim and not float_case_sensitive:
+				assert parser.inf_values == {expected.strip() for expected in inf_values}
+				assert parser._match_inf_values == {expected.lower().strip() for expected in inf_values}
+			if not trim and float_case_sensitive:
+				assert parser.inf_values == set(inf_values)
+				assert parser._match_inf_values == set(inf_values)
+			if not trim and not float_case_sensitive:
+				assert parser.inf_values == set(inf_values)
+				assert parser._match_inf_values == {expected.lower() for expected in inf_values}
 
-		if trim and float_case_sensitive:
-			assert {value.strip() for value in parser.nan_values} == {expected.strip() for expected in nan_values}
-		if trim and not float_case_sensitive:
-			assert {value.lower().strip() for value in parser.nan_values} == {expected.lower().strip() for expected in nan_values}
-			assert {value.upper().strip() for value in parser.nan_values} == {expected.upper().strip() for expected in nan_values}
-		if not trim and float_case_sensitive:
-			assert set(parser.nan_values) == set(nan_values)
-		if not trim and not float_case_sensitive:
-			assert {value.lower() for value in parser.nan_values} == {expected.lower() for expected in nan_values}
-			assert {value.upper() for value in parser.nan_values} == {expected.upper() for expected in nan_values}
+			if trim and float_case_sensitive:
+				assert parser.nan_values == {expected.strip() for expected in nan_values}
+				assert parser._match_nan_values == {expected.strip() for expected in nan_values}
+			if trim and not float_case_sensitive:
+				assert parser.nan_values == {expected.strip() for expected in nan_values}
+				assert parser._match_nan_values == {expected.lower().strip() for expected in nan_values}
+			if not trim and float_case_sensitive:
+				assert parser.nan_values == set(nan_values)
+				assert parser._match_nan_values == set(nan_values)
+			if not trim and not float_case_sensitive:
+				assert parser.nan_values == set(nan_values)
+				assert parser._match_nan_values == {expected.lower() for expected in nan_values}
 
 
 	@staticmethod
 	@pytest.mark.parametrize('none_case_sensitive', [True, False])
 	@pytest.mark.parametrize('bool_case_sensitive', [True, False])
+	@pytest.mark.parametrize('int_case_sensitive', [True, False])
 	@pytest.mark.parametrize('float_case_sensitive', [True, False])
 	@pytest.mark.parametrize('case_sensitive', [True, False, None])
-	def test_case_sensitive(none_case_sensitive: bool, bool_case_sensitive: bool, float_case_sensitive: bool, case_sensitive: Union[bool, None]):
-		parser = TypeParser(
+	def test_case_sensitive(
+		default_parser: TypeParser,
+		none_case_sensitive: bool,
+		bool_case_sensitive: bool,
+		int_case_sensitive: bool,
+		float_case_sensitive: bool,
+		case_sensitive: Union[bool, None]
+	):
+		default_parser.none_case_sensitive = none_case_sensitive
+		default_parser.bool_case_sensitive = bool_case_sensitive
+		default_parser.int_case_sensitive = int_case_sensitive
+		default_parser.float_case_sensitive = float_case_sensitive
+		default_parser.case_sensitive = case_sensitive
+
+		configured_parser = TypeParser(
 			none_case_sensitive=none_case_sensitive,
 			bool_case_sensitive=bool_case_sensitive,
+			int_case_sensitive=int_case_sensitive,
 			float_case_sensitive=float_case_sensitive,
 			case_sensitive=case_sensitive,
 		)
 
-		if case_sensitive is None:
-			assert parser.none_case_sensitive == none_case_sensitive
-			assert parser.bool_case_sensitive == bool_case_sensitive
-			assert parser.float_case_sensitive == float_case_sensitive
-		else:
-			assert parser.none_case_sensitive == case_sensitive
-			assert parser.bool_case_sensitive == case_sensitive
-			assert parser.float_case_sensitive == case_sensitive
+		for parser in [default_parser, configured_parser]:
+			if case_sensitive is None:
+				assert parser.none_case_sensitive == none_case_sensitive
+				assert parser._none_case_sensitive == none_case_sensitive
+				assert parser.bool_case_sensitive == bool_case_sensitive
+				assert parser._bool_case_sensitive == bool_case_sensitive
+				assert parser.int_case_sensitive == int_case_sensitive
+				assert parser._int_case_sensitive == int_case_sensitive
+				assert parser.float_case_sensitive == float_case_sensitive
+				assert parser._float_case_sensitive == float_case_sensitive
+			else:
+				assert parser.none_case_sensitive == case_sensitive
+				assert parser._none_case_sensitive == case_sensitive
+				assert parser.bool_case_sensitive == case_sensitive
+				assert parser._bool_case_sensitive == case_sensitive
+				assert parser.int_case_sensitive == case_sensitive
+				assert parser._int_case_sensitive == case_sensitive
+				assert parser.float_case_sensitive == case_sensitive
+				assert parser._float_case_sensitive == case_sensitive
 
 
 	@staticmethod

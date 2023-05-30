@@ -15,7 +15,7 @@ GenericValue: TypeAlias = str
 
 
 S = TypeVar('S', bound=AnyScalar)
-"""Generic TypeVar of the non-container types recognised by `parsetypes`"""
+"""Generic TypeVar for the non-container types recognised by `parsetypes`"""
 
 
 class Nullable(Generic[S]):

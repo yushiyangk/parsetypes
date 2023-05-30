@@ -60,11 +60,11 @@ class TypeParser:
 	"""
 		A parser that can be used to infer the underlying types of data serialised as strings, and to convert them into their original underlying types.
 
-		Instances of this class can be configured with different settings for the parser and inferrer. See the constructor for more details about the available options.
+		The behaviour of the parser and the type inference can be configured either in the constructor or using mutable properties of a parser instance. See the constructor documentation for the list of available options.
 	"""
 
 	def __init__(self,
-	    *,
+		*,
 		trim: bool=True,
 		use_decimal: bool=False,
 		list_delimiter: Optional[str]=None,
@@ -82,89 +82,78 @@ class TypeParser:
 		"""
 			Initialise a new parser
 
-			Parameters
-			----------
+			The behaviour of the parser and the type inference can be configured either in the constructor or using mutable properties of a parser instance. For example,
+
+			```python
+			parser = TypeParser(list_delimiter=",")
+			assert parser.list_delimiter == ","
+			parser.list_delimiter = ";"
+			assert parser.list_delimiter == ";"
+			```
+
+			Keyword arguments
+			-----------------
 			`trim`
 			: whether leading and trailing whitespace should be stripped from strings
 
 			`use_decimal`
-			: whether non-integer numeric values should be inferred to be Decimal (exact values) instead of float (non-exact values). Note that this only applies to methods that attempt to infer type (`infer()` and `infer_*()`), and does not affect methods where the type is explicitly specified (`is_float()`, `is_decimal()`, `parse_float()`, `parse_decimal()`).
+			: whether non-integer numeric values should be inferred to be Decimal (exact values) instead of float (non-exact values). Note that this only applies to methods that attempt to infer the type (`infer()` `infer_series()`, `infer_table()`), and does not affect methods where the type is explicitly specified (`is_float()`, `is_decimal()`, `parse_float()`, `parse_decimal()`).
 
 			`list_delimiter`
-			: the delimiter used for identifying lists and for separating list items. If set to None, the parser will not attempt to identify lists when inferring types, which usually causes the value to be treated as a str instead.
+			: the delimiter used for identifying lists and for separating list items. If set to None, the parser will not attempt to identify lists when inferring types, which usually causes the value to be treated as a str instead. Note that this setting is unaffected by <code><var>parser</var>.trim</code> and <code><var>parser</var>.case_sensitive</code>, and will always be used verbatim.
 
 			`none_values`
-			: list of strings that represent the value None
+			: list of strings that represent the value `None`
 
 			`none_case_sensitive`
 			: whether matches against `none_values` should be made in a case-sensitive manner
 
 			`true_values`
-			: list of strings that represent the bool value True
+			: list of strings that represent the bool value `True`
 
 			`false_values`
-			: list of strings that represent the bool value False
+			: list of strings that represent the bool value `False`
 
 			`bool_case_sensitive`
 			: whether matches against `true_values` and `false_values` should be made in a case-sensitive manner
 
 			`int_case_sensitive`
-			: whether checks for int should be done in a case-sensitive manner. This usually only applies to values given in scientific notation, where the mantissa and exponent usually are separated by `e`.
+			: whether checks for int should be done in a case-sensitive manner. This only applies to values given in scientific notation, where the mantissa and exponent usually are separated by `e`.
 
 			`inf_values`
-			: list of strings that represent the float or Decimal value of infinity. Each of the strings can be prepended with a negative sign to represent negative infinity also.
+			: list of strings that represent the float or Decimal value of infinity. Each of the strings can also be prepended with a negative sign to represent negative infinity.
 
 			`nan_values`
 			: list of strings that represent a float or Decimal that is NaN (not a number)
 
 			`float_case_sensitive`
-			: whether checks for float should be done in a case-sensitive manner. This applies to matches against `inf_values` and `nan_values`, as well as to values given in scientific notation, where the mantissa and exponent are usually separated by `e`.
+			: whether checks for float or Decimal should be done in a case-sensitive manner. This applies to matches against `inf_values` and `nan_values`, as well as to values given in scientific notation, where the mantissa and exponent are usually separated by `e`.
 
 			`case_sensitive`
-			: whether all matches should be made in a case-sensitive manner. Sets all of `none_case_sensitive`, `bool_case_sensitive`, `int_case_sensitive`, `float_case_sensitive` to the same value, ignoring any individual settings.
+			: whether all matches should be made in a case-sensitive manner. Sets all of `none_case_sensitive`, `bool_case_sensitive`, `int_case_sensitive`, `float_case_sensitive` to the same value, discarding any individual settings.
 
 			Raises
 			------
 			`ValueError` if any of the options would lead to ambiguities during parsing
 		"""
 
-		if case_sensitive is not None:
-			none_case_sensitive = case_sensitive
-			int_case_sensitive = case_sensitive
-			bool_case_sensitive = case_sensitive
-			float_case_sensitive = case_sensitive
-
-		self.trim = trim
-		if self.trim:
-			none_values = (value.strip() for value in none_values)
-			true_values = (value.strip() for value in true_values)
-			false_values = (value.strip() for value in false_values)
-			inf_values = (value.strip() for value in inf_values)
-			nan_values = (value.strip() for value in nan_values)
-
-		self.use_decimal = use_decimal
-		self.list_delimiter = list_delimiter
-
-		self.none_case_sensitive = none_case_sensitive
-		if not self.none_case_sensitive:
-			none_values = (value.lower() for value in none_values)
-		self.none_values = set(none_values)
-
-		self.bool_case_sensitive = bool_case_sensitive
-		if not self.bool_case_sensitive:
-			true_values = (value.lower() for value in true_values)
-			false_values = (value.lower() for value in false_values)
-		self.true_values = set(true_values)
-		self.false_values = set(false_values)
-
-		self.int_case_sensitive = int_case_sensitive
-
-		self.float_case_sensitive = float_case_sensitive
-		if not self.float_case_sensitive:
-			inf_values = (value.lower() for value in inf_values)
-			nan_values = (value.lower() for value in nan_values)
-		self.inf_values = set(inf_values)
-		self.nan_values = set(nan_values)
+		self._trim: bool = False
+		self._use_decimal: bool = False
+		self._list_delimiter: Union[str, None] = None
+		self._match_none_values: set[str] = set()
+		self._original_none_values: set[str] = set()
+		self._none_case_sensitive: bool = False
+		self._match_true_values: set[str] = set()
+		self._original_true_values: set[str] = set()
+		self._match_false_values: set[str] = set()
+		self._original_false_values: set[str] = set()
+		self._bool_case_sensitive: bool = False
+		self._int_case_sensitive: bool = False
+		self._match_inf_values: set[str] = set()
+		self._original_inf_values: set[str] = set()
+		self._match_nan_values: set[str] = set()
+		self._original_nan_values: set[str] = set()
+		self._float_case_sensitive: bool = False
 
 		# Unconfigurable default values
 		self._negative_char = "-"
@@ -175,58 +164,308 @@ class TypeParser:
 		self._scientific_char = "e"
 		self._float_separator = "."
 		self._reserved_chars = self._sign_chars | self._digit_chars | self._digit_separators | {self._scientific_char} | {self._float_separator}
-		# special_chars = self._reserved_chars | self.list_delimiter
+		# special_chars = self._reserved_chars | self._list_delimiter
+
+		# Configured values
+
+		self.trim = trim
+		self.use_decimal = use_decimal
+		self.list_delimiter = list_delimiter
+
+		self.none_case_sensitive = none_case_sensitive
+		self.bool_case_sensitive = bool_case_sensitive
+		self.int_case_sensitive = int_case_sensitive
+		self.float_case_sensitive = float_case_sensitive
+		self.case_sensitive = case_sensitive
+
+		self.none_values = none_values
+
+		self.true_values = true_values
+		self.false_values = false_values
+
+		self.inf_values = inf_values
+		self.nan_values = nan_values
 
 		# Check if any special values conflict
 		for name, special_values in [
-			(_SpecialValue.LIST, [self.list_delimiter] if self.list_delimiter is not None else []),
-			(_SpecialValue.NONE, self.none_values),
-			(_SpecialValue.TRUE, self.true_values),
-			(_SpecialValue.FALSE, self.false_values),
-			(_SpecialValue.INF, self.inf_values),
-			(_SpecialValue.NAN, self.nan_values),
+			(_SpecialValue.LIST, [self._list_delimiter] if self._list_delimiter is not None else []),
+			(_SpecialValue.NONE, self._match_none_values),
+			(_SpecialValue.TRUE, self._match_true_values),
+			(_SpecialValue.FALSE, self._match_false_values),
+			(_SpecialValue.INF, self._match_inf_values),
+			(_SpecialValue.NAN, self._match_nan_values),
 		]:
 			for special_value in special_values:
-				if special_value in self._reserved_chars:
-					raise ValueError(f"cannot use reserved char as {name.value}: {special_value}")
+				self._validate_special(name, special_value)
 
-				if name != _SpecialValue.NONE and self.is_none(special_value):
-					raise ValueError(f"cannot use None value as {name.value}: {special_value}")
 
-				if (
-					(name == _SpecialValue.TRUE and self.parse_bool(special_value) != True) or
-					(name == _SpecialValue.FALSE and self.parse_bool(special_value) != False) or
-					(name != _SpecialValue.TRUE and name != _SpecialValue.FALSE and self.is_bool(special_value))
-				):
-					raise ValueError(f"cannot use bool value as {name.value}: {special_value}")
+	def _validate_special(self, name: _SpecialValue, value: str):
+		if value in self._reserved_chars:
+			raise ValueError(f"cannot use reserved char as {name.value}: {value}")
 
-				if self.is_int(special_value):
-					raise ValueError(f"cannot use int value as {name.value}: {special_value}")
+		if name != _SpecialValue.NONE and self.is_none(value):
+			raise ValueError(f"cannot use None value as {name.value}: {value}")
 
-				if self.use_decimal:
-					if (
-						(name == _SpecialValue.INF and self.parse_decimal(special_value) != Decimal(math.inf)) or
-						(name == _SpecialValue.NAN and not self.parse_decimal(special_value).is_nan()) or
-						(name != _SpecialValue.INF and name != _SpecialValue.NAN and self.is_float(special_value))
-					):
-						raise ValueError(f"cannot use Decimal value as {name}: {special_value}")
-				else:
-					if (
-						(name == _SpecialValue.INF and self.parse_float(special_value) != math.inf) or
-						(name == _SpecialValue.NAN and self.parse_float(special_value) is not math.nan) or
-						(name != _SpecialValue.INF and name != _SpecialValue.NAN and self.is_float(special_value))
-					):
-						raise ValueError(f"cannot use float value as {name}: {special_value}")
+		if (
+			(name == _SpecialValue.TRUE and self.parse_bool(value) != True) or
+			(name == _SpecialValue.FALSE and self.parse_bool(value) != False) or
+			(name != _SpecialValue.TRUE and name != _SpecialValue.FALSE and self.is_bool(value))
+		):
+			raise ValueError(f"cannot use bool value as {name.value}: {value}")
+
+		if self.is_int(value):
+			raise ValueError(f"cannot use int value as {name.value}: {value}")
+
+		if self._use_decimal:
+			if (
+				(name == _SpecialValue.INF and self.parse_decimal(value) != Decimal(math.inf)) or
+				(name == _SpecialValue.NAN and not self.parse_decimal(value).is_nan()) or
+				(name != _SpecialValue.INF and name != _SpecialValue.NAN and self.is_float(value))
+			):
+				raise ValueError(f"cannot use Decimal value as {name}: {value}")
+		else:
+			if (
+				(name == _SpecialValue.INF and self.parse_float(value) != math.inf) or
+				(name == _SpecialValue.NAN and self.parse_float(value) is not math.nan) or
+				(name != _SpecialValue.INF and name != _SpecialValue.NAN and self.is_float(value))
+			):
+				raise ValueError(f"cannot use float value as {name}: {value}")
+
+
+	@property
+	def trim(self) -> bool:
+		return self._trim
+
+	@trim.setter
+	def trim(self, value: bool):
+		if type(value) != bool:
+			raise TypeError(f"trim must be a bool: {value}")
+		if value != self._trim:
+			self._trim = value
+			self.none_values = self._original_none_values
+			self.true_values = self._original_true_values
+			self.false_values = self._original_false_values
+			self.inf_values = self._original_inf_values
+			self.nan_values = self._original_nan_values
+
+
+	@property
+	def use_decimal(self) -> bool:
+		return self._use_decimal
+
+	@use_decimal.setter
+	def use_decimal(self, value: bool):
+		if type(value) != bool:
+			raise TypeError(f"use_decimal must be a bool: {value}")
+		self._use_decimal = value
+
+
+	@property
+	def list_delimiter(self) -> Union[str, None]:
+		return self._list_delimiter
+
+	@list_delimiter.setter
+	def list_delimiter(self, value: Union[str, None]):
+		if value is not None and type(value) != str:
+			raise TypeError(f"list_delimiter must be a str or None: {value}")
+		if value is not None:
+			self._validate_special(_SpecialValue.LIST, value)
+		self._list_delimiter = value
+
+
+	@property
+	def none_values(self) -> set[str]:
+		if self._trim:
+			return {value.strip() for value in self._original_none_values}
+		else:
+			return self._original_none_values
+
+	@none_values.setter
+	def none_values(self, values: Iterable[str]):
+		if not isinstance(values, Iterable):
+			raise TypeError(f"none_values must be an Iterable: {values}")
+		for i, value in enumerate(values):
+			if type(value) != str:
+				raise TypeError(f"each item in none_values must be a str: {value} at index {i}")
+		self._original_none_values = set(values)
+		if self._trim:
+			values = (value.strip() for value in values)
+		if not self._none_case_sensitive:
+			values = (value.lower() for value in values)
+		self._match_none_values = set(values)
+
+
+	@property
+	def none_case_sensitive(self) -> bool:
+		return self._none_case_sensitive
+
+	@none_case_sensitive.setter
+	def none_case_sensitive(self, value: bool):
+		if type(value) != bool:
+			raise TypeError(f"none_case_sensitive must be a bool: {value}")
+		if value != self._none_case_sensitive:
+			self._none_case_sensitive = value
+			self.none_values = self._original_none_values
+
+
+	@property
+	def true_values(self) -> set[str]:
+		if self._trim:
+			return {value.strip() for value in self._original_true_values}
+		else:
+			return self._original_true_values
+
+	@true_values.setter
+	def true_values(self, values: Iterable[str]):
+		if not isinstance(values, Iterable):
+			raise TypeError(f"true_values must be an Iterable: {values}")
+		for i, value in enumerate(values):
+			if type(value) != str:
+				raise TypeError(f"each item in true_values must be a str: {value} at index {i}")
+		self._original_true_values = set(values)
+		if self._trim:
+			values = (value.strip() for value in values)
+		if not self._bool_case_sensitive:
+			values = (value.lower() for value in values)
+		self._match_true_values = set(values)
+
+
+	@property
+	def false_values(self) -> set[str]:
+		if self._trim:
+			return {value.strip() for value in self._original_false_values}
+		else:
+			return self._original_false_values
+
+	@false_values.setter
+	def false_values(self, values: Iterable[str]):
+		if not isinstance(values, Iterable):
+			raise TypeError(f"false_values must be an Iterable: {values}")
+		for i, value in enumerate(values):
+			if type(value) != str:
+				raise TypeError(f"each item in false_values must be a str: {value} at index {i}")
+		self._original_false_values = set(values)
+		if self._trim:
+			values = (value.strip() for value in values)
+		if not self._bool_case_sensitive:
+			values = (value.lower() for value in values)
+		self._match_false_values = set(values)
+
+
+	@property
+	def bool_case_sensitive(self) -> bool:
+		return self._bool_case_sensitive
+
+	@bool_case_sensitive.setter
+	def bool_case_sensitive(self, value: bool):
+		if type(value) != bool:
+			raise TypeError(f"bool_case_sensitive must be a bool: {value}")
+		if value != self._bool_case_sensitive:
+			self._bool_case_sensitive = value
+			self.true_values = self._original_true_values
+			self.false_values = self._original_false_values
+
+
+	@property
+	def int_case_sensitive(self) -> bool:
+		return self._int_case_sensitive
+
+	@int_case_sensitive.setter
+	def int_case_sensitive(self, value: bool):
+		if type(value) != bool:
+			raise TypeError(f"int_case_sensitive must be a bool: {value}")
+		self._int_case_sensitive = value
+
+
+	@property
+	def inf_values(self) -> set[str]:
+		if self._trim:
+			return {value.strip() for value in self._original_inf_values}
+		else:
+			return self._original_inf_values
+
+	@inf_values.setter
+	def inf_values(self, values: Iterable[str]):
+		if not isinstance(values, Iterable):
+			raise TypeError(f"inf_values must be an Iterable: {values}")
+		for i, value in enumerate(values):
+			if type(value) != str:
+				raise TypeError(f"each item in inf_values must be a str: {value} at index {i}")
+		self._original_inf_values = set(values)
+		if self._trim:
+			values = (value.strip() for value in values)
+		if not self._float_case_sensitive:
+			values = (value.lower() for value in values)
+		self._match_inf_values = set(values)
+
+
+	@property
+	def nan_values(self) -> set[str]:
+		values = self._original_nan_values
+		if self._trim:
+			return {value.strip() for value in self._original_nan_values}
+		else:
+			return self._original_nan_values
+
+	@nan_values.setter
+	def nan_values(self, values: Iterable[str]):
+		if not isinstance(values, Iterable):
+			raise TypeError(f"nan_values must be an Iterable: {values}")
+		for i, value in enumerate(values):
+			if type(value) != str:
+				raise TypeError(f"each item in nan_values must be a str: {value} at index {i}")
+		self._original_nan_values = set(values)
+		if self._trim:
+			values = (value.strip() for value in values)
+		if not self._float_case_sensitive:
+			values = (value.lower() for value in values)
+		self._match_nan_values = set(values)
+
+
+	@property
+	def float_case_sensitive(self) -> bool:
+		return self._float_case_sensitive
+
+	@float_case_sensitive.setter
+	def float_case_sensitive(self, value: bool):
+		if type(value) != bool:
+			raise TypeError(f"float_case_sensitive must be a bool: {value}")
+		if value != self._float_case_sensitive:
+			self._float_case_sensitive = value
+			self.inf_values = self._original_inf_values
+			self.nan_values = self._original_nan_values
+
+
+	@property
+	def case_sensitive(self) -> Union[bool, None]:
+		if (
+			self._none_case_sensitive == self._bool_case_sensitive and
+			self._none_case_sensitive == self._int_case_sensitive and
+			self._none_case_sensitive == self._float_case_sensitive
+		):
+			return self._none_case_sensitive
+		else:
+			return None
+
+	@case_sensitive.setter
+	def case_sensitive(self, value: Union[bool, None]):
+		if value is not None and type(value) != bool:
+			raise TypeError(f"case_sensitive must be a bool or None: {value}")
+		if value is not None:
+			self.none_case_sensitive = value
+			self.int_case_sensitive = value
+			self.bool_case_sensitive = value
+			self.float_case_sensitive = value
 
 
 	def is_none(self, value: str) -> bool:
 		"""
 			Check if a string represents the value None
 
-			Only strings that match the values in `self.none_values` will be interpreted as None. The default accepted values are `[""]`, i.e. an empty string. The case sensitivity of this matching depends on `self.none_case_sensitive`, which is False by default.
+			Only strings that match the values in <code><var>parser</var>.none_values</code> will be interpreted as None. The default accepted values are `[""]`, i.e. an empty string. The case sensitivity of this matching depends on <code><var>parser</var>.none_case_sensitive</code>, which is False by default.
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`value`
 			: string to be checked
 
@@ -238,16 +477,16 @@ class TypeParser:
 			--------
 			```python
 			parser = TypeParser()
-			parser.parse_bool("")     # True
-			parser.parse_bool("abc")  # False
+			parser.is_none("")     # True
+			parser.is_none("abc")  # False
 			```
 		"""
-		if self.trim:
+		if self._trim:
 			value = value.strip()
-		if not self.bool_case_sensitive:
+		if not self._bool_case_sensitive:
 			value = value.lower()
 
-		if value in self.none_values:
+		if value in self._match_none_values:
 			return True
 		else:
 			return False
@@ -257,10 +496,10 @@ class TypeParser:
 		"""
 			Check if a string represents a bool
 
-			Only strings that match the values in `self.true_values` and `self.false_values` will be interpreted as booleans. The default accepted values are `["true"]` and `["false"]` respectively. The case sensitivity of this matching depends on `self.bool_case_sensitive`, which is False by default.
+			Only strings that match the values in <code><var>parser</var>.true_values</code> and <code><var>parser</var>.false_values</code> will be interpreted as booleans. The default accepted values are `["true"]` and `["false"]` respectively. The case sensitivity of this matching depends on <code><var>parser</var>.bool_case_sensitive</code>, which is False by default.
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`value`
 			: string to be checked
 
@@ -277,14 +516,14 @@ class TypeParser:
 			parser.is_bool("abc")   # False
 			```
 		"""
-		if self.trim:
+		if self._trim:
 			value = value.strip()
 
-		if not self.bool_case_sensitive:
+		if not self._bool_case_sensitive:
 			value = value.lower()
-		if value in self.true_values:
+		if value in self._match_true_values:
 			return True
-		if value in self.false_values:
+		if value in self._match_false_values:
 			return True
 
 		return False
@@ -294,10 +533,13 @@ class TypeParser:
 		"""
 			Check if a string represents an int
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`value`
 			: string to be checked
+
+			Keyword arguments
+			-----------------
 
 			`allow_negative`
 			: whether to accept negative values
@@ -322,14 +564,14 @@ class TypeParser:
 			parser.is_int("")     # False
 			```
 		"""
-		if self.trim:
+		if self._trim:
 			value = value.strip()
 
 		if len(value) == 0:
 			return False
 
 		if allow_scientific:
-			value, exp = _decompose_string_pair(value, self._scientific_char, self.int_case_sensitive)
+			value, exp = _decompose_string_pair(value, self._scientific_char, self._int_case_sensitive)
 			if exp is not None:
 				return self.is_int(
 					value, allow_sign=True, allow_negative=allow_negative, allow_scientific=False
@@ -369,19 +611,22 @@ class TypeParser:
 
 			Alias: `is_decimal()`
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`value`
 			: string to be checked
+
+			Keyword arguments
+			-----------------
 
 			`allow_scientific`
 			: whether to accept scientific notation. If True, strings of the form <code>"<var>M</var>e<var>X</var>"</code> will be interpreted as the expression <code><var>M</var> * (10 ** <var>X</var>)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note that <var>X</var> must be an integer, but can be negative.
 
 			`allow_inf`
-			: whether to accept positive and negative infinity values. If True, strings that match the values in `self.inf_values` (empty by default) are interpreted as infinity, or as negative infinity if prepended by a negative sign. The case sensitivity of this matching depends on `self.float_case_sensitive`, which is False by default.
+			: whether to accept positive and negative infinity values. If True, strings that match the values in <code><var>parser</var>.inf_values</code> (empty set by default) are interpreted as infinity, or as negative infinity if prepended by a negative sign. The case sensitivity of this matching depends on <code><var>parser</var>.float_case_sensitive</code>, which is False by default.
 
 			`allow_nan`
-			: whether to accept NaN (not a number) representations. If True, strings that match the values in `self.nan_values` (empty by default) are interpeted as NaN. The case sensitivity of this matching depends on `self.float_case_sensitive`, which is False by default.
+			: whether to accept NaN (not a number) representations. If True, strings that match the values in <code><var>parser</var>.nan_values</code> (empty set by default) are interpeted as NaN. The case sensitivity of this matching also depends on <code><var>parser</var>.float_case_sensitive</code>, which is False by default.
 
 			Returns
 			-------
@@ -397,30 +642,30 @@ class TypeParser:
 			parser.is_float("")         # False
 			```
 		"""
-		if self.trim:
+		if self._trim:
 			value = value.strip()
 
 		if len(value) > 0 and value[0] in self._sign_chars:
 			value = value[1:]
 
-		if self.float_case_sensitive:
+		if self._float_case_sensitive:
 			special_value = value
 		else:
 			special_value = value.lower()
-		if allow_inf and special_value in self.inf_values:
+		if allow_inf and special_value in self._match_inf_values:
 			return True
-		if allow_nan and special_value in self.nan_values:
+		if allow_nan and special_value in self._match_nan_values:
 			return True
 
 		if len(value) == 0:
 			return False
 
 		if allow_scientific:
-			value, exp = _decompose_string_pair(value, self._scientific_char, self.float_case_sensitive)
+			value, exp = _decompose_string_pair(value, self._scientific_char, self._float_case_sensitive)
 			if exp is not None:
 				return self.is_float(value, allow_scientific=False, allow_inf=False, allow_nan=False) and self.is_int(exp, allow_sign=True, allow_negative=True, allow_scientific=False)
 
-		value, frac = _decompose_string_pair(value, self._float_separator, self.float_case_sensitive)
+		value, frac = _decompose_string_pair(value, self._float_separator, self._float_case_sensitive)
 		if frac is not None:
 			if value == "" and frac == "":
 				return False
@@ -444,10 +689,10 @@ class TypeParser:
 		"""
 			Parse a string and return it as the value None if possible
 
-			Only strings that match the values in `self.none_values` will be interpreted as None. The default accepted values are `[""]`, i.e. an empty string. The case sensitivity of this matching depends on `self.none_case_sensitive`, which is False by default.
+			Only strings that match the values in <code><var>parser</var>.none_values</code> will be interpreted as None. The default accepted values are `[""]`, i.e. an empty string. The case sensitivity of this matching depends on <code><var>parser</var>.none_case_sensitive</code>, which is False by default.
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`value`
 			: string to be parsed
 
@@ -463,8 +708,8 @@ class TypeParser:
 			--------
 			```python
 			parser = TypeParser()
-			parser.parse_bool("")     # None
-			parser.parse_bool("abc")  # raises ValueError
+			parser.parse_none("")     # None
+			parser.parse_none("abc")  # raises ValueError
 			```
 		"""
 		if self.is_none(value):
@@ -477,10 +722,10 @@ class TypeParser:
 		"""
 			Parse a string and return it as a bool if possible
 
-			Only strings that match the values in `self.true_values` and `self.false_values` will be interpreted as booleans. The default accepted values are `["true"]` and `["false"]` respectively. The case sensitivity of this matching depends on `self.bool_case_sensitive`, which is False by default.
+			Only strings that match the values in <code><var>parser</var>.true_values</code> and <code><var>parser</var>.false_values</code> will be interpreted as booleans. The default accepted values are `["true"]` and `["false"]` respectively. The case sensitivity of this matching depends on <code><var>parser</var>.bool_case_sensitive</code>, which is False by default.
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`value`
 			: string to be parsed
 
@@ -500,16 +745,17 @@ class TypeParser:
 			parser.parse_bool("FALSE")  # False
 			```
 		"""
-		if self.trim:
+		if self._trim:
 			value = value.strip()
 
-		if self.bool_case_sensitive:
+		if self._bool_case_sensitive:
 			special_value = value
 		else:
 			special_value = value.lower()
-		if special_value in self.true_values:
+
+		if special_value in self._match_true_values:
 			return True
-		if special_value in self.false_values:
+		if special_value in self._match_false_values:
 			return False
 
 		raise ValueError(f"not a boolean: {value}")
@@ -521,10 +767,13 @@ class TypeParser:
 
 			If the string represents a bool, it will be converted to `1` for True and `0` for False.
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`value`
 			: string to be parsed
+
+			Keyword arguments
+			-----------------
 
 			`allow_scientific`
 			: whether to accept scientific notation. If True, strings of the form <code>"<var>M</var>e<var>X</var>"</code> will be interpreted as the expression <code><var>M</var> * (10 ** <var>X</var>)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note that <var>M</var> must be an integer and <var>X</var> must be a non-negative integer, even in cases where the expression would evaluate mathematically to an integer.
@@ -546,12 +795,12 @@ class TypeParser:
 			parser.parse_int("2e3")  # 2000
 			```
 		"""
-		if self.trim:
+		if self._trim:
 			value = value.strip()
 
 		if self.is_int(value, allow_sign=True, allow_negative=True, allow_scientific=allow_scientific):
 			if allow_scientific:
-				value, exp = _decompose_string_pair(value, self._scientific_char, self.int_case_sensitive)
+				value, exp = _decompose_string_pair(value, self._scientific_char, self._int_case_sensitive)
 				if exp is not None:
 					if value[0] in (self._negative_chars - {self._negative_char}):
 						value = self._negative_char + value[1:]
@@ -577,30 +826,30 @@ class TypeParser:
 		allow_inf: bool=True,
 		allow_nan: bool=True
 	) -> _FloatLike:
-		if self.trim:
+		if self._trim:
 			value = value.strip()
 		if self.is_float(value, allow_scientific=allow_scientific, allow_inf=allow_inf, allow_nan=allow_nan):
-			if self.float_case_sensitive:
+			if self._float_case_sensitive:
 				special_value = value
 			else:
 				special_value = value.lower()
-			if allow_inf and special_value in self.inf_values:
+			if allow_inf and special_value in self._match_inf_values:
 				return inf_value
-			if allow_nan and special_value in self.nan_values:
+			if allow_nan and special_value in self._match_nan_values:
 				return nan_value
 
 			if len(value) > 0 and value[0] in self._sign_chars:
 				positive_part = value[1:]
-				if self.float_case_sensitive:
+				if self._float_case_sensitive:
 					special_value = positive_part
 				else:
 					special_value = positive_part.lower()
-				if allow_inf and special_value in self.inf_values:
+				if allow_inf and special_value in self._match_inf_values:
 					if value[0] in self._negative_chars:
 						return -1 * inf_value
 					else:
 						return inf_value
-				if allow_nan and special_value in self.nan_values:
+				if allow_nan and special_value in self._match_nan_values:
 					return nan_value
 
 				if value[0] in self._negative_chars:
@@ -620,19 +869,22 @@ class TypeParser:
 
 			Behaves analogously to `parse_decimal()`, except that that returns an exact Decimal instead.
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`value`
 			: string to be parsed
+
+			Keyword arguments
+			-----------------
 
 			`allow_scientific`
 			: whether to accept scientific notation. If True, strings of the form <code>"<var>M</var>e<var>X</var>"</code> will be interpreted as the expression <code><var>M</var> * (10 ** <var>X</var>)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note that <var>X</var> must be an integer, but can be negative.
 
 			`allow_inf`
-			: whether to accept positive and negative infinity values. If True, strings that match the values in `self.inf_values` (empty by default) are interpreted as infinity, or as negative infinity if prepended by a negative sign. The case sensitivity of this matching depends on `self.float_case_sensitive`, which is False by default.
+			: whether to accept positive and negative infinity values. If True, strings that match the values in <code><var>parser</var>.inf_values</code> (empty set by default) are interpreted as infinity, or as negative infinity if prepended by a negative sign. The case sensitivity of this matching depends on <code><var>parser</var>.float_case_sensitive</code>, which is False by default.
 
 			`allow_nan`
-			: whether to accept NaN (not a number) representations. If True, strings that match the values in `self.nan_values` (empty by default) are interpeted as NaN. The case sensitivity of this matching depends on `self.float_case_sensitive`, which is False by default.
+			: whether to accept NaN (not a number) representations. If True, strings that match the values in <code><var>parser</var>.nan_values</code> (empty set by default) are interpeted as NaN. The case sensitivity of this matching also depends on <code><var>parser</var>.float_case_sensitive</code>, which is False by default.
 
 			Returns
 			-------
@@ -667,19 +919,22 @@ class TypeParser:
 
 			Behaves analogously to `parse_float()`, except that that returns a non-exact float instead.
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`value`
 			: string to be parsed
+
+			Keyword arguments
+			-----------------
 
 			`allow_scientific`
 			: whether to accept scientific notation. If True, strings of the form <code>"<var>M</var>e<var>X</var>"</code> will be interpreted as the expression <code><var>M</var> * (10 ** <var>X</var>)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note that <var>X</var> must be an integer, but can be negative.
 
 			`allow_inf`
-			: whether to accept positive and negative infinity values. If True, strings that match the values in `self.inf_values` (empty by default) are interpreted as infinity, or as negative infinity if prepended by a negative sign. The case sensitivity of this matching depends on `self.float_case_sensitive`, which is False by default.
+			: whether to accept positive and negative infinity values. If True, strings that match the values in <code><var>parser</var>.inf_values</code> (empty set by default) are interpreted as infinity, or as negative infinity if prepended by a negative sign. The case sensitivity of this matching depends on <code><var>parser</var>.float_case_sensitive</code>, which is False by default.
 
 			`allow_nan`
-			: whether to accept NaN (not a number) representations. If True, strings that match the values in `self.nan_values` (empty by default) are interpeted as NaN. The case sensitivity of this matching depends on `self.float_case_sensitive`, which is False by default.
+			: whether to accept NaN (not a number) representations. If True, strings that match the values in <code><var>parser</var>.nan_values</code> (empty set by default) are interpeted as NaN. The case sensitivity of this matching also depends on <code><var>parser</var>.float_case_sensitive</code>, which is False by default.
 
 			Returns
 			-------
@@ -710,10 +965,10 @@ class TypeParser:
 		"""
 			Infer the underlying type of a string
 
-			Also check for inline lists if `self.list_delimiter` is not None.
+			Also check for inline lists if <code><var>parser</var>.list_delimiter</code> is not None.
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`value`
 			: the string for which the type should be inferred
 
@@ -737,17 +992,17 @@ class TypeParser:
 		if self.is_int(value):
 			return int
 		if self.is_float(value):
-			if self.use_decimal:
+			if self._use_decimal:
 				return Decimal
 			else:
 				return float
 
-		if self.trim:
+		if self._trim:
 			value = value.strip()
 
-		if self.list_delimiter is not None and self.list_delimiter in value:
-			subvalues = value.split(self.list_delimiter)
-			if self.trim:
+		if self._list_delimiter is not None and self._list_delimiter in value:
+			subvalues = value.split(self._list_delimiter)
+			if self._trim:
 				subvalues = [subvalue.strip() for subvalue in subvalues]
 			reduced_type = reduce_types(self.infer(subvalue) for subvalue in subvalues)
 			r = list[reduced_type]
@@ -762,8 +1017,8 @@ class TypeParser:
 
 			If the values in the series do not have the same apparent type, the resulting type will be narrowest possible type that will encompass all values in the series. See `parsetypes.reduce_types()` for more information.
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`values`
 			: series of strings for which the type should be inferred
 
@@ -791,8 +1046,8 @@ class TypeParser:
 
 			Note that the individual inferred types of every value in the table must be able to fit into memory.
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`rows`
 			: table of strings for which the types should be inferred, in row-major order
 
@@ -834,8 +1089,8 @@ class TypeParser:
 
 			Valid values for `target_type` include any return value from `infer()`, `infer_series()` and `infer_table()`. To infer and convert the string automatically, use `parse()`, `parse_series()` or `parse_table()` instead.
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`value`
 			: the string to be converted
 
@@ -886,8 +1141,8 @@ class TypeParser:
 				else:
 					return value
 		elif base == list:
-			subvalues = value.split(self.list_delimiter)
-			if self.trim:
+			subvalues = value.split(self._list_delimiter)
+			if self._trim:
 				subvalues = [subvalue.strip() for subvalue in subvalues]
 			if type_args is not None and len(type_args) == 1 and type_args[0] != str:
 				subtype = type_args[0]
@@ -902,8 +1157,8 @@ class TypeParser:
 		"""
 			Parse a string and convert it to its underlying type
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`value`
 			: the string to be parsed
 
@@ -929,8 +1184,8 @@ class TypeParser:
 
 			If the values in the series do not have the same apparent type, the common type is taken as the narrowest possible type that will encompass all values in the series. See `parsetypes.reduce_types()` for more information.
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`values`
 			: series of strings to be parsed
 
@@ -960,10 +1215,10 @@ class TypeParser:
 
 			Note that the type to which the values should be converted is determined by `infer_table()`, and so the individual inferred types of every value in the table must be able to fit into memory.
 
-			This is a function that computes the entire table and returns it all at once. The generator `iterate_table()` behaves analogously, except that it computes and yields each row one at a time.
+			This is a function that computes the entire table and returns it all at once. The generator function `iterate_table()` behaves analogously, except that it computes and yields each row one at a time instead.
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`rows`
 			: table of strings to be parsed, in row-major order
 
@@ -999,15 +1254,17 @@ class TypeParser:
 
 			For each column, if the values do not have the same apparent type, the common type is taken as the narrowest possible type that will encompass all values in the column. See `parsetypes.reduce_types()` for more information.
 
-			This is a generator that computes and yields each row one at a time. The function `parse_table()` behaves analogously, except that it computes the entire table and returns it as a list of lists. However, note that although this is a generator, the type to which the value sshould be converted is still determined by `infer_table()`, and so the individual inferred types of every value in the table must be able to fit into memory.
+			This is a generator function that computes and yields each row one at a time. However, note that in order to determine the types to which each column should be converted, the individual inferred types of every value in the table must still be able to fit into memory.
 
-			Parameters
-			----------
+			The function `parse_table()` behaves analogously, except that it computes the entire table and returns it as a list of lists instead.
+
+			Arguments
+			---------
 			`rows`
 			: table of strings to be parsed, in row-major order
 
 			Yields
-			-------
+			------
 			each row of converted table values
 
 			Examples

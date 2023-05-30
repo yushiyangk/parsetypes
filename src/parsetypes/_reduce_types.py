@@ -160,8 +160,8 @@ def reduce_types(types: Iterable[AnyValueType]) -> AnyValueType:
 
 		This operation is useful in cases such as parsing a CSV file where each column should have a consistent type, but where the individual values in a column could be interpreted variously as ints or floats (or other types).
 
-		Parameters
-		----------
+		Arguments
+		---------
 		`types`
 		: types to be reduced
 
