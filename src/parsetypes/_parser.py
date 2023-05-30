@@ -464,8 +464,8 @@ class TypeParser:
 
 			Only strings that match the values in <code><var>parser</var>.none_values</code> will be interpreted as None. The default accepted values are `[""]`, i.e. an empty string. The case sensitivity of this matching depends on <code><var>parser</var>.none_case_sensitive</code>, which is False by default.
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`value`
 			: string to be checked
 
@@ -498,8 +498,8 @@ class TypeParser:
 
 			Only strings that match the values in <code><var>parser</var>.true_values</code> and <code><var>parser</var>.false_values</code> will be interpreted as booleans. The default accepted values are `["true"]` and `["false"]` respectively. The case sensitivity of this matching depends on <code><var>parser</var>.bool_case_sensitive</code>, which is False by default.
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`value`
 			: string to be checked
 
@@ -533,10 +533,13 @@ class TypeParser:
 		"""
 			Check if a string represents an int
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`value`
 			: string to be checked
+
+			Keyword arguments
+			-----------------
 
 			`allow_negative`
 			: whether to accept negative values
@@ -608,10 +611,13 @@ class TypeParser:
 
 			Alias: `is_decimal()`
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`value`
 			: string to be checked
+
+			Keyword arguments
+			-----------------
 
 			`allow_scientific`
 			: whether to accept scientific notation. If True, strings of the form <code>"<var>M</var>e<var>X</var>"</code> will be interpreted as the expression <code><var>M</var> * (10 ** <var>X</var>)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note that <var>X</var> must be an integer, but can be negative.
@@ -685,8 +691,8 @@ class TypeParser:
 
 			Only strings that match the values in <code><var>parser</var>.none_values</code> will be interpreted as None. The default accepted values are `[""]`, i.e. an empty string. The case sensitivity of this matching depends on <code><var>parser</var>.none_case_sensitive</code>, which is False by default.
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`value`
 			: string to be parsed
 
@@ -718,8 +724,8 @@ class TypeParser:
 
 			Only strings that match the values in <code><var>parser</var>.true_values</code> and <code><var>parser</var>.false_values</code> will be interpreted as booleans. The default accepted values are `["true"]` and `["false"]` respectively. The case sensitivity of this matching depends on <code><var>parser</var>.bool_case_sensitive</code>, which is False by default.
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`value`
 			: string to be parsed
 
@@ -761,10 +767,13 @@ class TypeParser:
 
 			If the string represents a bool, it will be converted to `1` for True and `0` for False.
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`value`
 			: string to be parsed
+
+			Keyword arguments
+			-----------------
 
 			`allow_scientific`
 			: whether to accept scientific notation. If True, strings of the form <code>"<var>M</var>e<var>X</var>"</code> will be interpreted as the expression <code><var>M</var> * (10 ** <var>X</var>)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note that <var>M</var> must be an integer and <var>X</var> must be a non-negative integer, even in cases where the expression would evaluate mathematically to an integer.
@@ -860,10 +869,13 @@ class TypeParser:
 
 			Behaves analogously to `parse_decimal()`, except that that returns an exact Decimal instead.
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`value`
 			: string to be parsed
+
+			Keyword arguments
+			-----------------
 
 			`allow_scientific`
 			: whether to accept scientific notation. If True, strings of the form <code>"<var>M</var>e<var>X</var>"</code> will be interpreted as the expression <code><var>M</var> * (10 ** <var>X</var>)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note that <var>X</var> must be an integer, but can be negative.
@@ -907,10 +919,13 @@ class TypeParser:
 
 			Behaves analogously to `parse_float()`, except that that returns a non-exact float instead.
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`value`
 			: string to be parsed
+
+			Keyword arguments
+			-----------------
 
 			`allow_scientific`
 			: whether to accept scientific notation. If True, strings of the form <code>"<var>M</var>e<var>X</var>"</code> will be interpreted as the expression <code><var>M</var> * (10 ** <var>X</var>)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note that <var>X</var> must be an integer, but can be negative.
@@ -952,8 +967,8 @@ class TypeParser:
 
 			Also check for inline lists if <code><var>parser</var>.list_delimiter</code> is not None.
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`value`
 			: the string for which the type should be inferred
 
@@ -1002,8 +1017,8 @@ class TypeParser:
 
 			If the values in the series do not have the same apparent type, the resulting type will be narrowest possible type that will encompass all values in the series. See `parsetypes.reduce_types()` for more information.
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`values`
 			: series of strings for which the type should be inferred
 
@@ -1031,8 +1046,8 @@ class TypeParser:
 
 			Note that the individual inferred types of every value in the table must be able to fit into memory.
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`rows`
 			: table of strings for which the types should be inferred, in row-major order
 
@@ -1074,8 +1089,8 @@ class TypeParser:
 
 			Valid values for `target_type` include any return value from `infer()`, `infer_series()` and `infer_table()`. To infer and convert the string automatically, use `parse()`, `parse_series()` or `parse_table()` instead.
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`value`
 			: the string to be converted
 
@@ -1142,8 +1157,8 @@ class TypeParser:
 		"""
 			Parse a string and convert it to its underlying type
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`value`
 			: the string to be parsed
 
@@ -1169,8 +1184,8 @@ class TypeParser:
 
 			If the values in the series do not have the same apparent type, the common type is taken as the narrowest possible type that will encompass all values in the series. See `parsetypes.reduce_types()` for more information.
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`values`
 			: series of strings to be parsed
 
@@ -1202,8 +1217,8 @@ class TypeParser:
 
 			This is a function that computes the entire table and returns it all at once. The generator function `iterate_table()` behaves analogously, except that it computes and yields each row one at a time instead.
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`rows`
 			: table of strings to be parsed, in row-major order
 
@@ -1243,13 +1258,13 @@ class TypeParser:
 
 			The function `parse_table()` behaves analogously, except that it computes the entire table and returns it as a list of lists instead.
 
-			Parameters
-			----------
+			Arguments
+			---------
 			`rows`
 			: table of strings to be parsed, in row-major order
 
 			Yields
-			-------
+			------
 			each row of converted table values
 
 			Examples
