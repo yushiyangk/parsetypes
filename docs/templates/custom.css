@@ -1,9 +1,9 @@
-.pdoc .attribution {
+nav.pdoc .attribution {
 	font-size: small;
 	display: none;
 }
 
-.pdoc .attribution img {
+nav.pdoc .attribution img {
 	height: 2em;
 	width: unset;
 	margin-left: 0.1em;
@@ -11,6 +11,10 @@
 
 nav.pdoc .function::after {
 	content: none;
+}
+
+.pdoc > section:not(.module-info) h2 {
+	font-size: 1.3rem;
 }
 
 .pdoc code {
