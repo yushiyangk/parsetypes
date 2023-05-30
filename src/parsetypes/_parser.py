@@ -157,6 +157,8 @@ class TypeParser:
 		self._reserved_chars = self._sign_chars | self._digit_chars | self._digit_separators | {self._scientific_char} | {self._float_separator}
 		# special_chars = self._reserved_chars | self._list_delimiter
 
+		# Configured values
+
 		self.trim = trim
 		self.use_decimal = use_decimal
 		self.list_delimiter = list_delimiter
@@ -264,12 +266,10 @@ class TypeParser:
 
 	@property
 	def none_values(self) -> set[str]:
-		values = self._original_none_values
 		if self._trim:
-			values = (value.strip() for value in values)
-		if not self._none_case_sensitive:
-			values = (value.lower() for value in values)
-		return set(values)
+			return {value.strip() for value in self._original_none_values}
+		else:
+			return self._original_none_values
 
 	@none_values.setter
 	def none_values(self, values: Iterable[str]):
@@ -301,12 +301,10 @@ class TypeParser:
 
 	@property
 	def true_values(self) -> set[str]:
-		values = self._original_true_values
 		if self._trim:
-			values = (value.strip() for value in values)
-		if not self._bool_case_sensitive:
-			values = (value.lower() for value in values)
-		return set(values)
+			return {value.strip() for value in self._original_true_values}
+		else:
+			return self._original_true_values
 
 	@true_values.setter
 	def true_values(self, values: Iterable[str]):
@@ -325,12 +323,10 @@ class TypeParser:
 
 	@property
 	def false_values(self) -> set[str]:
-		values = self._original_false_values
 		if self._trim:
-			values = (value.strip() for value in values)
-		if not self._bool_case_sensitive:
-			values = (value.lower() for value in values)
-		return set(values)
+			return {value.strip() for value in self._original_false_values}
+		else:
+			return self._original_false_values
 
 	@false_values.setter
 	def false_values(self, values: Iterable[str]):
@@ -374,12 +370,10 @@ class TypeParser:
 
 	@property
 	def inf_values(self) -> set[str]:
-		values = self._original_inf_values
 		if self._trim:
-			values = (value.strip() for value in values)
-		if not self._float_case_sensitive:
-			values = (value.lower() for value in values)
-		return set(values)
+			return {value.strip() for value in self._original_inf_values}
+		else:
+			return self._original_inf_values
 
 	@inf_values.setter
 	def inf_values(self, values: Iterable[str]):
@@ -400,10 +394,9 @@ class TypeParser:
 	def nan_values(self) -> set[str]:
 		values = self._original_nan_values
 		if self._trim:
-			values = (value.strip() for value in values)
-		if not self._float_case_sensitive:
-			values = (value.lower() for value in values)
-		return set(values)
+			return {value.strip() for value in self._original_nan_values}
+		else:
+			return self._original_nan_values
 
 	@nan_values.setter
 	def nan_values(self, values: Iterable[str]):
