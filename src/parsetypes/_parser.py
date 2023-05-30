@@ -60,7 +60,7 @@ class TypeParser:
 	"""
 		A parser that can be used to infer the underlying types of data serialised as strings, and to convert them into their original underlying types.
 
-		Instances of this class can be configured with different settings for the parser and inferrer. See the constructor for more details about the available options.
+		The behaviour of the parser and the type inference can be configured either in the constructor or using mutable properties of a parser instance. See the constructor documentation for the list of available options.
 	"""
 
 	def __init__(self,
@@ -82,46 +82,55 @@ class TypeParser:
 		"""
 			Initialise a new parser
 
-			Parameters
-			----------
+			The behaviour of the parser and the type inference can be configured either in the constructor or using mutable properties of a parser instance. For example,
+
+			```python
+			parser = TypeParser(list_delimiter=",")
+			assert parser.list_delimiter == ","
+			parser.list_delimiter = ";"
+			assert parser.list_delimiter == ";"
+			```
+
+			Keyword arguments
+			-----------------
 			`trim`
 			: whether leading and trailing whitespace should be stripped from strings
 
 			`use_decimal`
-			: whether non-integer numeric values should be inferred to be Decimal (exact values) instead of float (non-exact values). Note that this only applies to methods that attempt to infer type (`infer()` and `infer_*()`), and does not affect methods where the type is explicitly specified (`is_float()`, `is_decimal()`, `parse_float()`, `parse_decimal()`).
+			: whether non-integer numeric values should be inferred to be Decimal (exact values) instead of float (non-exact values). Note that this only applies to methods that attempt to infer the type (`infer()` `infer_series()`, `infer_table()`), and does not affect methods where the type is explicitly specified (`is_float()`, `is_decimal()`, `parse_float()`, `parse_decimal()`).
 
 			`list_delimiter`
-			: the delimiter used for identifying lists and for separating list items. If set to None, the parser will not attempt to identify lists when inferring types, which usually causes the value to be treated as a str instead. Note that this setting is unaffected by `self.trim` and `self.case_sensitive`, and will always be used verbatim.
+			: the delimiter used for identifying lists and for separating list items. If set to None, the parser will not attempt to identify lists when inferring types, which usually causes the value to be treated as a str instead. Note that this setting is unaffected by <code><var>parser</var>.trim</code> and <code><var>parser</var>.case_sensitive</code>, and will always be used verbatim.
 
 			`none_values`
-			: list of strings that represent the value None
+			: list of strings that represent the value `None`
 
 			`none_case_sensitive`
 			: whether matches against `none_values` should be made in a case-sensitive manner
 
 			`true_values`
-			: list of strings that represent the bool value True
+			: list of strings that represent the bool value `True`
 
 			`false_values`
-			: list of strings that represent the bool value False
+			: list of strings that represent the bool value `False`
 
 			`bool_case_sensitive`
 			: whether matches against `true_values` and `false_values` should be made in a case-sensitive manner
 
 			`int_case_sensitive`
-			: whether checks for int should be done in a case-sensitive manner. This usually only applies to values given in scientific notation, where the mantissa and exponent usually are separated by `e`.
+			: whether checks for int should be done in a case-sensitive manner. This only applies to values given in scientific notation, where the mantissa and exponent usually are separated by `e`.
 
 			`inf_values`
-			: list of strings that represent the float or Decimal value of infinity. Each of the strings can be prepended with a negative sign to represent negative infinity also.
+			: list of strings that represent the float or Decimal value of infinity. Each of the strings can also be prepended with a negative sign to represent negative infinity.
 
 			`nan_values`
 			: list of strings that represent a float or Decimal that is NaN (not a number)
 
 			`float_case_sensitive`
-			: whether checks for float should be done in a case-sensitive manner. This applies to matches against `inf_values` and `nan_values`, as well as to values given in scientific notation, where the mantissa and exponent are usually separated by `e`.
+			: whether checks for float or Decimal should be done in a case-sensitive manner. This applies to matches against `inf_values` and `nan_values`, as well as to values given in scientific notation, where the mantissa and exponent are usually separated by `e`.
 
 			`case_sensitive`
-			: whether all matches should be made in a case-sensitive manner. Sets all of `none_case_sensitive`, `bool_case_sensitive`, `int_case_sensitive`, `float_case_sensitive` to the same value, ignoring any individual settings.
+			: whether all matches should be made in a case-sensitive manner. Sets all of `none_case_sensitive`, `bool_case_sensitive`, `int_case_sensitive`, `float_case_sensitive` to the same value, discarding any individual settings.
 
 			Raises
 			------
@@ -453,7 +462,7 @@ class TypeParser:
 		"""
 			Check if a string represents the value None
 
-			Only strings that match the values in `self.none_values` will be interpreted as None. The default accepted values are `[""]`, i.e. an empty string. The case sensitivity of this matching depends on `self.none_case_sensitive`, which is False by default.
+			Only strings that match the values in <code><var>parser</var>.none_values</code> will be interpreted as None. The default accepted values are `[""]`, i.e. an empty string. The case sensitivity of this matching depends on <code><var>parser</var>.none_case_sensitive</code>, which is False by default.
 
 			Parameters
 			----------
@@ -487,7 +496,7 @@ class TypeParser:
 		"""
 			Check if a string represents a bool
 
-			Only strings that match the values in `self.true_values` and `self.false_values` will be interpreted as booleans. The default accepted values are `["true"]` and `["false"]` respectively. The case sensitivity of this matching depends on `self.bool_case_sensitive`, which is False by default.
+			Only strings that match the values in <code><var>parser</var>.true_values</code> and <code><var>parser</var>.false_values</code> will be interpreted as booleans. The default accepted values are `["true"]` and `["false"]` respectively. The case sensitivity of this matching depends on <code><var>parser</var>.bool_case_sensitive</code>, which is False by default.
 
 			Parameters
 			----------
@@ -608,10 +617,10 @@ class TypeParser:
 			: whether to accept scientific notation. If True, strings of the form <code>"<var>M</var>e<var>X</var>"</code> will be interpreted as the expression <code><var>M</var> * (10 ** <var>X</var>)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note that <var>X</var> must be an integer, but can be negative.
 
 			`allow_inf`
-			: whether to accept positive and negative infinity values. If True, strings that match the values in `self.inf_values` (empty by default) are interpreted as infinity, or as negative infinity if prepended by a negative sign. The case sensitivity of this matching depends on `self.float_case_sensitive`, which is False by default.
+			: whether to accept positive and negative infinity values. If True, strings that match the values in <code><var>parser</var>.inf_values</code> (empty set by default) are interpreted as infinity, or as negative infinity if prepended by a negative sign. The case sensitivity of this matching depends on <code><var>parser</var>.float_case_sensitive</code>, which is False by default.
 
 			`allow_nan`
-			: whether to accept NaN (not a number) representations. If True, strings that match the values in `self.nan_values` (empty by default) are interpeted as NaN. The case sensitivity of this matching depends on `self.float_case_sensitive`, which is False by default.
+			: whether to accept NaN (not a number) representations. If True, strings that match the values in <code><var>parser</var>.nan_values</code> (empty set by default) are interpeted as NaN. The case sensitivity of this matching also depends on <code><var>parser</var>.float_case_sensitive</code>, which is False by default.
 
 			Returns
 			-------
@@ -674,7 +683,7 @@ class TypeParser:
 		"""
 			Parse a string and return it as the value None if possible
 
-			Only strings that match the values in `self.none_values` will be interpreted as None. The default accepted values are `[""]`, i.e. an empty string. The case sensitivity of this matching depends on `self.none_case_sensitive`, which is False by default.
+			Only strings that match the values in <code><var>parser</var>.none_values</code> will be interpreted as None. The default accepted values are `[""]`, i.e. an empty string. The case sensitivity of this matching depends on <code><var>parser</var>.none_case_sensitive</code>, which is False by default.
 
 			Parameters
 			----------
@@ -707,7 +716,7 @@ class TypeParser:
 		"""
 			Parse a string and return it as a bool if possible
 
-			Only strings that match the values in `self.true_values` and `self.false_values` will be interpreted as booleans. The default accepted values are `["true"]` and `["false"]` respectively. The case sensitivity of this matching depends on `self.bool_case_sensitive`, which is False by default.
+			Only strings that match the values in <code><var>parser</var>.true_values</code> and <code><var>parser</var>.false_values</code> will be interpreted as booleans. The default accepted values are `["true"]` and `["false"]` respectively. The case sensitivity of this matching depends on <code><var>parser</var>.bool_case_sensitive</code>, which is False by default.
 
 			Parameters
 			----------
@@ -860,10 +869,10 @@ class TypeParser:
 			: whether to accept scientific notation. If True, strings of the form <code>"<var>M</var>e<var>X</var>"</code> will be interpreted as the expression <code><var>M</var> * (10 ** <var>X</var>)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note that <var>X</var> must be an integer, but can be negative.
 
 			`allow_inf`
-			: whether to accept positive and negative infinity values. If True, strings that match the values in `self.inf_values` (empty by default) are interpreted as infinity, or as negative infinity if prepended by a negative sign. The case sensitivity of this matching depends on `self.float_case_sensitive`, which is False by default.
+			: whether to accept positive and negative infinity values. If True, strings that match the values in <code><var>parser</var>.inf_values</code> (empty set by default) are interpreted as infinity, or as negative infinity if prepended by a negative sign. The case sensitivity of this matching depends on <code><var>parser</var>.float_case_sensitive</code>, which is False by default.
 
 			`allow_nan`
-			: whether to accept NaN (not a number) representations. If True, strings that match the values in `self.nan_values` (empty by default) are interpeted as NaN. The case sensitivity of this matching depends on `self.float_case_sensitive`, which is False by default.
+			: whether to accept NaN (not a number) representations. If True, strings that match the values in <code><var>parser</var>.nan_values</code> (empty set by default) are interpeted as NaN. The case sensitivity of this matching also depends on <code><var>parser</var>.float_case_sensitive</code>, which is False by default.
 
 			Returns
 			-------
@@ -907,10 +916,10 @@ class TypeParser:
 			: whether to accept scientific notation. If True, strings of the form <code>"<var>M</var>e<var>X</var>"</code> will be interpreted as the expression <code><var>M</var> * (10 ** <var>X</var>)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note that <var>X</var> must be an integer, but can be negative.
 
 			`allow_inf`
-			: whether to accept positive and negative infinity values. If True, strings that match the values in `self.inf_values` (empty by default) are interpreted as infinity, or as negative infinity if prepended by a negative sign. The case sensitivity of this matching depends on `self.float_case_sensitive`, which is False by default.
+			: whether to accept positive and negative infinity values. If True, strings that match the values in <code><var>parser</var>.inf_values</code> (empty set by default) are interpreted as infinity, or as negative infinity if prepended by a negative sign. The case sensitivity of this matching depends on <code><var>parser</var>.float_case_sensitive</code>, which is False by default.
 
 			`allow_nan`
-			: whether to accept NaN (not a number) representations. If True, strings that match the values in `self.nan_values` (empty by default) are interpeted as NaN. The case sensitivity of this matching depends on `self.float_case_sensitive`, which is False by default.
+			: whether to accept NaN (not a number) representations. If True, strings that match the values in <code><var>parser</var>.nan_values</code> (empty set by default) are interpeted as NaN. The case sensitivity of this matching also depends on <code><var>parser</var>.float_case_sensitive</code>, which is False by default.
 
 			Returns
 			-------
@@ -941,7 +950,7 @@ class TypeParser:
 		"""
 			Infer the underlying type of a string
 
-			Also check for inline lists if `self.list_delimiter` is not None.
+			Also check for inline lists if <code><var>parser</var>.list_delimiter</code> is not None.
 
 			Parameters
 			----------
