@@ -180,11 +180,11 @@ class TypeParser:
 		# Check if any special values conflict
 		for name, special_values in [
 			(_SpecialValue.LIST, [self._list_delimiter] if self._list_delimiter is not None else []),
-			(_SpecialValue.NONE, self._original_none_values),
-			(_SpecialValue.TRUE, self._original_true_values),
-			(_SpecialValue.FALSE, self._original_false_values),
-			(_SpecialValue.INF, self._original_inf_values),
-			(_SpecialValue.NAN, self._original_nan_values),
+			(_SpecialValue.NONE, self._match_none_values),
+			(_SpecialValue.TRUE, self._match_true_values),
+			(_SpecialValue.FALSE, self._match_false_values),
+			(_SpecialValue.INF, self._match_inf_values),
+			(_SpecialValue.NAN, self._match_nan_values),
 		]:
 			for special_value in special_values:
 				self._validate_special(name, special_value)
