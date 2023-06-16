@@ -542,7 +542,7 @@ class TypeParser:
 			-----------------
 
 			`allow_negative`
-			: whether to accept negative values
+			: whether to accept negative values. Since negative values are always indicated with a negative sign, `allow_sign` must also be True (which is the default setting) for this to have any effect.
 
 			`allow_sign`
 			: whether to accept values prepended with a sign character. If False, it implies that `allow_negative` is False also.
@@ -761,7 +761,7 @@ class TypeParser:
 		raise ValueError(f"not a boolean: {value}")
 
 
-	def parse_int(self, value: str, *, allow_scientific: bool=True) -> int:
+	def parse_int(self, value: str, *, allow_negative: bool=True, allow_sign: bool=True, allow_scientific: bool=True) -> int:
 		"""
 			Parse a string and return it as an int if possible
 
@@ -774,6 +774,12 @@ class TypeParser:
 
 			Keyword arguments
 			-----------------
+
+			`allow_negative`
+			: whether to accept negative values. Since negative values are always indicated with a negative sign, `allow_sign` must also be True (which is the default setting) for this to have any effect.
+
+			`allow_sign`
+			: whether to accept values prepended with a sign character. If False, it implies that `allow_negative` is False also.
 
 			`allow_scientific`
 			: whether to accept scientific notation. If True, strings of the form <code>"<var>M</var>e<var>X</var>"</code> will be interpreted as the expression <code><var>M</var> * (10 ** <var>X</var>)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note that <var>M</var> must be an integer and <var>X</var> must be a non-negative integer, even in cases where the expression would evaluate mathematically to an integer.
@@ -798,7 +804,7 @@ class TypeParser:
 		if self._trim:
 			value = value.strip()
 
-		if self.is_int(value, allow_sign=True, allow_negative=True, allow_scientific=allow_scientific):
+		if self.is_int(value, allow_negative=allow_negative, allow_sign=allow_sign, allow_scientific=allow_scientific):
 			if allow_scientific:
 				value, exp = _decompose_string_pair(value, self._scientific_char, self._int_case_sensitive)
 				if exp is not None:

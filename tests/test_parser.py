@@ -382,29 +382,29 @@ class TestInt:
 
 	@staticmethod
 	@pytest.mark.parametrize(
-		('value', 'is_int_allow_sign_expected', 'is_int_allow_negative_expected', 'is_int_allow_both_expected', 'expected_int'),
+		('value', 'is_int_allow_sign_expected', 'is_int_allow_negative_expected', 'is_int_allow_both_expected', 'allow_sign_expected', 'allow_negative_expected', 'allow_both_expected'),
 		# All test cases expect False when both disallowed
 		[
-			("+0", True, False, True, 0),
-			("-0", False, False, True, 0),
-			("−0", False, False, True, 0),
-			("+1", True, False, True, 1),
-			("+20", True, False, True, 20),
-			("+03", True, False, True, 3),
-			("-4", False, False, True, -4),
-			("-50", False, False, True, -50),
-			("-06", False, False, True, -6),
-			("−7", False, False, True, -7),
-			("−80", False, False, True, -80),
-			("−09", False, False, True, -9),
-			("++10", False, False, False, None),
-			("--10", False, False, False, None),
-			("10+", False, False, False, None),
-			("10-", False, False, False, None),
-			("1+1", False, False, False, None),
-			("1-1", False, False, False, None),
-			("0+1", False, False, False, None),
-			("0-1", False, False, False, None),
+			("+0", True, False, True, 0, None, 0),
+			("-0", False, False, True, None, None, 0),
+			("−0", False, False, True, None, None, 0),
+			("+1", True, False, True, 1, None, 1),
+			("+20", True, False, True, 20, None, 20),
+			("+03", True, False, True, 3, None, 3),
+			("-4", False, False, True, None, None, -4),
+			("-50", False, False, True, None, None, -50),
+			("-06", False, False, True, None, None, -6),
+			("−7", False, False, True, None, None, -7),
+			("−80", False, False, True, None, None, -80),
+			("−09", False, False, True, None, None, -9),
+			("++10", False, False, False, None, None, None),
+			("--10", False, False, False, None, None, None),
+			("10+", False, False, False, None, None, None),
+			("10-", False, False, False, None, None, None),
+			("1+1", False, False, False, None, None, None),
+			("1-1", False, False, False, None, None, None),
+			("0+1", False, False, False, None, None, None),
+			("0-1", False, False, False, None, None, None),
 		]
 	)
 	def test_allow_sign_negative(
@@ -413,7 +413,9 @@ class TestInt:
 		is_int_allow_sign_expected: bool,
 		is_int_allow_negative_expected: bool,
 		is_int_allow_both_expected: bool,
-		expected_int: int
+		allow_sign_expected: int,
+		allow_negative_expected: int,
+		allow_both_expected: int,
 	):
 		is_int_allow_sign_result = default_parser.is_int(value, allow_sign=True, allow_negative=False)
 		assert is_int_allow_sign_result == is_int_allow_sign_expected
@@ -421,16 +423,32 @@ class TestInt:
 		assert is_int_allow_negative_result == is_int_allow_negative_expected
 		is_int_allow_both_result = default_parser.is_int(value, allow_sign=True, allow_negative=True)
 		assert is_int_allow_both_result == is_int_allow_both_expected
+		is_int_allow_none_result = default_parser.is_int(value, allow_sign=False, allow_negative=False)
+		assert is_int_allow_none_result == False
 
-		is_int_disallow_negative_result = default_parser.is_int(value, allow_sign=False, allow_negative=False)
-		assert is_int_disallow_negative_result == False
-
-		if expected_int is None:
+		if allow_sign_expected is None:
 			with pytest.raises(ValueError):
-				default_parser.parse_int(value)
+				default_parser.parse_int(value, allow_sign=True, allow_negative=False)
 		else:
-			result = default_parser.parse_int(value)
-			assert result == expected_int
+			allow_sign_result = default_parser.parse_int(value, allow_sign=True, allow_negative=False)
+			assert allow_sign_result == allow_sign_expected
+
+		if allow_negative_expected is None:
+			with pytest.raises(ValueError):
+				default_parser.parse_int(value, allow_sign=False, allow_negative=True)
+		else:
+			allow_negative_result = default_parser.parse_int(value, allow_sign=False, allow_negative=True)
+			assert allow_negative_result == allow_negative_expected
+
+		if allow_both_expected is None:
+			with pytest.raises(ValueError):
+				default_parser.parse_int(value, allow_sign=True, allow_negative=True)
+		else:
+			allow_both_result = default_parser.parse_int(value, allow_sign=True, allow_negative=True)
+			assert allow_both_result == allow_both_expected
+
+		with pytest.raises(ValueError):
+			default_parser.parse_int(value, allow_sign=False, allow_negative=False)
 
 
 	@staticmethod
@@ -1712,8 +1730,8 @@ class TestConstructorAndProperties:
 	@pytest.mark.parametrize('none_values', [[], [""], ["none", "n"]])
 	@pytest.mark.parametrize('true_values', [[], ["t", "tru"]])
 	@pytest.mark.parametrize('false_values', [[], ["f", "fa"]])
-	@pytest.mark.parametrize('inf_values', [['inf']])
-	@pytest.mark.parametrize('nan_values', [['nan']])
+	@pytest.mark.parametrize('inf_values', [["inf"]])
+	@pytest.mark.parametrize('nan_values', [["nan"]])
 	def test_args(
 		list_delimiter: str,
 		none_values: list[str],

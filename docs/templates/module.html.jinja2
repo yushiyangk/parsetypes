@@ -2,19 +2,6 @@
 
 
 {#
-	Treat dunder methods as public
-	https://pdoc.dev/docs/pdoc.html#control-what-is-documented
-#}
-{% macro is_public(doc) %}
-	{% if doc.kind == "function" and doc.name.startswith("__") and doc.name.endswith("__") %}
-		true
-	{% else %}
-		{{ default_is_public(doc) }}
-	{% endif %}
-{% endmacro %}
-
-
-{#
 	JavaScript hacks
 #}
 {% block head %}
@@ -36,61 +23,6 @@
 					a.removeAttribute('href');
 				}
 			});
-
-			// Rearrange function signatures in summary to prepare for elision
-			document.querySelectorAll('.pdoc .summary dt').forEach((heading) => {
-				const returnType = heading.querySelector('.return-annotation');
-				const signature = heading.querySelector('.signature');
-				if (returnType !== null) {
-					heading.appendChild(returnType);
-				} else {
-					// ( <- workaround for bad parenthesis matching in text editor
-					if (signature !== null && signature.childNodes !== null && signature.lastChild?.nodeType === Node.TEXT_NODE && signature.lastChild?.textContent === ")") {
-						heading.appendChild(signature.lastChild);
-					}
-				}
-				if (signature !== null && signature.childNodes !== null && signature.firstChild?.textContent === '(') {
-					const name = heading.querySelector('.name');
-					heading.insertBefore(signature.firstChild, signature);
-				}
-				// ) <- workaround for bad parenthesis matching in text editor
-			});
-			// Elision of function signatures except return type
-			document.querySelectorAll('.pdoc .summary').forEach((summary) => {
-				// Instead of observing resize of every single dt, just observe the parent .summary instead since they have the same width
-				const summaryMarginLeft = parseInt(window.getComputedStyle(summary).marginLeft);
-				console.log(summaryMarginLeft);
-				const headings = summary.querySelectorAll('dt');
-				const headingsArray = [...headings];
-      			const names = headingsArray.map((h) => h.querySelector('.name'));
-      			const signatures = headingsArray.map((h) => h.querySelector('.signature'));
-				const returnTypes = headingsArray.map((h) => h.querySelector('.return-annotation'));
-				const summaryResizeObserver = new ResizeObserver((entries) => {
-					for (const entry of entries) {
-						if (entry.contentBoxSize !== null && entry.contentBoxSize[0] !== null) {
-							const containerWidth = entry.contentBoxSize[0].inlineSize;
-							headings.forEach((heading, i) => {
-								if (names[i] !== null && signatures[i] !== null) {
-									const nameWidth = names[i].scrollWidth;
-									const signatureWidth = signatures[i].scrollWidth;
-									let returnTypeWidth = 0;
-									if (returnTypes[i] !== null) {
-										returnTypeWidth = returnTypes[i].scrollWidth;
-									}
-									// Need to add padding, border, margin widths too in principle, but they are 0
-									if (nameWidth + signatureWidth + returnTypeWidth + summaryMarginLeft > containerWidth) {
-										signatures[i].style.width = (containerWidth - nameWidth - returnTypeWidth - summaryMarginLeft) + 'px';
-									} else if (signatures[i].style.width !== '') {
-										signatures[i].style.removeProperty('width');
-									}
-								}
-							});
-						}
-					}
-				});
-				summaryResizeObserver.observe(summary);
-			});
-
 		});
 	</script>
 {% endblock %}
@@ -123,62 +55,6 @@
 
 {% macro variable(var) -%}
 	{{ shorttypes(default_variable(var)) }}
-{% endmacro %}
-
-
-{#
-	Keep tabs in docstring
-#}
-{% macro preserve_tabs(s, n) -%}
-	{%- autoescape false -%}
-		{%- set lines = s.splitlines() -%}
-		{%- for line in lines -%}
-			{{ '\n' + ((line.__len__() - line.lstrip().__len__()) // n) * '\t' + line.lstrip() }}
-		{%- endfor -%}
-	{%- endautoescape -%}
-{%- endmacro %}
-
-
-{#
-	Macros for generating summary sections
-#}
-{% macro summary(m) %}
-	{% set paragraphs = m.docstring.strip().split("\n") %}
-	<dt>
-		{%- autoescape false -%}
-			{%- if m.kind == "class" -%}
-				<span class="name">{{ cls.qualname | linkify }}</span>
-			{%- elif m.kind == "function" -%}
-				{% if m.name == "__init__" %}
-					<span class="name"><a href="#{{ m.qualname }}">{{ ".".join(m.qualname.split(".")[:-1]) }}</a></span>
-					{{- shorttypes(m.signature_without_self | format_signature(colon=False) | linkify) -}}
-				{%- else %}
-					<span class="name"><a href="#{{ m.qualname }}">{{ m.name }}</a></span>
-					{{- shorttypes(m.signature | format_signature(colon=True) | linkify) -}}
-				{%- endif %}
-			{%- elif m.kind == "module" -%}
-				{{ submodule(m) }}
-			{%- else -%}
-				<span class="name"><a href="#{{ m.qualname }}">{{ m.name }}</a></span>{{ annotation(m) }}{{ default_value(m) }}
-			{%- endif -%}
-		{%- endautoescape -%}
-	</dt>
-
-	{#
-		doc.docstring has all tabs converted to 8 spaces
-		to_html converts all tabs to 4 spaces
-	#}
-	{%- set summary_html = preserve_tabs(paragraphs[0], 8) | to_markdown | to_html -%}
-	<dd>{{ preserve_tabs(summary_html, 4) | linkify(namespace=m.qualname) }}</dd>
-{% endmacro %}
-
-{% macro class_summary(heading, content) %}
-	{% if content %}
-		<h2>{{ heading }}</h2>
-		<dl>
-			{{ content }}
-		</dl>
-	{% endif %}
 {% endmacro %}
 
 
@@ -222,8 +98,17 @@
 
 
 {#
-	Changes to linking in docstring
+	Keep tabs in docstring
 #}
+{% macro preserve_tabs(s, n) -%}
+	{%- autoescape false -%}
+		{%- set lines = s.splitlines() -%}
+		{%- for line in lines -%}
+			{{ '\n' + ((line.__len__() - line.lstrip().__len__()) // n) * '\t' + line.lstrip() }}
+		{%- endfor -%}
+	{%- endautoescape -%}
+{%- endmacro %}
+
 {% macro docstring(doc) %}
 	{% if doc.docstring %}
 		{# {{ default_docstring(doc) }} #}
@@ -233,54 +118,5 @@
 		#}
 		{%- set docstring_html = preserve_tabs(doc.docstring, 8) | to_markdown | to_html -%}
 		<div class="docstring">{{ preserve_tabs(docstring_html, 4) | linkify(namespace=doc.qualname) }}</div>
-
 	{% endif %}
-	{#
-	{% if doc.kind == "class" %}
-		<div class="summary">
-
-			{% set list -%}
-				{% for m in doc.own_members if m.kind == "function" and (is_public(m) | trim) and m.name == "__init__" -%}
-					{{ summary(m)}}
-				{%- endfor %}
-			{%- endset %}
-			{{ class_summary("Constructor summary", list) }}
-
-			{% set list -%}
-				{% for m in doc.own_members if m.kind == "variable" and (is_public(m) | trim) and m.is_classvar -%}
-					{{ summary(m) }}
-				{%- endfor %}
-			{%- endset %}
-			{{ class_summary("Class variables summary", list) }}
-
-			{% set list -%}
-				{% for m in doc.own_members if m.kind == "variable" and (is_public(m) | trim) and not m.is_classvar -%}
-					{{ summary(m) }}
-				{%- endfor %}
-			{%- endset %}
-			{{ class_summary("Instance variables summary", list) }}
-
-			{% set list -%}
-				{% for m in doc.own_members if m.kind == "function" and (is_public(m) | trim) and "@staticmethod" in m.decorators -%}
-					{{ summary(m)}}
-				{%- endfor %}
-			{%- endset %}
-			{{ class_summary("Static methods summary", list) }}
-
-			{% set list -%}
-				{% for m in doc.own_members if m.kind == "function" and (is_public(m) | trim) and "@classmethod" in m.decorators -%}
-					{{ summary(m)}}
-				{%- endfor %}
-			{%- endset %}
-			{{ class_summary("Class methods summary", list) }}
-
-			{% set list -%}
-				{% for m in doc.own_members if m.kind == "function" and (is_public(m) | trim) and "@staticmethod" not in m.decorators and "@classmethod" not in m.decorators and m.name != "__init__" -%}
-					{{ summary(m)}}
-				{%- endfor %}
-			{%- endset %}
-			{{ class_summary("Instance methods summary", list) }}
-		</div>
-	{% endif %}
-	#}
 {% endmacro %}
