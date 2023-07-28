@@ -1,8 +1,8 @@
 
 ## Contributing
 
-* [Report an issue](https://github.com/yushiyangk/parsetypes/issues)
-* [Submit a pull request](https://github.com/yushiyangk/parsetypes/pulls).
+- [Report an issue](https://github.com/yushiyangk/parsetypes/issues)
+- [Submit a pull request](https://github.com/yushiyangk/parsetypes/pulls).
 
 ## Dev environment
 
