@@ -1,23 +1,23 @@
 import typing
 from decimal import Decimal
-from typing import Iterable, Optional, cast
+from typing import Final, Iterable, Optional, cast
 
 from ._common import AnyBaseType, AnyContainerBaseType, AnyScalarType, AnyValueType, GenericValue, Nullable
 
-from ._compat import Final, NoneType, Union
+from ._compat import NoneType, Union
 
 
-_TerminalValue: 'Final[AnyBaseType]' = list
+_TerminalValue: Final[AnyBaseType] = list
 
-_scalar_hierarchy: 'Final[dict[AnyBaseType, Union[AnyBaseType, None]]]' = {
+_scalar_hierarchy: Final[dict[AnyBaseType, Union[AnyBaseType, None]]] = {
 	bool: int,
 	int: Decimal,
 	Decimal: float,
 	float: str,
 	str: None,
 }
-_containers: 'Final[set[AnyBaseType]]' = {Nullable, list}
-_type_hierarchy: 'Final[dict[AnyBaseType, Union[AnyBaseType, None]]]' = {
+_containers: Final[set[AnyBaseType]] = {Nullable, list}
+_type_hierarchy: Final[dict[AnyBaseType, Union[AnyBaseType, None]]] = {
 	bool: int,
 	int: Decimal,
 	Decimal: float,
