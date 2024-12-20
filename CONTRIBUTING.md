@@ -2,7 +2,7 @@
 ## Contributing
 
 - [Report an issue](https://github.com/yushiyangk/parsetypes/issues)
-- [Submit a pull request](https://github.com/yushiyangk/parsetypes/pulls).
+- [Submit a pull request](https://github.com/yushiyangk/parsetypes/pulls)
 
 ## Dev environment
 
@@ -12,9 +12,9 @@ The source for the package is `src/`, with tests in `tests/`.
 
 ### Virtual environment
 
-Create the venv using `python -m venv .`.
+Create the venv using `python -m venv .venv`.
 
-To activate the venv, on Linux run `source Scripts/activate`, and on Windows run `Scripts/Activate.ps1` or `Scripts/activate.bat`.
+To activate the venv, on Linux run `source .venv/bin/activate`, and on Windows run `.venv/Scripts/Activate.ps1` or `.venv/Scripts/activate.bat`.
 
 Later, to deactivate the venv, run `deactivate`.
 
