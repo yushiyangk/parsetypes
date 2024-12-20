@@ -1,7 +1,7 @@
 import math
 from decimal import Decimal
 from enum import Enum
-from typing import Callable, Iterable, Iterator, Optional, Sequence, TypeVar, cast
+from typing import Callable, Iterable, Iterator, Optional, Sequence, TypeVar
 
 from ._common import AnyValue, AnyValueType, GenericValue, Nullable
 from ._reduce_types import reduce_types, _decompose_type
@@ -623,7 +623,7 @@ class TypeParser:
 			: whether to accept scientific notation. If True, strings of the form <code>"<var>M</var>e<var>X</var>"</code> will be interpreted as the expression <code><var>M</var> * (10 ** <var>X</var>)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note that <var>X</var> must be an integer, but can be negative.
 
 			`allow_inf`
-			: whether to accept positive and negative infinity values. If True, strings that match the values in <code><var>parser</var>.inf_values</code> (empty set by default) are interpreted as infinity, or as negative infinity if prepended by a negative sign. The case sensitivity of this matching depends on <code><var>parser</var>.float_case_sensitive</code>, which is False by default.
+			: whether to accept positive and negative infinity values. If True, strings that match the values in <code><var>parser</var>.inf_values</code> (empty set by default) are interpreted as infinity, or as negative infinity if prepended with a negative sign. The case sensitivity of this matching depends on <code><var>parser</var>.float_case_sensitive</code>, which is False by default.
 
 			`allow_nan`
 			: whether to accept NaN (not a number) representations. If True, strings that match the values in <code><var>parser</var>.nan_values</code> (empty set by default) are interpeted as NaN. The case sensitivity of this matching also depends on <code><var>parser</var>.float_case_sensitive</code>, which is False by default.
@@ -887,7 +887,7 @@ class TypeParser:
 			: whether to accept scientific notation. If True, strings of the form <code>"<var>M</var>e<var>X</var>"</code> will be interpreted as the expression <code><var>M</var> * (10 ** <var>X</var>)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note that <var>X</var> must be an integer, but can be negative.
 
 			`allow_inf`
-			: whether to accept positive and negative infinity values. If True, strings that match the values in <code><var>parser</var>.inf_values</code> (empty set by default) are interpreted as infinity, or as negative infinity if prepended by a negative sign. The case sensitivity of this matching depends on <code><var>parser</var>.float_case_sensitive</code>, which is False by default.
+			: whether to accept positive and negative infinity values. If True, strings that match the values in <code><var>parser</var>.inf_values</code> (empty set by default) are interpreted as infinity, or as negative infinity if prepended with a negative sign. The case sensitivity of this matching depends on <code><var>parser</var>.float_case_sensitive</code>, which is False by default.
 
 			`allow_nan`
 			: whether to accept NaN (not a number) representations. If True, strings that match the values in <code><var>parser</var>.nan_values</code> (empty set by default) are interpeted as NaN. The case sensitivity of this matching also depends on <code><var>parser</var>.float_case_sensitive</code>, which is False by default.
@@ -937,7 +937,7 @@ class TypeParser:
 			: whether to accept scientific notation. If True, strings of the form <code>"<var>M</var>e<var>X</var>"</code> will be interpreted as the expression <code><var>M</var> * (10 ** <var>X</var>)</code>, where <var>M</var> is the mantissa/significand and <var>X</var> is the exponent. Note that <var>X</var> must be an integer, but can be negative.
 
 			`allow_inf`
-			: whether to accept positive and negative infinity values. If True, strings that match the values in <code><var>parser</var>.inf_values</code> (empty set by default) are interpreted as infinity, or as negative infinity if prepended by a negative sign. The case sensitivity of this matching depends on <code><var>parser</var>.float_case_sensitive</code>, which is False by default.
+			: whether to accept positive and negative infinity values. If True, strings that match the values in <code><var>parser</var>.inf_values</code> (empty set by default) are interpreted as infinity, or as negative infinity if prepended with a negative sign. The case sensitivity of this matching depends on <code><var>parser</var>.float_case_sensitive</code>, which is False by default.
 
 			`allow_nan`
 			: whether to accept NaN (not a number) representations. If True, strings that match the values in <code><var>parser</var>.nan_values</code> (empty set by default) are interpeted as NaN. The case sensitivity of this matching also depends on <code><var>parser</var>.float_case_sensitive</code>, which is False by default.
