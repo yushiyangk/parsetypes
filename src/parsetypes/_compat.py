@@ -13,8 +13,3 @@ if sys.version_info >= (3, 10):
 else:
 	NoneType = type(None)
 	TypeAlias = typing.Any
-
-if sys.version_info >= (3, 8):
-	Final = typing.Final[typing.Any]
-else:
-	Final = typing.Any
